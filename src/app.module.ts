@@ -10,6 +10,7 @@ import { MemoriesModule } from './memories/index.js';
 import { RelationshipsModule } from './relationships/index.js';
 import { SpacesModule } from './spaces/index.js';
 import { ConfirmationsModule } from './confirmations/index.js';
+import { PreferencesModule } from './preferences/index.js';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ConfirmationsModule } from './confirmations/index.js';
     RelationshipsModule,
     SpacesModule,
     ConfirmationsModule,
+    PreferencesModule,
   ],
   providers: [
     {
