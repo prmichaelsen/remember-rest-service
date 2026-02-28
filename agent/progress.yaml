@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.1.0
+  version: 0.2.0
   started: 2026-02-28
   status: in_progress
   description: |
@@ -62,9 +62,9 @@ milestones:
 
   - id: M7
     name: App Tier Routes
-    status: not_started
+    status: completed
     tasks_total: 1
-    tasks_completed: 0
+    tasks_completed: 1
     estimated_weeks: 1
     dependencies: [M3]
     document: agent/milestones/milestone-7-app-tier-routes.md
@@ -260,9 +260,9 @@ tasks:
   milestone_7:
     - id: 27
       name: Implement App Tier Routes (/api/app/v1/)
-      status: not_started
+      status: completed
       estimated_hours: 6-8
-      completed_date: null
+      completed_date: 2026-02-28
       dependencies: [2, 6]
       document: agent/tasks/milestone-7-app-tier-routes/task-27-implement-app-tier-routes.md
       notes: |
@@ -285,10 +285,10 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 95
-  overall: 95
+  implementation: 100
+  overall: 100
 
-current_milestone: M7
+current_milestone: null
 
 recent_work:
   - date: 2026-02-28
@@ -309,9 +309,11 @@ recent_work:
     description: "Task 26 complete: ensureUserCollection added to all 5 controllers — 117 unit/e2e tests passing, needs redeploy"
   - date: 2026-02-28
     description: "safeEnsureUserCollection wrapper + e1 redeploy — memories/relationships/trust CRUD now returns 201. 120 unit+e2e tests, 32 live tests passing"
+  - date: 2026-02-28
+    description: "M7 complete: App tier routes — ProfilesController (4 endpoints), GhostSearchController (1 endpoint), DTOs, unit tests — 134 total tests passing (116 unit + 18 e2e)"
 
 next_steps:
-  - Redeploy to production
+  - Redeploy to e1 and production with app tier routes
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 
 notes:

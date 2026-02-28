@@ -12,6 +12,7 @@ import { SpacesModule } from './spaces/index.js';
 import { ConfirmationsModule } from './confirmations/index.js';
 import { PreferencesModule } from './preferences/index.js';
 import { TrustModule } from './trust/index.js';
+import { AppTierModule } from './app/index.js';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { TrustModule } from './trust/index.js';
     ConfirmationsModule,
     PreferencesModule,
     TrustModule,
+    AppTierModule,
   ],
   providers: [
     {
