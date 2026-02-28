@@ -6,6 +6,7 @@ import { ConfigService } from './config/config.service.js';
 import { CoreModule } from './core/index.js';
 import { AuthModule } from './auth/index.js';
 import { HealthModule } from './health/index.js';
+import { MemoriesModule } from './memories/index.js';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { HealthModule } from './health/index.js';
     }),
     AuthModule,
     HealthModule,
+    MemoriesModule,
   ],
   providers: [
     {

@@ -1,0 +1,296 @@
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsArray,
+  Min,
+  Max,
+  IsBoolean,
+  IsEnum,
+  IsObject,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class SearchFiltersDto {
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  types?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  weight_min?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  weight_max?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  trust_min?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  trust_max?: number;
+
+  @IsOptional()
+  @IsString()
+  date_from?: string;
+
+  @IsOptional()
+  @IsString()
+  date_to?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  has_relationships?: boolean;
+}
+
+export class GhostSearchContextDto {
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  accessor_trust_level!: number;
+
+  @IsString()
+  owner_user_id!: string;
+
+  @IsOptional()
+  @IsBoolean()
+  include_ghost_content?: boolean;
+}
+
+export class CreateMemoryDto {
+  @IsString()
+  content!: string;
+
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  type?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  weight?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  trust?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  references?: string[];
+
+  @IsOptional()
+  @IsString()
+  template_id?: string;
+
+  @IsOptional()
+  @IsString()
+  parent_id?: string | null;
+
+  @IsOptional()
+  @IsString()
+  thread_root_id?: string | null;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  moderation_flags?: string[];
+
+  @IsOptional()
+  @IsString()
+  context_summary?: string;
+
+  @IsOptional()
+  @IsString()
+  context_conversation_id?: string;
+}
+
+export class SearchMemoryDto {
+  @IsString()
+  query!: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  alpha?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsBoolean()
+  include_relationships?: boolean;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
+export class FindSimilarDto {
+  @IsOptional()
+  @IsString()
+  memory_id?: string;
+
+  @IsOptional()
+  @IsString()
+  text?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  min_similarity?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  include_relationships?: boolean;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
+export class QueryMemoryDto {
+  @IsString()
+  query!: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  min_relevance?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
+export class UpdateMemoryDto {
+  @IsOptional()
+  @IsString()
+  content?: string;
+
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  type?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  weight?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  trust?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  references?: string[];
+
+  @IsOptional()
+  @IsString()
+  parent_id?: string | null;
+
+  @IsOptional()
+  @IsString()
+  thread_root_id?: string | null;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  moderation_flags?: string[];
+}
+
+export class DeleteMemoryDto {
+  @IsOptional()
+  @IsString()
+  reason?: string;
+}
