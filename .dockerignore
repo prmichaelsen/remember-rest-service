@@ -1,0 +1,35 @@
+# Development
+node_modules/
+dist/
+build/
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+agent/
+docs/
+
+# Environment
+.env
+.env.local
+.env.example
+
+# IDE
+.vscode/
+.idea/
+.claude/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Tests
+**/*.spec.ts
+**/*.e2e.ts
+jest.config.ts
+jest-e2e.config.ts
