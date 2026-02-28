@@ -1,6 +1,7 @@
 import { ConfigService } from '../config/config.service.js';
 
 const mockInitWeaviateClient = jest.fn().mockResolvedValue({ isReady: () => true });
+const mockEnsureUserCollection = jest.fn().mockResolvedValue(false);
 const mockInitFirestore = jest.fn();
 const mockCreateLogger = jest.fn().mockReturnValue({
   debug: jest.fn(),
@@ -11,6 +12,7 @@ const mockCreateLogger = jest.fn().mockReturnValue({
 
 jest.mock('@prmichaelsen/remember-core/database/weaviate', () => ({
   initWeaviateClient: mockInitWeaviateClient,
+  ensureUserCollection: mockEnsureUserCollection,
 }));
 
 jest.mock('@prmichaelsen/remember-core/database/firestore', () => ({
@@ -32,6 +34,7 @@ import {
   firestoreProvider,
   loggerProvider,
   confirmationTokenServiceProvider,
+  safeEnsureUserCollection,
 } from './core.providers.js';
 
 const REQUIRED_ENV = {
@@ -124,6 +127,26 @@ describe('Core Providers', () => {
       factory(mockLogger);
 
       expect(MockConfirmationTokenService).toHaveBeenCalledWith(mockLogger);
+    });
+  });
+
+  describe('safeEnsureUserCollection', () => {
+    it('should call ensureUserCollection', async () => {
+      const client = {};
+      await safeEnsureUserCollection(client, 'user-1');
+      expect(mockEnsureUserCollection).toHaveBeenCalledWith(client, 'user-1');
+    });
+
+    it('should swallow "already exists" errors', async () => {
+      mockEnsureUserCollection.mockRejectedValueOnce(
+        new Error('class name Memory_users_user1 already exists'),
+      );
+      await expect(safeEnsureUserCollection({}, 'user1')).resolves.toBeUndefined();
+    });
+
+    it('should rethrow other errors', async () => {
+      mockEnsureUserCollection.mockRejectedValueOnce(new Error('connection refused'));
+      await expect(safeEnsureUserCollection({}, 'user1')).rejects.toThrow('connection refused');
     });
   });
 });

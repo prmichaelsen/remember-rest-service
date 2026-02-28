@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
-const RUN_ID = randomUUID().slice(0, 8);
+// Weaviate collection names don't allow hyphens, so use hex-only run ID
+const RUN_ID = randomUUID().replace(/-/g, '').slice(0, 8);
 
-export const TEST_USER_ID = `live-test-${RUN_ID}`;
-export const TEST_TARGET_USER_ID = `live-test-target-${RUN_ID}`;
+export const TEST_USER_ID = `live_test_${RUN_ID}`;
+export const TEST_TARGET_USER_ID = `live_test_target_${RUN_ID}`;

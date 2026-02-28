@@ -1,5 +1,5 @@
 import type { Provider } from '@nestjs/common';
-import { initWeaviateClient } from '@prmichaelsen/remember-core/database/weaviate';
+import { initWeaviateClient, ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { initFirestore } from '@prmichaelsen/remember-core/database/firestore';
 import { createLogger } from '@prmichaelsen/remember-core/utils';
 import { ConfirmationTokenService } from '@prmichaelsen/remember-core/services';
@@ -57,3 +57,15 @@ export const confirmationTokenServiceProvider: Provider = {
   },
   inject: [LOGGER],
 };
+
+/**
+ * Safely ensure a user collection exists, tolerating "already exists" race conditions.
+ */
+export async function safeEnsureUserCollection(client: any, userId: string): Promise<void> {
+  try {
+    await ensureUserCollection(client, userId);
+  } catch (err: any) {
+    if (err?.message?.includes('already exists')) return;
+    throw err;
+  }
+}

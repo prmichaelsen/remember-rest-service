@@ -9,8 +9,7 @@ import {
   type QuerySpaceInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
-import { ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, safeEnsureUserCollection } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 import {
   PublishDto,
@@ -30,7 +29,7 @@ export class SpacesController {
   ) {}
 
   private async getService(userId: string): Promise<SpaceService> {
-    await ensureUserCollection(this.weaviateClient, userId);
+    await safeEnsureUserCollection(this.weaviateClient, userId);
     const userCollection = this.weaviateClient.collections.get(
       `Memory_users_${userId}`,
     );
