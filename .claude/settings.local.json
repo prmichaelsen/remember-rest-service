@@ -7,7 +7,14 @@
       "Bash(npx:*)",
       "Bash(node:*)",
       "Bash(npm show:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(npm install:*)",
+      "Bash(npm ls:*)",
+      "Bash(gcloud config:*)",
+      "Bash(gcloud secrets:*)",
+      "Bash(gcloud builds:*)",
+      "Bash(gcloud run:*)",
+      "Bash(curl:*)"
     ]
   }
 }
