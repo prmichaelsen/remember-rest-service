@@ -248,11 +248,19 @@ tasks:
       dependencies: [22, 23]
       document: agent/tasks/milestone-6-live-e2e-testing/task-25-preferences-trust-spaces-live-tests.md
 
+  unassigned:
+    - id: 26
+      name: Add ensureUserCollection to Controllers
+      status: completed
+      completed_date: 2026-02-28
+      estimated_hours: 1-2
+      document: agent/tasks/unassigned/task-26-ensure-user-collection.md
+
 documentation:
   design_documents: 1
   milestone_documents: 6
   pattern_documents: 0
-  task_documents: 25
+  task_documents: 26
 
 progress:
   planning: 100
@@ -276,8 +284,12 @@ recent_work:
     description: "M5 complete: Dockerfile, cloudbuild.yaml + cloudbuild.e1.yaml, deployed to e1 and production on Cloud Run"
   - date: 2026-02-28
     description: "M6 complete: Live E2E test suite — 32 tests across 7 suites (health, auth, memories, relationships, preferences, trust, spaces)"
+  - date: 2026-02-28
+    description: "Task 26 complete: ensureUserCollection added to all 5 controllers — 117 unit/e2e tests passing, needs redeploy"
 
-next_steps: []
+next_steps:
+  - Redeploy to e1 and production to activate ensureUserCollection fix
+  - Re-run live E2E tests after redeploy to verify CRUD operations return 201
 
 notes:
   - Spec-first approach — OpenAPI spec in remember-core is source of truth
