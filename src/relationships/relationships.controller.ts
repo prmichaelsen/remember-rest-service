@@ -14,6 +14,7 @@ import {
   type UpdateRelationshipInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
+import { ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { WEAVIATE_CLIENT, LOGGER } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 import {
@@ -29,7 +30,8 @@ export class RelationshipsController {
     @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
-  private getService(userId: string): RelationshipService {
+  private async getService(userId: string): Promise<RelationshipService> {
+    await ensureUserCollection(this.weaviateClient, userId);
     const collection = this.weaviateClient.collections.get(
       `Memory_users_${userId}`,
     );
@@ -38,13 +40,13 @@ export class RelationshipsController {
 
   @Post()
   async create(@User() userId: string, @Body() dto: CreateRelationshipDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.create(dto as CreateRelationshipInput);
   }
 
   @Post('search')
   async search(@User() userId: string, @Body() dto: SearchRelationshipDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.search(dto as SearchRelationshipInput);
   }
 
@@ -54,7 +56,7 @@ export class RelationshipsController {
     @Param('id') id: string,
     @Body() dto: UpdateRelationshipDto,
   ) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.update({
       ...dto,
       relationship_id: id,
@@ -63,7 +65,7 @@ export class RelationshipsController {
 
   @Delete(':id')
   async delete(@User() userId: string, @Param('id') id: string) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.delete({ relationship_id: id });
   }
 }

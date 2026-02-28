@@ -16,6 +16,7 @@ import {
   type UpdateMemoryInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
+import { ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { WEAVIATE_CLIENT, LOGGER } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 import {
@@ -34,7 +35,8 @@ export class MemoriesController {
     @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
-  private getService(userId: string): MemoryService {
+  private async getService(userId: string): Promise<MemoryService> {
+    await ensureUserCollection(this.weaviateClient, userId);
     const collection = this.weaviateClient.collections.get(
       `Memory_users_${userId}`,
     );
@@ -43,25 +45,25 @@ export class MemoriesController {
 
   @Post()
   async create(@User() userId: string, @Body() dto: CreateMemoryDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.create(dto as CreateMemoryInput);
   }
 
   @Post('search')
   async search(@User() userId: string, @Body() dto: SearchMemoryDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.search(dto as SearchMemoryInput);
   }
 
   @Post('similar')
   async findSimilar(@User() userId: string, @Body() dto: FindSimilarDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.findSimilar(dto as FindSimilarInput);
   }
 
   @Post('query')
   async query(@User() userId: string, @Body() dto: QueryMemoryDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.query(dto as QueryMemoryInput);
   }
 
@@ -71,7 +73,7 @@ export class MemoriesController {
     @Param('id') id: string,
     @Body() dto: UpdateMemoryDto,
   ) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.update({ ...dto, memory_id: id } as UpdateMemoryInput);
   }
 
@@ -81,7 +83,7 @@ export class MemoriesController {
     @Param('id') id: string,
     @Body() dto: DeleteMemoryDto,
   ) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.delete({ memory_id: id, reason: dto.reason });
   }
 }

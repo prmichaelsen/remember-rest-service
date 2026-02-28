@@ -9,6 +9,7 @@ import {
   type QuerySpaceInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
+import { ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 import {
@@ -28,7 +29,8 @@ export class SpacesController {
     @Inject(CONFIRMATION_TOKEN_SERVICE) private readonly confirmationTokenService: any,
   ) {}
 
-  private getService(userId: string): SpaceService {
+  private async getService(userId: string): Promise<SpaceService> {
+    await ensureUserCollection(this.weaviateClient, userId);
     const userCollection = this.weaviateClient.collections.get(
       `Memory_users_${userId}`,
     );
@@ -43,37 +45,37 @@ export class SpacesController {
 
   @Post('publish')
   async publish(@User() userId: string, @Body() dto: PublishDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.publish(dto as PublishInput);
   }
 
   @Post('retract')
   async retract(@User() userId: string, @Body() dto: RetractDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.retract(dto as RetractInput);
   }
 
   @Post('revise')
   async revise(@User() userId: string, @Body() dto: ReviseDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.revise(dto as ReviseInput);
   }
 
   @Post('moderate')
   async moderate(@User() userId: string, @Body() dto: ModerateDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.moderate(dto as ModerateInput);
   }
 
   @Post('search')
   async search(@User() userId: string, @Body() dto: SearchSpaceDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.search(dto as SearchSpaceInput);
   }
 
   @Post('query')
   async query(@User() userId: string, @Body() dto: QuerySpaceDto) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.query(dto as QuerySpaceInput);
   }
 }

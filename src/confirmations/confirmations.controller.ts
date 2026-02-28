@@ -1,6 +1,7 @@
 import { Controller, Post, Param, Inject } from '@nestjs/common';
 import { SpaceService } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
+import { ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 
@@ -12,7 +13,8 @@ export class ConfirmationsController {
     @Inject(CONFIRMATION_TOKEN_SERVICE) private readonly confirmationTokenService: any,
   ) {}
 
-  private getService(userId: string): SpaceService {
+  private async getService(userId: string): Promise<SpaceService> {
+    await ensureUserCollection(this.weaviateClient, userId);
     const userCollection = this.weaviateClient.collections.get(
       `Memory_users_${userId}`,
     );
@@ -27,13 +29,13 @@ export class ConfirmationsController {
 
   @Post(':token/confirm')
   async confirm(@User() userId: string, @Param('token') token: string) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.confirm({ token });
   }
 
   @Post(':token/deny')
   async deny(@User() userId: string, @Param('token') token: string) {
-    const service = this.getService(userId);
+    const service = await this.getService(userId);
     return service.deny({ token });
   }
 }

@@ -15,6 +15,10 @@ jest.mock('@prmichaelsen/remember-core/services', () => ({
   SpaceService: jest.fn().mockImplementation(() => mockSpaceService),
 }));
 
+jest.mock('@prmichaelsen/remember-core/database/weaviate', () => ({
+  ensureUserCollection: jest.fn().mockResolvedValue(false),
+}));
+
 const mockCollection = { data: {} };
 const mockWeaviateClient = {
   collections: {

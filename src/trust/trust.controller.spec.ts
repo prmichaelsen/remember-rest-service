@@ -22,6 +22,10 @@ jest.mock('@prmichaelsen/remember-core/services', () => ({
   FirestoreEscalationStore: jest.fn().mockImplementation(() => ({})),
 }));
 
+jest.mock('@prmichaelsen/remember-core/database/weaviate', () => ({
+  ensureUserCollection: jest.fn().mockResolvedValue(false),
+}));
+
 const mockFetchObjectById = jest.fn();
 const mockCollection = {
   query: { fetchObjectById: mockFetchObjectById },
