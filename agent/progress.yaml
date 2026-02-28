@@ -6,28 +6,211 @@ project:
   description: |
     REST service implementing @prmichaelsen/remember-core on Google Cloud Run
 
-milestones: []
+milestones:
+  - id: M1
+    name: Project Scaffolding & Core Integration
+    status: not_started
+    tasks_total: 5
+    tasks_completed: 0
+    estimated_weeks: 1
+    document: agent/milestones/milestone-1-project-scaffolding.md
 
-tasks: {}
+  - id: M2
+    name: Authentication & Security
+    status: not_started
+    tasks_total: 3
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M1]
+    document: agent/milestones/milestone-2-authentication.md
+
+  - id: M3
+    name: API Controllers
+    status: not_started
+    tasks_total: 6
+    tasks_completed: 0
+    estimated_weeks: 2
+    dependencies: [M1, M2]
+    document: agent/milestones/milestone-3-api-controllers.md
+
+  - id: M4
+    name: Observability & Testing
+    status: not_started
+    tasks_total: 3
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M1, M2, M3]
+    document: agent/milestones/milestone-4-observability-testing.md
+
+  - id: M5
+    name: Cloud Run Deployment
+    status: not_started
+    tasks_total: 4
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M1, M2, M3]
+    document: agent/milestones/milestone-5-cloud-run-deployment.md
+
+tasks:
+  milestone_1:
+    - id: 1
+      name: Initialize NestJS Project
+      status: not_started
+      estimated_hours: 2-3
+      document: agent/tasks/milestone-1-project-scaffolding/task-1-initialize-nestjs-project.md
+    - id: 2
+      name: Create Core Module
+      status: not_started
+      estimated_hours: 3-4
+      dependencies: [1]
+      document: agent/tasks/milestone-1-project-scaffolding/task-2-create-core-module.md
+    - id: 3
+      name: Create Config Module
+      status: not_started
+      estimated_hours: 2
+      dependencies: [1]
+      document: agent/tasks/milestone-1-project-scaffolding/task-3-create-config-module.md
+    - id: 4
+      name: Create Health Endpoints
+      status: not_started
+      estimated_hours: 1
+      dependencies: [1, 3]
+      document: agent/tasks/milestone-1-project-scaffolding/task-4-create-health-endpoints.md
+    - id: 5
+      name: Create Error Filter
+      status: not_started
+      estimated_hours: 2
+      dependencies: [1]
+      document: agent/tasks/milestone-1-project-scaffolding/task-5-create-error-filter.md
+
+  milestone_2:
+    - id: 6
+      name: Implement JWT Auth Guard
+      status: not_started
+      estimated_hours: 3-4
+      dependencies: [1, 3]
+      document: agent/tasks/milestone-2-authentication/task-6-implement-jwt-auth-guard.md
+    - id: 7
+      name: Implement Rate Limiting
+      status: not_started
+      estimated_hours: 2
+      dependencies: [1, 3]
+      document: agent/tasks/milestone-2-authentication/task-7-implement-rate-limiting.md
+    - id: 8
+      name: Configure CORS
+      status: not_started
+      estimated_hours: 1
+      dependencies: [1, 3]
+      document: agent/tasks/milestone-2-authentication/task-8-configure-cors.md
+
+  milestone_3:
+    - id: 9
+      name: Memory Controller
+      status: not_started
+      estimated_hours: 4-6
+      dependencies: [2, 5, 6]
+      document: agent/tasks/milestone-3-api-controllers/task-9-memory-controller.md
+    - id: 10
+      name: Relationship Controller
+      status: not_started
+      estimated_hours: 2-3
+      dependencies: [2, 5, 6, 9]
+      document: agent/tasks/milestone-3-api-controllers/task-10-relationship-controller.md
+    - id: 11
+      name: Space Controller
+      status: not_started
+      estimated_hours: 3-4
+      dependencies: [2, 5, 6, 9]
+      document: agent/tasks/milestone-3-api-controllers/task-11-space-controller.md
+    - id: 12
+      name: Confirmation Controller
+      status: not_started
+      estimated_hours: 1
+      dependencies: [2, 5, 6]
+      document: agent/tasks/milestone-3-api-controllers/task-12-confirmation-controller.md
+    - id: 13
+      name: Preferences Controller
+      status: not_started
+      estimated_hours: 1-2
+      dependencies: [2, 5, 6]
+      document: agent/tasks/milestone-3-api-controllers/task-13-preferences-controller.md
+    - id: 14
+      name: Trust Controller
+      status: not_started
+      estimated_hours: 3-4
+      dependencies: [2, 5, 6]
+      document: agent/tasks/milestone-3-api-controllers/task-14-trust-controller.md
+
+  milestone_4:
+    - id: 15
+      name: Logging Interceptor
+      status: not_started
+      estimated_hours: 3-4
+      dependencies: [1, 3]
+      document: agent/tasks/milestone-4-observability-testing/task-15-logging-interceptor.md
+    - id: 16
+      name: Unit Test Coverage
+      status: not_started
+      estimated_hours: 4-6
+      dependencies: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+      document: agent/tasks/milestone-4-observability-testing/task-16-unit-test-coverage.md
+    - id: 17
+      name: Integration Tests
+      status: not_started
+      estimated_hours: 4-6
+      dependencies: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+      document: agent/tasks/milestone-4-observability-testing/task-17-integration-tests.md
+
+  milestone_5:
+    - id: 18
+      name: Create Dockerfile
+      status: not_started
+      estimated_hours: 2
+      dependencies: [1]
+      document: agent/tasks/milestone-5-cloud-run-deployment/task-18-create-dockerfile.md
+    - id: 19
+      name: Cloud Build & Secrets
+      status: not_started
+      estimated_hours: 2-3
+      dependencies: [18]
+      document: agent/tasks/milestone-5-cloud-run-deployment/task-19-cloud-build-secrets.md
+    - id: 20
+      name: Deploy to e1
+      status: not_started
+      estimated_hours: 2
+      dependencies: [19]
+      document: agent/tasks/milestone-5-cloud-run-deployment/task-20-deploy-e1.md
+    - id: 21
+      name: Deploy to Production
+      status: not_started
+      estimated_hours: 2
+      dependencies: [20]
+      document: agent/tasks/milestone-5-cloud-run-deployment/task-21-deploy-production.md
 
 documentation:
-  design_documents: 0
-  milestone_documents: 0
+  design_documents: 1
+  milestone_documents: 5
   pattern_documents: 0
-  task_documents: 0
+  task_documents: 21
 
 progress:
-  planning: 0
+  planning: 100
   implementation: 0
-  overall: 0
+  overall: 10
 
-recent_work: []
+current_milestone: M1
+
+recent_work:
+  - date: 2026-02-28
+    description: Created requirements draft, clarification, design doc, OpenAPI spec, 5 milestones, 21 tasks
 
 next_steps:
-  - Define project requirements in agent/design/requirements.md
-  - Plan milestones and tasks with @acp.plan
-  - Start development with @acp.proceed
+  - Begin M1 Task 1 - Initialize NestJS project
+  - OpenAPI spec draft in remember-core/docs/openapi.yaml ready for review
 
-notes: []
+notes:
+  - Spec-first approach — OpenAPI spec in remember-core is source of truth
+  - Colocated tests — *.spec.ts (unit), *.e2e.ts (integration)
+  - Trust controller expanded to 7 endpoints matching GhostConfigHandlerService
 
 current_blockers: []
