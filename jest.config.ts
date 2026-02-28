@@ -6,11 +6,15 @@ const config: Config = {
   testRegex: '.*\\.spec\\.ts$',
   transform: {
     '^.+\\.ts$': ['ts-jest', { useESM: true, diagnostics: { ignoreCodes: [151002] } }],
+    '^.+\\.js$': ['ts-jest', { useESM: true, diagnostics: { ignoreCodes: [151002] } }],
   },
   extensionsToTreatAsEsm: ['.ts'],
   collectCoverageFrom: ['**/*.ts', '!**/*.spec.ts', '!**/*.e2e.ts', '!**/index.ts'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
+  transformIgnorePatterns: [
+    'node_modules/(?!@prmichaelsen/remember-core)',
+  ],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^@/(.*)$': '<rootDir>/$1',
