@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module.js';
 import { AppErrorFilter, FallbackErrorFilter } from './filters/index.js';
+import { LoggingInterceptor } from './interceptors/index.js';
 import { LOGGER } from './core/index.js';
 import { ConfigService } from './config/config.service.js';
 
@@ -18,6 +19,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
+
+  app.useGlobalInterceptors(new LoggingInterceptor(logger));
 
   app.useGlobalFilters(
     new FallbackErrorFilter(logger),
