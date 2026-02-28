@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(npm show:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}
