@@ -3,11 +3,21 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module.js';
 import { AppErrorFilter, FallbackErrorFilter } from './filters/index.js';
 import { LOGGER } from './core/index.js';
+import { ConfigService } from './config/config.service.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const logger = app.get(LOGGER);
+  const configService = app.get(ConfigService);
+
+  const corsOrigin = configService.corsConfig.origin;
+  app.enableCors({
+    origin: corsOrigin.includes(',') ? corsOrigin.split(',').map((o) => o.trim()) : corsOrigin,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
 
   app.useGlobalFilters(
     new FallbackErrorFilter(logger),
@@ -22,7 +32,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.PORT ?? 8080;
+  const port = configService.serverConfig.port;
   await app.listen(port);
 }
 
