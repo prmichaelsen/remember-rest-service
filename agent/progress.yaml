@@ -60,6 +60,15 @@ milestones:
     dependencies: [M5]
     document: agent/milestones/milestone-6-live-e2e-testing.md
 
+  - id: M7
+    name: App Tier Routes
+    status: not_started
+    tasks_total: 1
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M3]
+    document: agent/milestones/milestone-7-app-tier-routes.md
+
 tasks:
   milestone_1:
     - id: 1
@@ -248,6 +257,18 @@ tasks:
       dependencies: [22, 23]
       document: agent/tasks/milestone-6-live-e2e-testing/task-25-preferences-trust-spaces-live-tests.md
 
+  milestone_7:
+    - id: 27
+      name: Implement App Tier Routes (/api/app/v1/)
+      status: not_started
+      estimated_hours: 6-8
+      completed_date: null
+      dependencies: [2, 6]
+      document: agent/tasks/milestone-7-app-tier-routes/task-27-implement-app-tier-routes.md
+      notes: |
+        5 compound endpoints matching remember-core app client SDK:
+        profiles (create+publish, update+republish, retract, search) + ghost/search.
+
   unassigned:
     - id: 26
       name: Add ensureUserCollection to Controllers
@@ -260,14 +281,14 @@ documentation:
   design_documents: 1
   milestone_documents: 6
   pattern_documents: 0
-  task_documents: 26
+  task_documents: 27
 
 progress:
   planning: 100
-  implementation: 100
-  overall: 100
+  implementation: 95
+  overall: 95
 
-current_milestone: complete
+current_milestone: M7
 
 recent_work:
   - date: 2026-02-28
