@@ -2,7 +2,7 @@ project:
   name: remember-rest-service
   version: 0.1.0
   started: 2026-02-28
-  status: in_progress
+  status: completed
   description: |
     REST service implementing @prmichaelsen/remember-core on Google Cloud Run
 
@@ -44,9 +44,9 @@ milestones:
 
   - id: M5
     name: Cloud Run Deployment
-    status: not_started
+    status: completed
     tasks_total: 4
-    tasks_completed: 0
+    tasks_completed: 4
     estimated_weeks: 1
     dependencies: [M1, M2, M3]
     document: agent/milestones/milestone-5-cloud-run-deployment.md
@@ -182,25 +182,29 @@ tasks:
   milestone_5:
     - id: 18
       name: Create Dockerfile
-      status: not_started
+      status: completed
+      completed_date: 2026-02-28
       estimated_hours: 2
       dependencies: [1]
       document: agent/tasks/milestone-5-cloud-run-deployment/task-18-create-dockerfile.md
     - id: 19
       name: Cloud Build & Secrets
-      status: not_started
+      status: completed
+      completed_date: 2026-02-28
       estimated_hours: 2-3
       dependencies: [18]
       document: agent/tasks/milestone-5-cloud-run-deployment/task-19-cloud-build-secrets.md
     - id: 20
       name: Deploy to e1
-      status: not_started
+      status: completed
+      completed_date: 2026-02-28
       estimated_hours: 2
       dependencies: [19]
       document: agent/tasks/milestone-5-cloud-run-deployment/task-20-deploy-e1.md
     - id: 21
       name: Deploy to Production
-      status: not_started
+      status: completed
+      completed_date: 2026-02-28
       estimated_hours: 2
       dependencies: [20]
       document: agent/tasks/milestone-5-cloud-run-deployment/task-21-deploy-production.md
@@ -213,10 +217,10 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 81
-  overall: 85
+  implementation: 100
+  overall: 100
 
-current_milestone: M5
+current_milestone: complete
 
 recent_work:
   - date: 2026-02-28
@@ -229,11 +233,10 @@ recent_work:
     description: "M3 complete: Memory (12), Relationship (7), Space (7), Confirmation (3), Preferences (4), Trust (8) — 85 total tests passing"
   - date: 2026-02-28
     description: "M4 complete: LoggingInterceptor (11), coverage gaps (3), e2e tests (18), FallbackErrorFilter HttpException fix — 117 total tests passing"
+  - date: 2026-02-28
+    description: "M5 complete: Dockerfile, cloudbuild.yaml + cloudbuild.e1.yaml, deployed to e1 and production on Cloud Run"
 
-next_steps:
-  - Begin M5 Task 18 - Create Dockerfile
-  - Begin M5 Task 19 - Cloud Build & Secrets
-  - Begin M5 Task 20 - Deploy to e1
+next_steps: []
 
 notes:
   - Spec-first approach — OpenAPI spec in remember-core is source of truth
@@ -241,5 +244,8 @@ notes:
   - Trust controller expanded to 7 endpoints matching GhostConfigHandlerService
   - ESM project (type: module) required for remember-core compatibility
   - NestJS with NodeNext module resolution
+  - Reuses existing Secret Manager entries shared with remember-mcp-server
+  - e1 URL: https://remember-rest-service-e1-dit6gawkbq-uc.a.run.app
+  - Production URL: https://remember-rest-service-dit6gawkbq-uc.a.run.app
 
 current_blockers: []
