@@ -2,10 +2,12 @@ import type { Provider } from '@nestjs/common';
 import { initWeaviateClient } from '@prmichaelsen/remember-core/database/weaviate';
 import { initFirestore } from '@prmichaelsen/remember-core/database/firestore';
 import { createLogger } from '@prmichaelsen/remember-core/utils';
+import { ConfirmationTokenService } from '@prmichaelsen/remember-core/services';
 import { ConfigService } from '../config/config.service.js';
 
 export const WEAVIATE_CLIENT = Symbol('WEAVIATE_CLIENT');
 export const LOGGER = Symbol('LOGGER');
+export const CONFIRMATION_TOKEN_SERVICE = Symbol('CONFIRMATION_TOKEN_SERVICE');
 
 export const weaviateClientProvider: Provider = {
   provide: WEAVIATE_CLIENT,
@@ -46,4 +48,12 @@ export const loggerProvider: Provider = {
     return createLogger(logLevel);
   },
   inject: [ConfigService],
+};
+
+export const confirmationTokenServiceProvider: Provider = {
+  provide: CONFIRMATION_TOKEN_SERVICE,
+  useFactory: (logger: any) => {
+    return new ConfirmationTokenService(logger);
+  },
+  inject: [LOGGER],
 };
