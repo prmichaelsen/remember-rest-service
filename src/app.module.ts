@@ -9,6 +9,7 @@ import { HealthModule } from './health/index.js';
 import { MemoriesModule } from './memories/index.js';
 import { RelationshipsModule } from './relationships/index.js';
 import { SpacesModule } from './spaces/index.js';
+import { ConfirmationsModule } from './confirmations/index.js';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SpacesModule } from './spaces/index.js';
     MemoriesModule,
     RelationshipsModule,
     SpacesModule,
+    ConfirmationsModule,
   ],
   providers: [
     {
