@@ -1,5 +1,6 @@
 import {
   Catch,
+  HttpException,
   type ArgumentsHost,
   type ExceptionFilter,
   HttpStatus,
@@ -35,6 +36,14 @@ export class FallbackErrorFilter implements ExceptionFilter {
   constructor(@Inject(LOGGER) private readonly logger: Logger) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
+    if (exception instanceof HttpException) {
+      const ctx = host.switchToHttp();
+      const response = ctx.getResponse<Response>();
+      const status = exception.getStatus();
+      response.status(status).json(exception.getResponse());
+      return;
+    }
+
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
