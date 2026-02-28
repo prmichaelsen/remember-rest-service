@@ -1,7 +1,161 @@
-# ACP Package Manifest
-# Tracks installed packages and their versions
-
 packages:
+  core-sdk:
+    source: https://github.com/prmichaelsen/acp-core-sdk.git
+    package_version: 1.22.0
+    commit: d01d8922dc5db281e7c972bd05af6a42111b32df
+    installed_at: 2026-02-28T03:01:31Z
+    updated_at: 2026-02-28T03:01:31Z
+    files:
+      patterns:
+        - name: core-sdk.types-shared.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:99b7fed7acbdcaf64bd077a608c7371b4707766d0843ae6e0dc766dd6460e290
+        - name: core-sdk.types-result.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:8f7c7da654446597060861fb24fcc3ceee2de5bb00459a906d368f19a089a895
+        - name: core-sdk.types-generic.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:489c36931b33a1f8a336abf58e0921382dba060ac629bcbb805ece4f3d0546f5
+        - name: core-sdk.types-error.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:31913371e55327dcef66a61b5ecfe95146bf60824ab30087d76cdfb26a827d14
+        - name: core-sdk.types-config.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:c3bec232be582c39afed8e01c8fa09fca42d1cc203e6639021ea6bfb2154c17e
+        - name: core-sdk.testing-unit.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:64e625db8657415319cbfb10096be38e75a14fbbe37c121db0eb2849de93be19
+        - name: core-sdk.testing-mocks.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:dd5aed995c5f286fb9786cd1715cd1304b202dfee8f8cc66fe9f23dd537103f6
+        - name: core-sdk.testing-integration.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:1005a5b53ff8d40ad2736ae45e0836081bb899dd12d8a490d09709b41c5ad39e
+        - name: core-sdk.testing-fixtures.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:3eae1e4ef9bc98d9313dffab502b5d34050272725c79d995b13399c620d49f38
+        - name: core-sdk.testing-coverage.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:9ab09ba6bd8995c350c21a2f8e0aa4d4bc7660375232b4ad7120847e6e8b9515
+        - name: core-sdk.service-logging.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:33f3658b9df4b37a4eda901b2144136afb7bef0b5ea19837fc082eb87d79c71a
+        - name: core-sdk.service-interface.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:fb05113e5ad07d7b8e7b5518577aa372a73a2d4d6562bfa2d03cb616e33e1904
+        - name: core-sdk.service-error-handling.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:6abfe6ee744aff20c919e922dbdfc016b637e39afca1ea42ae44ed3927a1f8a6
+        - name: core-sdk.service-container.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:bfbb639621a496cf97caff0b4754c9946dc07452a8d2a15a0112fd859bbc9a18
+        - name: core-sdk.service-base.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:8d85acf4312e698959eadba148135bb5d80f4b4bdc23bdecb929cb19aba44a42
+        - name: core-sdk.config-secrets.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:ff19dab3b5257f0380089a9190ec420a0cf1fb0910ba8efa544e44fe6a4f91a1
+        - name: core-sdk.config-schema.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:0f35d340f8f1b2f25b0ac03562e666f4ca844e45c3539706a98ac938b362bedf
+        - name: core-sdk.config-multi-env.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:15004525079aa7cb0489e105ece54d6bc1093bf0f89256ac282037bcd938ef40
+        - name: core-sdk.config-loading.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:71918c51c5e44a373d7ba508c0c6b9f668679b77332f065f83414724d8b9dc4c
+        - name: core-sdk.config-environment.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:b7fae8b4aa7f70c3cd8b4495fafdc13a3fd0ece0cd992cd760b01c13ca1442d3
+        - name: core-sdk.adapter-rest.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:cfb55f4be7bfbb66c5e827131ff62d551eac0401514e16e66f8a43a7708c09f9
+        - name: core-sdk.adapter-mcp.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:42e70cccba26d1f8ddd1712f375ca3dfc45cf6f146b79caeb7b768435970e4cb
+        - name: core-sdk.adapter-client.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:895aae85bfeab5c03f703e03ca433072a05fa3f2f97027fd1257f46e4dfebe19
+        - name: core-sdk.adapter-cli.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:b3d94aaea86225be616f80bdcaabe3020c72a67d9605a2af698f4439634dd35b
+        - name: core-sdk.adapter-base.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:f13e1a69e014836f482bea589106cc2c4e836e0cb9486e4fecb39c705f52e9f3
+      commands:
+        - name: git.init.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:b7942de5258edcf3cc1786a8ef0a609ceb3da9d362251ace7655e71df65b6b69
+        - name: git.commit.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:70a9f9bf77e0e36bd696d33c14aa6594013d7f55ea1fae1c92a3d0c4072e8ff5
+      designs:
+        - name: core-sdk.architecture.md
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:15a2cb316379dd94c544abcea91436eb7242b39aacac932e3eb36ac9dc5475a5
+      scripts:
+        - name: bootstrap.sh
+          version: 0.0.0
+          installed_at: 2026-02-28T03:01:36Z
+          modified: false
+          checksum: sha256:unknown
+      files:
   acp-core:
     source: https://github.com/prmichaelsen/agent-context-protocol.git
     package_version: 4.6.1
@@ -50,6 +204,5 @@ packages:
       designs:
         - name: design.template.md
         - name: requirements.template.md
-
 manifest_version: 1.0.0
-last_updated: 2026-02-28T02:57:08Z
+last_updated: 2026-02-28T03:01:31Z
