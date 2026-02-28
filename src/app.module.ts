@@ -7,6 +7,7 @@ import { CoreModule } from './core/index.js';
 import { AuthModule } from './auth/index.js';
 import { HealthModule } from './health/index.js';
 import { MemoriesModule } from './memories/index.js';
+import { RelationshipsModule } from './relationships/index.js';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MemoriesModule } from './memories/index.js';
     AuthModule,
     HealthModule,
     MemoriesModule,
+    RelationshipsModule,
   ],
   providers: [
     {
