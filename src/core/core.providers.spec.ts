@@ -21,10 +21,17 @@ jest.mock('@prmichaelsen/remember-core/utils', () => ({
   createLogger: mockCreateLogger,
 }));
 
+const MockConfirmationTokenService = jest.fn().mockImplementation(() => ({}));
+
+jest.mock('@prmichaelsen/remember-core/services', () => ({
+  ConfirmationTokenService: MockConfirmationTokenService,
+}));
+
 import {
   weaviateClientProvider,
   firestoreProvider,
   loggerProvider,
+  confirmationTokenServiceProvider,
 } from './core.providers.js';
 
 const REQUIRED_ENV = {
@@ -107,6 +114,16 @@ describe('Core Providers', () => {
       factory(configService);
 
       expect(mockCreateLogger).toHaveBeenCalledWith('warn');
+    });
+  });
+
+  describe('confirmationTokenServiceProvider', () => {
+    it('should create ConfirmationTokenService with logger', () => {
+      const mockLogger = { info: jest.fn() };
+      const factory = (confirmationTokenServiceProvider as any).useFactory;
+      factory(mockLogger);
+
+      expect(MockConfirmationTokenService).toHaveBeenCalledWith(mockLogger);
     });
   });
 });
