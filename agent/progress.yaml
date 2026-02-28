@@ -286,10 +286,12 @@ recent_work:
     description: "M6 complete: Live E2E test suite — 32 tests across 7 suites (health, auth, memories, relationships, preferences, trust, spaces)"
   - date: 2026-02-28
     description: "Task 26 complete: ensureUserCollection added to all 5 controllers — 117 unit/e2e tests passing, needs redeploy"
+  - date: 2026-02-28
+    description: "safeEnsureUserCollection wrapper + e1 redeploy — memories/relationships/trust CRUD now returns 201. 120 unit+e2e tests, 32 live tests passing"
 
 next_steps:
-  - Redeploy to e1 and production to activate ensureUserCollection fix
-  - Re-run live E2E tests after redeploy to verify CRUD operations return 201
+  - Redeploy to production
+  - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 
 notes:
   - Spec-first approach — OpenAPI spec in remember-core is source of truth
