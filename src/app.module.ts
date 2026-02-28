@@ -11,6 +11,7 @@ import { RelationshipsModule } from './relationships/index.js';
 import { SpacesModule } from './spaces/index.js';
 import { ConfirmationsModule } from './confirmations/index.js';
 import { PreferencesModule } from './preferences/index.js';
+import { TrustModule } from './trust/index.js';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PreferencesModule } from './preferences/index.js';
     SpacesModule,
     ConfirmationsModule,
     PreferencesModule,
+    TrustModule,
   ],
   providers: [
     {
