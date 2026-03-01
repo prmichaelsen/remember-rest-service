@@ -14,7 +14,11 @@
       "Bash(gcloud secrets:*)",
       "Bash(gcloud builds:*)",
       "Bash(gcloud run:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npm run:*)",
+      "Bash(gcloud logging:*)",
+      "Bash(ls:*)",
+      "Bash(echo exit: $?:*)"
     ]
   }
 }
