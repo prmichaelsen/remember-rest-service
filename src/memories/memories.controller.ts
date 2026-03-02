@@ -62,15 +62,31 @@ export class MemoriesController {
     @Query('author') author?: string,
     @Query('space') space?: string,
     @Query('group') group?: string,
+    @Query('include') include?: string,
   ) {
-    const collectionName = this.resolveCollectionName(userId, { author, space, group });
+    const source = { author, space, group };
+    const collectionName = this.resolveCollectionName(userId, source);
     const collection = this.weaviateClient.collections.get(collectionName);
     const existing = await fetchMemoryWithAllProperties(collection, id);
     if (!existing?.properties) {
       throw new NotFoundException(`Memory not found: ${id}`);
     }
 
-    return { memory: { id: existing.uuid, ...existing.properties } };
+    const result: Record<string, unknown> = {
+      memory: { id: existing.uuid, ...existing.properties },
+    };
+
+    if (include === 'similar' || include === 'both') {
+      const service = await this.getService(userId, source);
+      const similar = await service.findSimilar({
+        memory_id: id,
+        limit: 5,
+        min_similarity: 0.6,
+      });
+      result.similar_memories = similar.similar_memories ?? [];
+    }
+
+    return result;
   }
 
   @Post()
