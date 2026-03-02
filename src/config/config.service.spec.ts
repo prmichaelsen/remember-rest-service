@@ -39,6 +39,7 @@ describe('ConfigService', () => {
 
     expect(config.server.port).toBe(8080);
     expect(config.server.nodeEnv).toBe('development');
+    expect(config.server.logLevel).toBe('info');
     expect(config.auth.issuer).toBe('agentbase.me');
     expect(config.auth.audience).toBe('svc');
     expect(config.cors.origin).toBe('https://agentbase.me');

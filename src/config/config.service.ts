@@ -14,6 +14,7 @@ export class ConfigService {
       server: {
         port: this.getInt('PORT', 8080),
         nodeEnv: this.get('NODE_ENV', 'development'),
+        logLevel: this.get('LOG_LEVEL', 'info'),
       },
       auth: {
         serviceToken: this.getRequired('PLATFORM_SERVICE_TOKEN'),

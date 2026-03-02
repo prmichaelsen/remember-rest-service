@@ -1,6 +1,7 @@
 export interface ServerConfig {
   port: number;
   nodeEnv: string;
+  logLevel: string;
 }
 
 export interface AuthConfig {

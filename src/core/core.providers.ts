@@ -43,9 +43,7 @@ export const firestoreProvider: Provider = {
 export const loggerProvider: Provider = {
   provide: LOGGER,
   useFactory: (configService: ConfigService) => {
-    const env = configService.serverConfig.nodeEnv;
-    const logLevel = env === 'production' ? 'warn' : 'debug';
-    return createLogger(logLevel);
+    return createLogger(configService.serverConfig.logLevel as any);
   },
   inject: [ConfigService],
 };
