@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Patch,
   Delete,
@@ -40,6 +41,12 @@ export class MemoriesController {
       `Memory_users_${userId}`,
     );
     return new MemoryService(collection, userId, this.logger);
+  }
+
+  @Get(':id')
+  async getById(@User() userId: string, @Param('id') id: string) {
+    const service = await this.getService(userId);
+    return service.getById(id);
   }
 
   @Post()

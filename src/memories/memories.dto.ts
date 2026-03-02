@@ -16,6 +16,11 @@ export class SearchFiltersDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  ids?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
   types?: string[];
 
   @IsOptional()
