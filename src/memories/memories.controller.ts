@@ -39,12 +39,20 @@ export class MemoriesController {
     @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
-  private async getService(userId: string): Promise<MemoryService> {
-    await safeEnsureUserCollection(this.weaviateClient, userId);
-    const collection = this.weaviateClient.collections.get(
-      `Memory_users_${userId}`,
-    );
-    return new MemoryService(collection, userId, this.logger);
+  private resolveCollectionName(userId: string, source?: { author?: string; space?: string; group?: string }): string {
+    if (source?.group) return getCollectionName(CollectionType.GROUPS, source.group);
+    if (source?.space) return getCollectionName(CollectionType.SPACES);
+    if (source?.author) return getCollectionName(CollectionType.USERS, source.author);
+    return getCollectionName(CollectionType.USERS, userId);
+  }
+
+  private async getService(userId: string, source?: { author?: string; space?: string; group?: string }): Promise<MemoryService> {
+    const collectionName = this.resolveCollectionName(userId, source);
+    if (!source?.group && !source?.space) {
+      await safeEnsureUserCollection(this.weaviateClient, source?.author ?? userId);
+    }
+    const collection = this.weaviateClient.collections.get(collectionName);
+    return new MemoryService(collection, source?.author ?? userId, this.logger);
   }
 
   @Get(':id')
@@ -55,18 +63,7 @@ export class MemoriesController {
     @Query('space') space?: string,
     @Query('group') group?: string,
   ) {
-    // Determine which collection to search based on source context
-    let collectionName: string;
-    if (group) {
-      collectionName = getCollectionName(CollectionType.GROUPS, group);
-    } else if (space) {
-      collectionName = getCollectionName(CollectionType.SPACES);
-    } else if (author) {
-      collectionName = getCollectionName(CollectionType.USERS, author);
-    } else {
-      collectionName = getCollectionName(CollectionType.USERS, userId);
-    }
-
+    const collectionName = this.resolveCollectionName(userId, { author, space, group });
     const collection = this.weaviateClient.collections.get(collectionName);
     const existing = await fetchMemoryWithAllProperties(collection, id);
     if (!existing?.properties) {
@@ -90,7 +87,7 @@ export class MemoriesController {
 
   @Post('similar')
   async findSimilar(@User() userId: string, @Body() dto: FindSimilarDto) {
-    const service = await this.getService(userId);
+    const service = await this.getService(userId, { author: dto.author, space: dto.space, group: dto.group });
     return service.findSimilar(dto as FindSimilarInput);
   }
 

@@ -212,6 +212,18 @@ export class FindSimilarDto {
   @ValidateNested()
   @Type(() => GhostSearchContextDto)
   ghost_context?: GhostSearchContextDto;
+
+  @IsOptional()
+  @IsString()
+  author?: string;
+
+  @IsOptional()
+  @IsString()
+  space?: string;
+
+  @IsOptional()
+  @IsString()
+  group?: string;
 }
 
 export class QueryMemoryDto {
