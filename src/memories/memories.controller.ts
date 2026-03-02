@@ -6,7 +6,9 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   Inject,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   MemoryService,
@@ -17,6 +19,8 @@ import {
   type UpdateMemoryInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
+import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
+import { CollectionType, getCollectionName } from '@prmichaelsen/remember-core/collections';
 import { WEAVIATE_CLIENT, LOGGER, safeEnsureUserCollection } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 import {
@@ -44,9 +48,32 @@ export class MemoriesController {
   }
 
   @Get(':id')
-  async getById(@User() userId: string, @Param('id') id: string) {
-    const service = await this.getService(userId);
-    return service.getById(id);
+  async getById(
+    @User() userId: string,
+    @Param('id') id: string,
+    @Query('author') author?: string,
+    @Query('space') space?: string,
+    @Query('group') group?: string,
+  ) {
+    // Determine which collection to search based on source context
+    let collectionName: string;
+    if (group) {
+      collectionName = getCollectionName(CollectionType.GROUPS, group);
+    } else if (space) {
+      collectionName = getCollectionName(CollectionType.SPACES);
+    } else if (author) {
+      collectionName = getCollectionName(CollectionType.USERS, author);
+    } else {
+      collectionName = getCollectionName(CollectionType.USERS, userId);
+    }
+
+    const collection = this.weaviateClient.collections.get(collectionName);
+    const existing = await fetchMemoryWithAllProperties(collection, id);
+    if (!existing?.properties) {
+      throw new NotFoundException(`Memory not found: ${id}`);
+    }
+
+    return { memory: { id: existing.uuid, ...existing.properties } };
   }
 
   @Post()
