@@ -17,6 +17,8 @@ import {
   type FindSimilarInput,
   type QueryMemoryInput,
   type UpdateMemoryInput,
+  type TimeModeRequest,
+  type DensityModeRequest,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
@@ -30,6 +32,8 @@ import {
   QueryMemoryDto,
   UpdateMemoryDto,
   DeleteMemoryDto,
+  TimeModeDto,
+  DensityModeDto,
 } from './memories.dto.js';
 
 @Controller('api/svc/v1/memories')
@@ -131,5 +135,17 @@ export class MemoriesController {
   ) {
     const service = await this.getService(userId);
     return service.delete({ memory_id: id, reason: dto.reason });
+  }
+
+  @Post('by-time')
+  async byTime(@User() userId: string, @Body() dto: TimeModeDto) {
+    const service = await this.getService(userId);
+    return service.byTime(dto as TimeModeRequest);
+  }
+
+  @Post('by-density')
+  async byDensity(@User() userId: string, @Body() dto: DensityModeDto) {
+    const service = await this.getService(userId);
+    return service.byDensity(dto as DensityModeRequest);
   }
 }

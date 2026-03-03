@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.2.0
+  version: 0.3.0
   started: 2026-02-28
   status: in_progress
   description: |
@@ -68,6 +68,16 @@ milestones:
     estimated_weeks: 1
     dependencies: [M3]
     document: agent/milestones/milestone-7-app-tier-routes.md
+
+  - id: M8
+    name: Sort Mode Endpoints
+    status: completed
+    tasks_total: 1
+    tasks_completed: 1
+    completed: 2026-03-03
+    estimated_weeks: 1
+    dependencies: []
+    document: agent/milestones/milestone-3-sort-mode-endpoints.md
 
 tasks:
   milestone_1:
@@ -269,6 +279,20 @@ tasks:
         5 compound endpoints matching remember-core app client SDK:
         profiles (create+publish, update+republish, retract, search) + ghost/search.
 
+  milestone_8:
+    - id: 28
+      name: Add Sort Mode REST Endpoints
+      status: completed
+      estimated_hours: 2
+      completed_date: 2026-03-03
+      dependencies: []
+      document: agent/tasks/milestone-3-sort-mode-endpoints/task-1-add-sort-mode-endpoints.md
+      notes: |
+        POST /memories/by-time and POST /memories/by-density endpoints.
+        Exposes remember-core v0.22.5 byTime() and byDensity() methods.
+        116 tests passing (114 unit + 2 failures in pre-existing tests).
+        Phase 1 MVP complete (Smart/Time/Density).
+
   unassigned:
     - id: 26
       name: Add ensureUserCollection to Controllers
@@ -279,9 +303,9 @@ tasks:
 
 documentation:
   design_documents: 1
-  milestone_documents: 6
+  milestone_documents: 7
   pattern_documents: 0
-  task_documents: 27
+  task_documents: 28
 
 progress:
   planning: 100
@@ -311,6 +335,8 @@ recent_work:
     description: "safeEnsureUserCollection wrapper + e1 redeploy — memories/relationships/trust CRUD now returns 201. 120 unit+e2e tests, 32 live tests passing"
   - date: 2026-02-28
     description: "M7 complete: App tier routes — ProfilesController (4 endpoints), GhostSearchController (1 endpoint), DTOs, unit tests — 134 total tests passing (116 unit + 18 e2e)"
+  - date: 2026-03-03
+    description: "🎉 M8 complete: Sort Mode Endpoints — POST /memories/by-time, POST /memories/by-density, validation DTOs, updated remember-core to v0.22.5 — 116 tests passing. Phase 1 MVP complete (Smart/Time/Density)."
 
 next_steps:
   - Redeploy to e1 and production with app tier routes

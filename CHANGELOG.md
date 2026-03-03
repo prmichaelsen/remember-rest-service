@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-03-03
+
+### Added
+- **Sort Mode REST Endpoints** - Expose Time and Density sort modes from remember-core
+  - `POST /api/svc/v1/memories/by-time` — Chronological sorting by created_at (asc/desc)
+  - `POST /api/svc/v1/memories/by-density` — Sort by relationship count (highest first)
+  - TimeModeDto and DensityModeDto validation with class-validator
+  - Support for pagination (limit/offset), filters, and ghost context
+  - Server-side sorting via remember-core v0.22.5 MemoryService
+- **Jest Configuration** - Added moduleNameMapper for `@prmichaelsen/remember-core/collections`
+
+### Changed
+- Updated `@prmichaelsen/remember-core` from v0.19.2 to v0.22.5
+- Phase 1 MVP Complete: Smart (search), Time, and Density sort modes now available via REST
+
+Completed Task 1: Add Sort Mode REST Endpoints
+Milestone: M3 - Sort Mode Endpoints (1/1 tasks, 100%)
+Version: 0.2.1 → 0.3.0
+
 ## [0.2.1] - 2026-03-02
 
 ### Fixed

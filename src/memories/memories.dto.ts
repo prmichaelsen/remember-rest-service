@@ -311,3 +311,66 @@ export class DeleteMemoryDto {
   @IsString()
   reason?: string;
 }
+
+export class TimeModeDto {
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(500)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  direction?: 'asc' | 'desc';
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
+export class DensityModeDto {
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(500)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  min_relationship_count?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
