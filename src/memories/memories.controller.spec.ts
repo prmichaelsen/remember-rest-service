@@ -9,6 +9,7 @@ const mockMemoryService = {
   query: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+  byTime: jest.fn(),
 };
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
@@ -17,6 +18,13 @@ jest.mock('@prmichaelsen/remember-core/services', () => ({
 
 jest.mock('@prmichaelsen/remember-core/database/weaviate', () => ({
   ensureUserCollection: jest.fn().mockResolvedValue(false),
+}));
+
+const mockSearchByTimeSlice = jest.fn();
+const mockSearchByDensitySlice = jest.fn();
+jest.mock('@prmichaelsen/remember-core/search', () => ({
+  searchByTimeSlice: (...args: unknown[]) => mockSearchByTimeSlice(...args),
+  searchByDensitySlice: (...args: unknown[]) => mockSearchByDensitySlice(...args),
 }));
 
 const mockCollection = { data: {} };
@@ -202,6 +210,108 @@ describe('MemoriesController', () => {
 
       expect(mockMemoryService.delete).toHaveBeenCalledWith({ memory_id: memoryId, reason: undefined });
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byTimeSlice', () => {
+    it('should call searchByTimeSlice with the MemoryService and return result', async () => {
+      const dto = { query: 'important meetings' } as any;
+      const expected = { memories: [{ id: 'mem-1' }], total: 1 };
+      mockSearchByTimeSlice.mockResolvedValue(expected);
+
+      const result = await controller.byTimeSlice(userId, dto);
+
+      expect(mockSearchByTimeSlice).toHaveBeenCalledWith(
+        mockMemoryService,
+        'important meetings',
+        { limit: 10, offset: 0, direction: 'desc', filters: undefined },
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it('should pass direction, filters, and pagination to searchByTimeSlice', async () => {
+      const dto = {
+        query: 'search text',
+        limit: 50,
+        offset: 10,
+        direction: 'asc' as const,
+        filters: { types: ['note'] },
+      } as any;
+      const expected = { memories: [], total: 0 };
+      mockSearchByTimeSlice.mockResolvedValue(expected);
+
+      const result = await controller.byTimeSlice(userId, dto);
+
+      expect(mockSearchByTimeSlice).toHaveBeenCalledWith(
+        mockMemoryService,
+        'search text',
+        { limit: 50, offset: 10, direction: 'asc', filters: { types: ['note'] } },
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it('should use defaults when optional fields are omitted', async () => {
+      const dto = { query: 'test' } as any;
+      mockSearchByTimeSlice.mockResolvedValue({ memories: [], total: 0 });
+
+      await controller.byTimeSlice(userId, dto);
+
+      expect(mockSearchByTimeSlice).toHaveBeenCalledWith(
+        mockMemoryService,
+        'test',
+        { limit: 10, offset: 0, direction: 'desc', filters: undefined },
+      );
+    });
+  });
+
+  describe('byDensitySlice', () => {
+    it('should call searchByDensitySlice with the MemoryService and return result', async () => {
+      const dto = { query: 'important meetings' } as any;
+      const expected = { memories: [{ id: 'mem-1' }], total: 1 };
+      mockSearchByDensitySlice.mockResolvedValue(expected);
+
+      const result = await controller.byDensitySlice(userId, dto);
+
+      expect(mockSearchByDensitySlice).toHaveBeenCalledWith(
+        mockMemoryService,
+        'important meetings',
+        { limit: 10, offset: 0, direction: 'desc', filters: undefined },
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it('should pass direction, filters, and pagination to searchByDensitySlice', async () => {
+      const dto = {
+        query: 'search text',
+        limit: 50,
+        offset: 10,
+        direction: 'asc' as const,
+        filters: { types: ['note'] },
+      } as any;
+      const expected = { memories: [], total: 0 };
+      mockSearchByDensitySlice.mockResolvedValue(expected);
+
+      const result = await controller.byDensitySlice(userId, dto);
+
+      expect(mockSearchByDensitySlice).toHaveBeenCalledWith(
+        mockMemoryService,
+        'search text',
+        { limit: 50, offset: 10, direction: 'asc', filters: { types: ['note'] } },
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it('should use defaults when optional fields are omitted', async () => {
+      const dto = { query: 'test' } as any;
+      mockSearchByDensitySlice.mockResolvedValue({ memories: [], total: 0 });
+
+      await controller.byDensitySlice(userId, dto);
+
+      expect(mockSearchByDensitySlice).toHaveBeenCalledWith(
+        mockMemoryService,
+        'test',
+        { limit: 10, offset: 0, direction: 'desc', filters: undefined },
+      );
     });
   });
 

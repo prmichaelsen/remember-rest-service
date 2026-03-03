@@ -34,6 +34,8 @@ const config: Config = {
       '<rootDir>/../node_modules/@prmichaelsen/remember-core/dist/types/index.js',
     '^@prmichaelsen/remember-core/collections$':
       '<rootDir>/../node_modules/@prmichaelsen/remember-core/dist/collections/index.js',
+    '^@prmichaelsen/remember-core/search$':
+      '<rootDir>/../node_modules/@prmichaelsen/remember-core/dist/search/index.js',
   },
 };
 

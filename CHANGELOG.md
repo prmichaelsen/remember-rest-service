@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-03-03
+
+### Added
+- **Time-Slice Search Endpoint** — `POST /api/svc/v1/memories/by-time-slice`
+  - Combines text search with chronological ordering via 14 parallel time-bucketed Weaviate queries
+  - Calls `searchByTimeSlice(memoryService, query, options)` from remember-core server-side
+  - TimeSliceModeDto validation: required `query`, optional limit/offset/direction/filters
+- **Density-Slice Search Endpoint** — `POST /api/svc/v1/memories/by-density-slice`
+  - Combines text search with relationship-density ordering via 9 parallel Weaviate queries
+  - Calls `searchByDensitySlice(memoryService, query, options)` from remember-core server-side
+  - DensitySliceModeDto validation: required `query`, optional limit/offset/direction/filters
+- Jest moduleNameMapper for `@prmichaelsen/remember-core/search` subpath
+- Integration pattern doc: `agent/patterns/local.svc-client-by-time-slice.md`
+
+### Changed
+- Updated `@prmichaelsen/remember-core` from v0.22.8 to v0.24.0
+
 ## [0.3.1] - 2026-03-03
 
 ### Fixed

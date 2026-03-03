@@ -1,6 +1,6 @@
 {
   "name": "remember-rest-service",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "REST API for remember-core on Google Cloud Run",
   "private": true,
   "type": "module",

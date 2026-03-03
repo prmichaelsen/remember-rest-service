@@ -21,6 +21,7 @@ import {
   type DensityModeRequest,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
+import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-core/search';
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
 import { CollectionType, getCollectionName } from '@prmichaelsen/remember-core/collections';
 import { WEAVIATE_CLIENT, LOGGER, safeEnsureUserCollection } from '../core/core.providers.js';
@@ -34,6 +35,8 @@ import {
   DeleteMemoryDto,
   TimeModeDto,
   DensityModeDto,
+  TimeSliceModeDto,
+  DensitySliceModeDto,
 } from './memories.dto.js';
 
 @Controller('api/svc/v1/memories')
@@ -147,5 +150,27 @@ export class MemoriesController {
   async byDensity(@User() userId: string, @Body() dto: DensityModeDto) {
     const service = await this.getService(userId);
     return service.byDensity(dto as DensityModeRequest);
+  }
+
+  @Post('by-time-slice')
+  async byTimeSlice(@User() userId: string, @Body() dto: TimeSliceModeDto) {
+    const service = await this.getService(userId);
+    return searchByTimeSlice(service, dto.query, {
+      limit: dto.limit ?? 10,
+      offset: dto.offset ?? 0,
+      direction: dto.direction ?? 'desc',
+      filters: dto.filters as Record<string, unknown> | undefined,
+    });
+  }
+
+  @Post('by-density-slice')
+  async byDensitySlice(@User() userId: string, @Body() dto: DensitySliceModeDto) {
+    const service = await this.getService(userId);
+    return searchByDensitySlice(service, dto.query, {
+      limit: dto.limit ?? 10,
+      offset: dto.offset ?? 0,
+      direction: dto.direction ?? 'desc',
+      filters: dto.filters as Record<string, unknown> | undefined,
+    });
   }
 }
