@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.3.0
+  version: 0.3.1
   started: 2026-02-28
   status: in_progress
   description: |
@@ -300,12 +300,22 @@ tasks:
       completed_date: 2026-02-28
       estimated_hours: 1-2
       document: agent/tasks/unassigned/task-26-ensure-user-collection.md
+    - id: 29
+      name: Fix Ghost Config Update Nulling Fields
+      status: completed
+      completed_date: 2026-03-03
+      estimated_hours: 2-3
+      document: agent/tasks/unassigned/task-29-fix-ghost-config-update-nulling-fields.md
+      notes: |
+        Added per_user_trust and blocked_users to UpdateGhostConfigDto.
+        Removed unsafe `as any` cast, replaced with typed Partial<GhostConfig>.
+        Added 3 new unit tests. 117 tests passing.
 
 documentation:
   design_documents: 1
   milestone_documents: 7
   pattern_documents: 0
-  task_documents: 28
+  task_documents: 29
 
 progress:
   planning: 100
@@ -337,6 +347,8 @@ recent_work:
     description: "M7 complete: App tier routes — ProfilesController (4 endpoints), GhostSearchController (1 endpoint), DTOs, unit tests — 134 total tests passing (116 unit + 18 e2e)"
   - date: 2026-03-03
     description: "🎉 M8 complete: Sort Mode Endpoints — POST /memories/by-time, POST /memories/by-density, validation DTOs, updated remember-core to v0.22.5 — 116 tests passing. Phase 1 MVP complete (Smart/Time/Density)."
+  - date: 2026-03-03
+    description: "Task 29 complete: Fixed ghost config update nulling fields — added per_user_trust + blocked_users to UpdateGhostConfigDto, removed unsafe `as any` cast, 3 new tests — 117 tests passing"
 
 next_steps:
   - Redeploy to e1 and production with app tier routes

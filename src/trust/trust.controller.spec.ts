@@ -84,6 +84,40 @@ describe('TrustController', () => {
       expect(mockHandleUpdateConfig).toHaveBeenCalledWith(userId, dto, mockLogger);
       expect(result).toEqual(expected);
     });
+
+    it('should pass per_user_trust through to handler', async () => {
+      const dto = { per_user_trust: { 'friend-123': 0.75, 'friend-456': 0.5 } };
+      const expected = { success: true, config: { per_user_trust: dto.per_user_trust }, message: 'updated' };
+      mockHandleUpdateConfig.mockResolvedValue(expected);
+
+      const result = await controller.updateGhostConfig(userId, dto);
+
+      expect(mockHandleUpdateConfig).toHaveBeenCalledWith(userId, dto, mockLogger);
+      expect(result).toEqual(expected);
+    });
+
+    it('should pass blocked_users through to handler', async () => {
+      const dto = { blocked_users: ['bad-user-1', 'bad-user-2'] };
+      const expected = { success: true, config: { blocked_users: dto.blocked_users }, message: 'updated' };
+      mockHandleUpdateConfig.mockResolvedValue(expected);
+
+      const result = await controller.updateGhostConfig(userId, dto);
+
+      expect(mockHandleUpdateConfig).toHaveBeenCalledWith(userId, dto, mockLogger);
+      expect(result).toEqual(expected);
+    });
+
+    it('should pass only specified fields (partial update)', async () => {
+      const dto = { enabled: true };
+      const expected = { success: true, config: { enabled: true }, message: 'updated' };
+      mockHandleUpdateConfig.mockResolvedValue(expected);
+
+      await controller.updateGhostConfig(userId, dto);
+
+      // Only 'enabled' should be passed — no other fields
+      const passedDto = mockHandleUpdateConfig.mock.calls[0][1];
+      expect(Object.keys(passedDto)).toEqual(['enabled']);
+    });
   });
 
   describe('setUserTrust', () => {

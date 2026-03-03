@@ -4,6 +4,8 @@ import {
   IsNumber,
   IsBoolean,
   IsEnum,
+  IsObject,
+  IsArray,
   Min,
   Max,
 } from 'class-validator';
@@ -28,6 +30,15 @@ export class UpdateGhostConfigDto {
   @Min(0)
   @Max(1)
   default_public_trust?: number;
+
+  @IsOptional()
+  @IsObject()
+  per_user_trust?: Record<string, number>;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  blocked_users?: string[];
 
   @IsOptional()
   @IsEnum(['query', 'prompt', 'hybrid'])

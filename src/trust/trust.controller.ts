@@ -18,6 +18,7 @@ import {
   FirestoreEscalationStore,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
+import type { GhostConfig } from '@prmichaelsen/remember-core/types';
 import { WEAVIATE_CLIENT, LOGGER, safeEnsureUserCollection } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 import {
@@ -50,7 +51,7 @@ export class TrustController {
     @User() userId: string,
     @Body() dto: UpdateGhostConfigDto,
   ) {
-    return handleUpdateConfig(userId, dto as any, this.logger);
+    return handleUpdateConfig(userId, dto as Partial<GhostConfig>, this.logger);
   }
 
   @Post('set-user-trust')

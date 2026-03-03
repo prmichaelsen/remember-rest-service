@@ -1,11 +1,13 @@
 {
   "name": "remember-rest-service",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "REST API for remember-core on Google Cloud Run",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "nest build",
+    "deploy": "npm run build && gcloud builds submit --config=cloudbuild.yaml --substitutions=COMMIT_SHA=$(git rev-parse HEAD)",
+    "deploy:e1": "npm run build && gcloud builds submit --config=cloudbuild.e1.yaml --substitutions=COMMIT_SHA=$(git rev-parse HEAD)",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",

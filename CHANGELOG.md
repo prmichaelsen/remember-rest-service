@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-03-03
+
+### Fixed
+- Ghost config PATCH endpoint silently dropping `per_user_trust` and `blocked_users` fields
+  - Add missing fields to `UpdateGhostConfigDto` so NestJS whitelist no longer strips them
+  - Remove unsafe `as any` cast in trust controller, replaced with typed `Partial<GhostConfig>`
+- 3 new unit tests for ghost config partial update behavior (117 total passing)
+
 ## [0.3.0] - 2026-03-03
 
 ### Added
