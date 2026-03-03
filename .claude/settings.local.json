@@ -18,7 +18,9 @@
       "Bash(npm run:*)",
       "Bash(gcloud logging:*)",
       "Bash(ls:*)",
-      "Bash(echo exit: $?:*)"
+      "Bash(echo exit: $?:*)",
+      "Bash(sort:*)",
+      "Bash(npm test:*)"
     ]
   }
 }
