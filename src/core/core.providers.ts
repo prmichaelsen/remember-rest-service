@@ -2,12 +2,13 @@ import type { Provider } from '@nestjs/common';
 import { initWeaviateClient, ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { initFirestore } from '@prmichaelsen/remember-core/database/firestore';
 import { createLogger } from '@prmichaelsen/remember-core/utils';
-import { ConfirmationTokenService } from '@prmichaelsen/remember-core/services';
+import { ConfirmationTokenService, createHaikuClient } from '@prmichaelsen/remember-core/services';
 import { ConfigService } from '../config/config.service.js';
 
 export const WEAVIATE_CLIENT = Symbol('WEAVIATE_CLIENT');
 export const LOGGER = Symbol('LOGGER');
 export const CONFIRMATION_TOKEN_SERVICE = Symbol('CONFIRMATION_TOKEN_SERVICE');
+export const HAIKU_CLIENT = Symbol('HAIKU_CLIENT');
 
 export const weaviateClientProvider: Provider = {
   provide: WEAVIATE_CLIENT,
@@ -54,6 +55,16 @@ export const confirmationTokenServiceProvider: Provider = {
     return new ConfirmationTokenService(logger);
   },
   inject: [LOGGER],
+};
+
+export const haikuClientProvider: Provider = {
+  provide: HAIKU_CLIENT,
+  useFactory: (configService: ConfigService) => {
+    const { apiKey, haikuModel } = configService.anthropicConfig;
+    if (!apiKey) return null;
+    return createHaikuClient({ apiKey, model: haikuModel });
+  },
+  inject: [ConfigService],
 };
 
 /**

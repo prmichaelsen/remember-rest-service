@@ -3,12 +3,14 @@ import {
   IsOptional,
   IsNumber,
   IsArray,
+  IsInt,
   Min,
   Max,
   IsBoolean,
   IsEnum,
   IsObject,
   ValidateNested,
+  ArrayMinSize,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -423,4 +425,31 @@ export class DensityModeDto {
   @ValidateNested()
   @Type(() => GhostSearchContextDto)
   ghost_context?: GhostSearchContextDto;
+}
+
+export class ImportItemDto {
+  @IsString()
+  content!: string;
+
+  @IsOptional()
+  @IsString()
+  source_filename?: string;
+}
+
+export class ImportMemoriesDto {
+  @ValidateNested({ each: true })
+  @Type(() => ImportItemDto)
+  @ArrayMinSize(1)
+  @IsArray()
+  items!: ImportItemDto[];
+
+  @IsOptional()
+  @IsInt()
+  @Min(500)
+  @Max(10000)
+  chunk_size?: number;
+
+  @IsOptional()
+  @IsString()
+  context_conversation_id?: string;
 }

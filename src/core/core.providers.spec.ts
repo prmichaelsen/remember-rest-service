@@ -24,9 +24,14 @@ jest.mock('@prmichaelsen/remember-core/utils', () => ({
 }));
 
 const MockConfirmationTokenService = jest.fn().mockImplementation(() => ({}));
+const mockCreateHaikuClient = jest.fn().mockReturnValue({
+  validateCluster: jest.fn(),
+  extractFeatures: jest.fn(),
+});
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
   ConfirmationTokenService: MockConfirmationTokenService,
+  createHaikuClient: mockCreateHaikuClient,
 }));
 
 import {
@@ -34,6 +39,7 @@ import {
   firestoreProvider,
   loggerProvider,
   confirmationTokenServiceProvider,
+  haikuClientProvider,
   safeEnsureUserCollection,
 } from './core.providers.js';
 
@@ -127,6 +133,47 @@ describe('Core Providers', () => {
       factory(mockLogger);
 
       expect(MockConfirmationTokenService).toHaveBeenCalledWith(mockLogger);
+    });
+  });
+
+  describe('haikuClientProvider', () => {
+    it('should create HaikuClient with Anthropic API key and model', () => {
+      process.env.ANTHROPIC_API_KEY = 'sk-ant-test-key';
+      process.env.ANTHROPIC_HAIKU_MODEL = 'claude-haiku-4-5-20251001';
+      configService = new ConfigService();
+
+      const factory = (haikuClientProvider as any).useFactory;
+      factory(configService);
+
+      expect(mockCreateHaikuClient).toHaveBeenCalledWith({
+        apiKey: 'sk-ant-test-key',
+        model: 'claude-haiku-4-5-20251001',
+      });
+    });
+
+    it('should use default model when ANTHROPIC_HAIKU_MODEL is not set', () => {
+      process.env.ANTHROPIC_API_KEY = 'sk-ant-test-key';
+      delete process.env.ANTHROPIC_HAIKU_MODEL;
+      configService = new ConfigService();
+
+      const factory = (haikuClientProvider as any).useFactory;
+      factory(configService);
+
+      expect(mockCreateHaikuClient).toHaveBeenCalledWith({
+        apiKey: 'sk-ant-test-key',
+        model: 'claude-sonnet-4-6-20241210',
+      });
+    });
+
+    it('should return null when ANTHROPIC_API_KEY is not set', () => {
+      delete process.env.ANTHROPIC_API_KEY;
+      configService = new ConfigService();
+
+      const factory = (haikuClientProvider as any).useFactory;
+      const result = factory(configService);
+
+      expect(result).toBeNull();
+      expect(mockCreateHaikuClient).not.toHaveBeenCalled();
     });
   });
 

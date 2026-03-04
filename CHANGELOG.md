@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-03-04
+
+### Added
+- **Import Endpoint** — `POST /api/svc/v1/memories/import`
+  - Bulk memory import with token-count chunking via remember-core `ImportService`
+  - `ImportMemoriesDto` validation: required `items` array (min 1), optional `chunk_size` (500–10000) and `context_conversation_id`
+  - `ImportItemDto`: required `content`, optional `source_filename`
+  - Constructs `ImportService` with `MemoryService`, `RelationshipService`, `HaikuClient`, and logger per request
+  - Returns `ImportResult` with parent/chunk memory IDs, counts, and generated summaries
+- **HAIKU_CLIENT Provider** — Anthropic API integration for import summarization
+  - `AnthropicConfig` in config types/service (`ANTHROPIC_API_KEY`, `ANTHROPIC_HAIKU_MODEL`)
+  - `createHaikuClient` factory from remember-core; returns `null` when API key not configured
+  - Registered in `CoreModule`, exported via barrel
+  - 3 unit tests for provider (with key, default model, null when missing)
+- 3 unit tests for import endpoint (construct + call, passthrough result, throw when no haiku client)
+
+### Changed
+- Updated `@prmichaelsen/remember-core` from v0.24.2 to v0.25.0
+
 ## [0.4.1] - 2026-03-04
 
 ### Changed

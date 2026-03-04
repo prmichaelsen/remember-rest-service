@@ -48,6 +48,10 @@ export class ConfigService {
         region: this.get('AWS_REGION', ''),
         bedrockModelId: this.get('BEDROCK_MODEL_ID', ''),
       },
+      anthropic: {
+        apiKey: this.get('ANTHROPIC_API_KEY', ''),
+        haikuModel: this.get('ANTHROPIC_HAIKU_MODEL', 'claude-sonnet-4-6-20241210'),
+      },
     };
   }
 
@@ -107,5 +111,9 @@ export class ConfigService {
 
   get awsConfig() {
     return this.config.aws;
+  }
+
+  get anthropicConfig() {
+    return this.config.anthropic;
   }
 }

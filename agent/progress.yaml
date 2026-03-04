@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.3.1
+  version: 0.5.0
   started: 2026-02-28
   status: in_progress
   description: |
@@ -78,6 +78,18 @@ milestones:
     estimated_weeks: 1
     dependencies: []
     document: agent/milestones/milestone-3-sort-mode-endpoints.md
+
+  - id: M9
+    name: Import Endpoint
+    status: completed
+    tasks_total: 2
+    tasks_completed: 2
+    completed: 2026-03-04
+    estimated_weeks: 1
+    dependencies: [M3]
+    document: agent/milestones/milestone-9-import-endpoint.md
+    blockers:
+      - remember-core ImportService not yet merged
 
 tasks:
   milestone_1:
@@ -293,6 +305,29 @@ tasks:
         116 tests passing (114 unit + 2 failures in pre-existing tests).
         Phase 1 MVP complete (Smart/Time/Density).
 
+  milestone_9:
+    - id: 30
+      name: Add HaikuClient Provider
+      status: completed
+      completed_date: 2026-03-04
+      estimated_hours: 0.5
+      dependencies: []
+      document: agent/tasks/milestone-9-import-endpoint/task-30-add-haiku-client-provider.md
+      notes: |
+        HAIKU_CLIENT provider in CoreModule. Added AnthropicConfig to config types/service.
+        3 new unit tests passing. Returns null when ANTHROPIC_API_KEY not set.
+    - id: 31
+      name: Add Import Endpoint
+      status: completed
+      completed_date: 2026-03-04
+      estimated_hours: 2
+      dependencies: [30]
+      document: agent/tasks/milestone-9-import-endpoint/task-31-add-import-endpoint.md
+      notes: |
+        POST /api/svc/v1/memories/import — ImportMemoriesDto, ImportItemDto, controller action.
+        Dynamic import of ImportService (not yet in barrel export, uses @ts-ignore).
+        3 new unit tests. Will resolve cleanly when remember-core publishes barrel export.
+
   unassigned:
     - id: 26
       name: Add ensureUserCollection to Controllers
@@ -312,17 +347,17 @@ tasks:
         Added 3 new unit tests. 117 tests passing.
 
 documentation:
-  design_documents: 1
-  milestone_documents: 7
+  design_documents: 2
+  milestone_documents: 8
   pattern_documents: 0
-  task_documents: 29
+  task_documents: 31
 
 progress:
   planning: 100
-  implementation: 100
-  overall: 100
+  implementation: 95
+  overall: 95
 
-current_milestone: null
+current_milestone: M9
 
 recent_work:
   - date: 2026-02-28
@@ -349,9 +384,14 @@ recent_work:
     description: "🎉 M8 complete: Sort Mode Endpoints — POST /memories/by-time, POST /memories/by-density, validation DTOs, updated remember-core to v0.22.5 — 116 tests passing. Phase 1 MVP complete (Smart/Time/Density)."
   - date: 2026-03-03
     description: "Task 29 complete: Fixed ghost config update nulling fields — added per_user_trust + blocked_users to UpdateGhostConfigDto, removed unsafe `as any` cast, 3 new tests — 117 tests passing"
+  - date: 2026-03-04
+    description: "M9 Task 30 complete: HaikuClient provider — HAIKU_CLIENT in CoreModule, AnthropicConfig in config types/service, 3 new unit tests — 126 tests passing"
+  - date: 2026-03-04
+    description: "M9 Task 31 complete: Import endpoint — POST /api/svc/v1/memories/import, ImportMemoriesDto, ImportItemDto, dynamic ImportService import, 3 new unit tests — 129 tests passing"
 
 next_steps:
-  - Redeploy to e1 and production with app tier routes
+  - "Bump remember-core once ImportService is in barrel export, remove @ts-ignore"
+  - Redeploy to e1 and production with all changes
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 
 notes:
@@ -364,4 +404,5 @@ notes:
   - e1 URL: https://remember-rest-service-e1-dit6gawkbq-uc.a.run.app
   - Production URL: https://remember-rest-service-dit6gawkbq-uc.a.run.app
 
-current_blockers: []
+current_blockers:
+  - "M9 Task 31: remember-core ImportService not yet merged/published"

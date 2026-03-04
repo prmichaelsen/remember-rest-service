@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { MemoriesController } from './memories.controller.js';
-import { WEAVIATE_CLIENT, LOGGER } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT } from '../core/core.providers.js';
 
 const mockMemoryService = {
   create: jest.fn(),
@@ -12,8 +12,37 @@ const mockMemoryService = {
   byTime: jest.fn(),
 };
 
+const mockRelationshipService = {
+  create: jest.fn(),
+  search: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+};
+
+const mockImportResult = {
+  items: [
+    {
+      import_id: 'import-1',
+      parent_memory_id: 'parent-1',
+      chunk_memory_ids: ['chunk-1', 'chunk-2'],
+      chunk_count: 2,
+      source_filename: 'notes.txt',
+      summary: 'Summary of notes',
+    },
+  ],
+  total_memories_created: 3,
+};
+
+const mockImportService = {
+  import: jest.fn().mockResolvedValue(mockImportResult),
+};
+
+const MockImportService = jest.fn().mockImplementation(() => mockImportService);
+
 jest.mock('@prmichaelsen/remember-core/services', () => ({
   MemoryService: jest.fn().mockImplementation(() => mockMemoryService),
+  RelationshipService: jest.fn().mockImplementation(() => mockRelationshipService),
+  get ImportService() { return MockImportService; },
 }));
 
 jest.mock('@prmichaelsen/remember-core/database/weaviate', () => ({
@@ -41,6 +70,11 @@ const mockLogger = {
   error: jest.fn(),
 };
 
+const mockHaikuClient = {
+  validateCluster: jest.fn(),
+  extractFeatures: jest.fn(),
+};
+
 describe('MemoriesController', () => {
   let controller: MemoriesController;
   const userId = 'test-user-123';
@@ -53,6 +87,7 @@ describe('MemoriesController', () => {
       providers: [
         { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
         { provide: LOGGER, useValue: mockLogger },
+        { provide: HAIKU_CLIENT, useValue: mockHaikuClient },
       ],
     }).compile();
 
@@ -328,6 +363,61 @@ describe('MemoriesController', () => {
       await controller.create('user-b', { content: 'b' });
       expect(mockWeaviateClient.collections.get).toHaveBeenCalledWith('Memory_users_user-b');
       expect(MockedService).toHaveBeenCalledWith(mockCollection, 'user-b', mockLogger);
+    });
+  });
+
+  describe('importMemories', () => {
+    beforeEach(() => {
+      MockImportService.mockClear();
+      mockImportService.import.mockClear();
+      mockImportService.import.mockResolvedValue(mockImportResult);
+    });
+
+    it('should construct ImportService and call import with dto', async () => {
+      const dto = {
+        items: [{ content: 'Hello world', source_filename: 'notes.txt' }],
+        chunk_size: 3000,
+        context_conversation_id: 'conv-1',
+      };
+
+      const result = await controller.importMemories(userId, dto as any);
+
+      expect(MockImportService).toHaveBeenCalledWith(
+        mockMemoryService,
+        mockRelationshipService,
+        mockHaikuClient,
+        mockLogger,
+      );
+      expect(mockImportService.import).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(mockImportResult);
+    });
+
+    it('should pass through ImportService result without transformation', async () => {
+      const dto = {
+        items: [{ content: 'Some text' }],
+      };
+
+      const result = await controller.importMemories(userId, dto as any);
+
+      expect(result).toBe(mockImportResult);
+    });
+
+    it('should throw when haikuClient is null', async () => {
+      const module = await Test.createTestingModule({
+        controllers: [MemoriesController],
+        providers: [
+          { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
+          { provide: LOGGER, useValue: mockLogger },
+          { provide: HAIKU_CLIENT, useValue: null },
+        ],
+      }).compile();
+
+      const noHaikuController = module.get(MemoriesController);
+      const dto = { items: [{ content: 'text' }] };
+
+      await expect(noHaikuController.importMemories(userId, dto as any)).rejects.toThrow(
+        'Import requires ANTHROPIC_API_KEY to be configured',
+      );
     });
   });
 });

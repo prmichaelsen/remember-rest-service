@@ -43,6 +43,11 @@ export interface AwsConfig {
   bedrockModelId: string;
 }
 
+export interface AnthropicConfig {
+  apiKey: string;
+  haikuModel: string;
+}
+
 export interface AppConfig {
   server: ServerConfig;
   auth: AuthConfig;
@@ -52,4 +57,5 @@ export interface AppConfig {
   firebase: FirebaseConfig;
   embeddings: EmbeddingsConfig;
   aws: AwsConfig;
+  anthropic: AnthropicConfig;
 }

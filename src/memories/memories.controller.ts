@@ -12,6 +12,8 @@ import {
 } from '@nestjs/common';
 import {
   MemoryService,
+  RelationshipService,
+  ImportService,
   type CreateMemoryInput,
   type SearchMemoryInput,
   type FindSimilarInput,
@@ -19,12 +21,14 @@ import {
   type UpdateMemoryInput,
   type TimeModeRequest,
   type DensityModeRequest,
+  type ImportInput,
+  type HaikuClient,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-core/search';
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
 import { CollectionType, getCollectionName } from '@prmichaelsen/remember-core/collections';
-import { WEAVIATE_CLIENT, LOGGER, safeEnsureUserCollection } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, safeEnsureUserCollection } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 import {
   CreateMemoryDto,
@@ -37,6 +41,7 @@ import {
   DensityModeDto,
   TimeSliceModeDto,
   DensitySliceModeDto,
+  ImportMemoriesDto,
 } from './memories.dto.js';
 
 @Controller('api/svc/v1/memories')
@@ -44,6 +49,7 @@ export class MemoriesController {
   constructor(
     @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
     @Inject(LOGGER) private readonly logger: Logger,
+    @Inject(HAIKU_CLIENT) private readonly haikuClient: HaikuClient | null,
   ) {}
 
   private resolveCollectionName(userId: string, source?: { author?: string; space?: string; group?: string }): string {
@@ -172,5 +178,31 @@ export class MemoriesController {
       direction: dto.direction ?? 'desc',
       filters: dto.filters as Record<string, unknown> | undefined,
     });
+  }
+
+  private async getRelationshipService(userId: string): Promise<RelationshipService> {
+    await safeEnsureUserCollection(this.weaviateClient, userId);
+    const collectionName = getCollectionName(CollectionType.USERS, userId);
+    const collection = this.weaviateClient.collections.get(collectionName);
+    return new RelationshipService(collection, userId, this.logger);
+  }
+
+  @Post('import')
+  async importMemories(@User() userId: string, @Body() dto: ImportMemoriesDto) {
+    if (!this.haikuClient) {
+      throw new Error('Import requires ANTHROPIC_API_KEY to be configured');
+    }
+
+    const memoryService = await this.getService(userId);
+    const relationshipService = await this.getRelationshipService(userId);
+
+    const importService = new ImportService(
+      memoryService,
+      relationshipService,
+      this.haikuClient,
+      this.logger,
+    );
+
+    return importService.import(dto as ImportInput);
   }
 }
