@@ -91,6 +91,17 @@ milestones:
     blockers:
       - remember-core ImportService not yet merged
 
+  - id: M10
+    name: Memory Resolution Fallback
+    status: not_started
+    tasks_total: 2
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M3]
+    document: agent/milestones/milestone-10-memory-resolution.md
+    blockers:
+      - remember-core v0.26.1 not yet published
+
 tasks:
   milestone_1:
     - id: 1
@@ -328,6 +339,26 @@ tasks:
         Dynamic import of ImportService (not yet in barrel export, uses @ts-ignore).
         3 new unit tests. Will resolve cleanly when remember-core publishes barrel export.
 
+  milestone_10:
+    - id: 32
+      name: Bump remember-core to v0.26.1
+      status: not_started
+      estimated_hours: 0.5
+      dependencies: []
+      document: agent/tasks/milestone-10-memory-resolution/task-32-bump-remember-core.md
+      notes: |
+        Updates remember-core to v0.26.1. Adds MemoryResolutionService import.
+        Also resolves M9 Task 31 @ts-ignore for ImportService barrel export.
+    - id: 33
+      name: Use MemoryResolutionService in getById
+      status: not_started
+      estimated_hours: 1
+      dependencies: [32]
+      document: agent/tasks/milestone-10-memory-resolution/task-33-use-memory-resolution-service.md
+      notes: |
+        Replace raw fetchMemoryWithAllProperties in getById with MemoryResolutionService.resolve().
+        Similar memories fetched from resolved collection. New unit tests for fallback.
+
   unassigned:
     - id: 26
       name: Add ensureUserCollection to Controllers
@@ -390,7 +421,8 @@ recent_work:
     description: "M9 Task 31 complete: Import endpoint — POST /api/svc/v1/memories/import, ImportMemoriesDto, ImportItemDto, dynamic ImportService import, 3 new unit tests — 129 tests passing"
 
 next_steps:
-  - "Bump remember-core once ImportService is in barrel export, remove @ts-ignore"
+  - "M10: Bump remember-core to v0.26.1 (MemoryResolutionService + ImportService barrel export)"
+  - "M10: Use MemoryResolutionService in getById for cross-collection fallback"
   - Redeploy to e1 and production with all changes
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 
