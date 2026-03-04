@@ -25,7 +25,7 @@ export class ConfigService {
         origin: this.get('CORS_ORIGIN', 'https://agentbase.me'),
       },
       rateLimit: {
-        max: this.getInt('RATE_LIMIT_MAX', 100),
+        max: this.getInt('RATE_LIMIT_MAX', 1000),
         windowMs: this.getInt('RATE_LIMIT_WINDOW_MS', 3600000),
       },
       weaviate: {

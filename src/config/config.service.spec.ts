@@ -43,7 +43,7 @@ describe('ConfigService', () => {
     expect(config.auth.issuer).toBe('agentbase.me');
     expect(config.auth.audience).toBe('svc');
     expect(config.cors.origin).toBe('https://agentbase.me');
-    expect(config.rateLimit.max).toBe(100);
+    expect(config.rateLimit.max).toBe(1000);
     expect(config.rateLimit.windowMs).toBe(3600000);
   });
 
