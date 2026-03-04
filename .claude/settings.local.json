@@ -20,7 +20,8 @@
       "Bash(ls:*)",
       "Bash(echo exit: $?:*)",
       "Bash(sort:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(npm version:*)"
     ]
   }
 }
