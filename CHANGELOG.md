@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-03-04
+
+### Added
+- **App-Tier Memory Endpoint** — `GET /api/app/v1/memories/:memoryId`
+  - Returns memory with optional relationship compound response
+  - Query params: `includeRelationships` (boolean), `relationshipMemoryLimit` (1-10, default 5)
+  - Builds `MemoryPreview` objects with title fallback (content[:80]) and author_id fallback
+  - Sorts member previews alphabetically by title
+- **App-Tier Relationship Memories Endpoint** — `GET /api/app/v1/relationships/:relationshipId/memories`
+  - Paginated memory listing for a relationship
+  - Query params: `limit` (1-50, default 20), `offset` (min 0, default 0)
+  - Filters soft-deleted memories, sorts alphabetically by title
+  - Returns relationship metadata, memories, total count, and has_more flag
+- Validation DTOs: `GetMemoryQueryDto`, `GetRelationshipMemoriesQueryDto`
+- 10 unit tests for both new controllers
+
 ## [0.5.0] - 2026-03-04
 
 ### Added

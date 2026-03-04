@@ -1,0 +1,100 @@
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Inject,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  MemoryService,
+  RelationshipService,
+} from '@prmichaelsen/remember-core/services';
+import type { Logger } from '@prmichaelsen/remember-core/utils';
+import { WEAVIATE_CLIENT, LOGGER, safeEnsureUserCollection } from '../../core/core.providers.js';
+import { User } from '../../auth/decorators.js';
+
+@Controller('api/app/v1/relationships')
+export class AppRelationshipsController {
+  constructor(
+    @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
+    @Inject(LOGGER) private readonly logger: Logger,
+  ) {}
+
+  private async getMemoryService(userId: string): Promise<MemoryService> {
+    await safeEnsureUserCollection(this.weaviateClient, userId);
+    const collection = this.weaviateClient.collections.get(
+      `Memory_users_${userId}`,
+    );
+    return new MemoryService(collection, userId, this.logger);
+  }
+
+  private async getRelationshipService(userId: string): Promise<RelationshipService> {
+    await safeEnsureUserCollection(this.weaviateClient, userId);
+    const collection = this.weaviateClient.collections.get(
+      `Memory_users_${userId}`,
+    );
+    return new RelationshipService(collection, userId, this.logger);
+  }
+
+  @Get(':relationshipId/memories')
+  async getRelationshipMemories(
+    @User() userId: string,
+    @Param('relationshipId') relationshipId: string,
+    @Query('limit') limitStr?: string,
+    @Query('offset') offsetStr?: string,
+  ) {
+    const limit = Math.min(Math.max(parseInt(limitStr || '20', 10) || 20, 1), 50);
+    const offset = Math.max(parseInt(offsetStr || '0', 10) || 0, 0);
+
+    const relationshipService = await this.getRelationshipService(userId);
+    const result = await relationshipService.getById(relationshipId);
+
+    if (!result.found) {
+      throw new NotFoundException(`Relationship not found: ${relationshipId}`);
+    }
+
+    const relationship = result.relationship!;
+    const memoryIds = (
+      (relationship.related_memory_ids as string[]) ??
+      (relationship.memory_ids as string[]) ??
+      []
+    );
+
+    const memoryService = await this.getMemoryService(userId);
+
+    const allMemories = await Promise.all(
+      memoryIds.map(async (id: string) => {
+        try {
+          const memResult = await memoryService.getById(id);
+          return memResult.memory as Record<string, unknown>;
+        } catch {
+          return null;
+        }
+      }),
+    );
+
+    const filtered = allMemories
+      .filter((m): m is Record<string, unknown> => m !== null && !m.deleted_at)
+      .sort((a, b) => {
+        const titleA = ((a.title as string) || (a.content as string) || '').toLowerCase();
+        const titleB = ((b.title as string) || (b.content as string) || '').toLowerCase();
+        return titleA.localeCompare(titleB);
+      });
+
+    const total = filtered.length;
+    const paginated = filtered.slice(offset, offset + limit);
+
+    const { related_memory_ids, memory_ids, ...relationshipMetadata } = relationship as any;
+
+    return {
+      relationship: {
+        ...relationshipMetadata,
+        memory_ids: memoryIds,
+      },
+      memories: paginated,
+      total,
+      has_more: offset + limit < total,
+    };
+  }
+}
