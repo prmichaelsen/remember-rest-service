@@ -91,10 +91,10 @@ describe('AppMemoriesController', () => {
 
       expect(result.memory).toEqual(memory);
       expect(result.relationships).toHaveLength(1);
-      expect(result.relationships[0].member_previews).toHaveLength(2);
+      expect(result.relationships[0].memory_previews).toHaveLength(2);
       // Sorted alphabetically
-      expect(result.relationships[0].member_previews[0].title).toBe('Related A');
-      expect(result.relationships[0].member_previews[1].title).toBe('Related B');
+      expect(result.relationships[0].memory_previews[0].title).toBe('Related A');
+      expect(result.relationships[0].memory_previews[1].title).toBe('Related B');
     });
 
     it('should limit relationship memory previews', async () => {
@@ -116,7 +116,7 @@ describe('AppMemoriesController', () => {
       const result = await controller.getMemory(userId, 'mem-1', 'true', '1');
 
       // Only 1 preview due to limit
-      expect(result.relationships[0].member_previews).toHaveLength(1);
+      expect(result.relationships[0].memory_previews).toHaveLength(1);
     });
 
     it('should use content[:80] as title fallback', async () => {
@@ -135,7 +135,7 @@ describe('AppMemoriesController', () => {
 
       const result = await controller.getMemory(userId, 'mem-1', 'true');
 
-      expect(result.relationships[0].member_previews[0].title).toBe('A'.repeat(80));
+      expect(result.relationships[0].memory_previews[0].title).toBe('A'.repeat(80));
     });
   });
 });

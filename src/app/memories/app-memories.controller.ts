@@ -88,6 +88,8 @@ export class AppMemoriesController {
                 memory_id: (mem.id as string) ?? id,
                 title,
                 author_id: authorId,
+                space_ids: (mem.space_ids as string[]) ?? [],
+                group_ids: (mem.group_ids as string[]) ?? [],
               };
             } catch {
               return null;
@@ -100,8 +102,14 @@ export class AppMemoriesController {
           .sort((a, b) => a.title.localeCompare(b.title));
 
         return {
-          ...rel,
-          member_previews: validPreviews,
+          id: rel.id as string,
+          relationship_type: (rel.relationship_type as string) ?? '',
+          observation: (rel.observation as string) ?? '',
+          strength: (rel.strength as number) ?? 0,
+          confidence: (rel.confidence as number) ?? 0,
+          source: (rel.source as string) ?? 'rem',
+          memory_count: relMemoryIds.length,
+          memory_previews: validPreviews,
         };
       }),
     );

@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-03-04
+
+### Fixed
+- App memories endpoint response shape mismatch with SDK `RelationshipWithPreviews` contract
+  - Rename `member_previews` → `memory_previews` to match SDK interface
+  - Add missing `memory_count`, `strength`, `confidence`, `source` fields to relationship objects
+  - Add missing `space_ids`, `group_ids` to `MemoryPreview` objects
+  - Return structured relationship fields instead of raw spread
+
 ## [0.6.0] - 2026-03-04
 
 ### Added
