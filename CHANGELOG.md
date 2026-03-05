@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Affected DTOs: `SetUserTrustDto`, `UpdateGhostConfigDto`, `CreateMemoryDto`, `UpdateMemoryDto`, `SearchFiltersDto`, `GhostSearchContextDto`, `PrivacyPreferencesDto`
   - Aligns with remember-core M19 TrustLevel enum redesign (PUBLIC=1, INTERNAL=2, CONFIDENTIAL=3, RESTRICTED=4, SECRET=5)
 - Updated test mocks to use integer trust values
+- Bump `@prmichaelsen/remember-core` to ^0.29.0 (read-time trust normalization)
+
+### Fixed
+- `GET /memories/:id?include=similar` returning 500 Unauthorized — MemoryService was constructed with request userId ('anonymous' for unauthenticated) instead of the memory's actual owner, causing `findSimilar()` ownership check to fail
 
 ## [0.8.0] - 2026-03-05
 

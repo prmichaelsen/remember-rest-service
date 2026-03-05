@@ -106,7 +106,9 @@ export class MemoriesController {
     };
 
     if (include === 'similar' || include === 'both') {
-      const service = new MemoryService(collection, userId ?? 'anonymous', this.logger, {
+      // Use the memory's own user_id so the ownership check in findSimilar passes
+      const memoryOwner = (existing.properties as Record<string, unknown>).user_id as string;
+      const service = new MemoryService(collection, memoryOwner ?? userId ?? 'anonymous', this.logger, {
         memoryIndex: this.memoryIndex,
         weaviateClient: this.weaviateClient,
       });
