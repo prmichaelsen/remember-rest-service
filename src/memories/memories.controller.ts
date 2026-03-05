@@ -83,39 +83,22 @@ export class MemoriesController {
   async getById(
     @User() userId: string,
     @Param('id') id: string,
-    @Query('author') author?: string,
-    @Query('space') space?: string,
-    @Query('group') group?: string,
     @Query('include') include?: string,
   ) {
-    // Try to resolve collection via memory index lookup table first
-    let collectionName: string | null = null;
-    if (!author && !space && !group) {
-      collectionName = await this.memoryIndex.lookup(id);
-    }
-
+    const collectionName = await this.memoryIndex.lookup(id);
     if (!collectionName) {
-      // Fallback to query-param-based resolution
-      if (!userId && !space) {
-        space = 'public';
-      }
-      if (!userId && (author || group)) {
-        throw new NotFoundException('Memory not found');
-      }
-      const source = { author, space, group };
-      collectionName = this.resolveCollectionName(userId ?? 'anonymous', source);
+      throw new NotFoundException('Memory not found');
     }
 
     // Unauthenticated users can only access public space memories
-    const spacesCollectionName = getCollectionName(CollectionType.SPACES);
-    if (!userId && collectionName !== spacesCollectionName) {
+    if (!userId && collectionName !== getCollectionName(CollectionType.SPACES)) {
       throw new NotFoundException('Memory not found');
     }
 
     const collection = this.weaviateClient.collections.get(collectionName);
     const existing = await fetchMemoryWithAllProperties(collection, id);
     if (!existing?.properties) {
-      throw new NotFoundException(`Memory not found: ${id}`);
+      throw new NotFoundException('Memory not found');
     }
 
     const result: Record<string, unknown> = {
@@ -123,8 +106,10 @@ export class MemoriesController {
     };
 
     if (include === 'similar' || include === 'both') {
-      const source = { author, space, group };
-      const service = await this.getService(userId ?? 'anonymous', source);
+      const service = new MemoryService(collection, userId ?? 'anonymous', this.logger, {
+        memoryIndex: this.memoryIndex,
+        weaviateClient: this.weaviateClient,
+      });
       const similar = await service.findSimilar({
         memory_id: id,
         limit: 5,
