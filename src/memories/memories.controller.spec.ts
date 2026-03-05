@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { MemoriesController } from './memories.controller.js';
-import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE } from '../core/core.providers.js';
 
 const mockMemoryService = {
   create: jest.fn(),
@@ -19,30 +19,23 @@ const mockRelationshipService = {
   delete: jest.fn(),
 };
 
-const mockImportResult = {
-  items: [
-    {
-      import_id: 'import-1',
-      parent_memory_id: 'parent-1',
-      chunk_memory_ids: ['chunk-1', 'chunk-2'],
-      chunk_count: 2,
-      source_filename: 'notes.txt',
-      summary: 'Summary of notes',
-    },
-  ],
-  total_memories_created: 3,
+const mockJobService = {
+  create: jest.fn(),
+  getStatus: jest.fn(),
+  cancel: jest.fn(),
+  cleanupExpired: jest.fn(),
 };
 
-const mockImportService = {
-  import: jest.fn().mockResolvedValue(mockImportResult),
-};
-
-const MockImportService = jest.fn().mockImplementation(() => mockImportService);
+const mockWorkerExecute = jest.fn().mockResolvedValue(undefined);
+const MockImportJobWorker = jest.fn().mockImplementation(() => ({
+  execute: mockWorkerExecute,
+}));
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
   MemoryService: jest.fn().mockImplementation(() => mockMemoryService),
   RelationshipService: jest.fn().mockImplementation(() => mockRelationshipService),
-  get ImportService() { return MockImportService; },
+  get ImportJobWorker() { return MockImportJobWorker; },
+  DEFAULT_TTL_HOURS: { import: 1, rem_cycle: 24 },
 }));
 
 jest.mock('@prmichaelsen/remember-core/database/weaviate', () => ({
@@ -88,6 +81,7 @@ describe('MemoriesController', () => {
         { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
         { provide: LOGGER, useValue: mockLogger },
         { provide: HAIKU_CLIENT, useValue: mockHaikuClient },
+        { provide: JOB_SERVICE, useValue: mockJobService },
       ],
     }).compile();
 
@@ -367,39 +361,54 @@ describe('MemoriesController', () => {
   });
 
   describe('importMemories', () => {
+    const mockRes = {
+      header: jest.fn(),
+    } as any;
+
     beforeEach(() => {
-      MockImportService.mockClear();
-      mockImportService.import.mockClear();
-      mockImportService.import.mockResolvedValue(mockImportResult);
+      MockImportJobWorker.mockClear();
+      mockWorkerExecute.mockClear();
+      mockJobService.create.mockResolvedValue({ id: 'job-123' });
     });
 
-    it('should construct ImportService and call import with dto', async () => {
+    it('should create job and return 202 with job_id', async () => {
       const dto = {
         items: [{ content: 'Hello world', source_filename: 'notes.txt' }],
         chunk_size: 3000,
         context_conversation_id: 'conv-1',
       };
 
-      const result = await controller.importMemories(userId, dto as any);
+      const result = await controller.importMemories(userId, dto as any, mockRes);
 
-      expect(MockImportService).toHaveBeenCalledWith(
+      expect(mockJobService.create).toHaveBeenCalledWith({
+        type: 'import',
+        user_id: userId,
+        params: { items: dto.items, chunk_size: 3000 },
+        ttl_hours: 1,
+      });
+      expect(result).toEqual({ job_id: 'job-123' });
+    });
+
+    it('should set Location header', async () => {
+      const dto = { items: [{ content: 'text' }] };
+
+      await controller.importMemories(userId, dto as any, mockRes);
+
+      expect(mockRes.header).toHaveBeenCalledWith('Location', '/api/svc/v1/jobs/job-123');
+    });
+
+    it('should construct ImportJobWorker with correct dependencies', async () => {
+      const dto = { items: [{ content: 'text' }] };
+
+      await controller.importMemories(userId, dto as any, mockRes);
+
+      expect(MockImportJobWorker).toHaveBeenCalledWith(
+        mockJobService,
         mockMemoryService,
         mockRelationshipService,
         mockHaikuClient,
         mockLogger,
       );
-      expect(mockImportService.import).toHaveBeenCalledWith(dto);
-      expect(result).toEqual(mockImportResult);
-    });
-
-    it('should pass through ImportService result without transformation', async () => {
-      const dto = {
-        items: [{ content: 'Some text' }],
-      };
-
-      const result = await controller.importMemories(userId, dto as any);
-
-      expect(result).toBe(mockImportResult);
     });
 
     it('should throw when haikuClient is null', async () => {
@@ -409,13 +418,14 @@ describe('MemoriesController', () => {
           { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
           { provide: LOGGER, useValue: mockLogger },
           { provide: HAIKU_CLIENT, useValue: null },
+          { provide: JOB_SERVICE, useValue: mockJobService },
         ],
       }).compile();
 
       const noHaikuController = module.get(MemoriesController);
       const dto = { items: [{ content: 'text' }] };
 
-      await expect(noHaikuController.importMemories(userId, dto as any)).rejects.toThrow(
+      await expect(noHaikuController.importMemories(userId, dto as any, mockRes)).rejects.toThrow(
         'Import requires ANTHROPIC_API_KEY to be configured',
       );
     });

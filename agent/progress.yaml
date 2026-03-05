@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.5.0
+  version: 0.7.0
   started: 2026-02-28
   status: in_progress
   description: |
@@ -104,9 +104,10 @@ milestones:
 
   - id: M11
     name: Job Tracking REST
-    status: not_started
+    status: completed
     tasks_total: 5
-    tasks_completed: 0
+    tasks_completed: 5
+    completed: 2026-03-05
     estimated_weeks: 1
     dependencies: [M9]
     document: agent/milestones/milestone-11-job-tracking-rest.md
@@ -375,7 +376,9 @@ tasks:
   milestone_11:
     - id: 34
       name: Bump remember-core to v0.27.1
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
+      actual_hours: 0.05
       estimated_hours: 0.5
       dependencies: []
       document: agent/tasks/milestone-11-job-tracking-rest/task-34-bump-remember-core.md
@@ -384,7 +387,9 @@ tasks:
         Resolves M9 Task 31 @ts-ignore for ImportService barrel export.
     - id: 35
       name: Create JobsModule
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
+      actual_hours: 0.1
       estimated_hours: 1
       dependencies: [34]
       document: agent/tasks/milestone-11-job-tracking-rest/task-35-create-jobs-module.md
@@ -393,7 +398,9 @@ tasks:
         Registered in AppModule.
     - id: 36
       name: Create JobsController
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
+      actual_hours: 0.1
       estimated_hours: 2
       dependencies: [35]
       document: agent/tasks/milestone-11-job-tracking-rest/task-36-create-jobs-controller.md
@@ -402,7 +409,9 @@ tasks:
         Matches remember-core OpenAPI spec.
     - id: 37
       name: Migrate import to async
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
+      actual_hours: 0.15
       estimated_hours: 2-3
       dependencies: [36]
       document: agent/tasks/milestone-11-job-tracking-rest/task-37-async-import.md
@@ -411,7 +420,9 @@ tasks:
         Background ImportJobWorker dispatch via setImmediate.
     - id: 38
       name: Integration tests
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
+      actual_hours: 0.1
       estimated_hours: 1-2
       dependencies: [37]
       document: agent/tasks/milestone-11-job-tracking-rest/task-38-integration-tests.md
@@ -444,8 +455,8 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 95
-  overall: 95
+  implementation: 100
+  overall: 100
 
 current_milestone: M11
 
@@ -480,9 +491,10 @@ recent_work:
     description: "M9 Task 31 complete: Import endpoint — POST /api/svc/v1/memories/import, ImportMemoriesDto, ImportItemDto, dynamic ImportService import, 3 new unit tests — 129 tests passing"
   - date: 2026-03-05
     description: "🎉 M10 complete: Memory Resolution Fallback — Replaced MemoryService.getById() with MemoryResolutionService.resolve() in AppMemoriesController for cross-collection fallback. 6 unit tests passing (1 new). 142 total tests."
+  - date: 2026-03-05
+    description: "🎉 M11 complete: Job Tracking REST — JobsModule, JobsController (get/cancel/cleanup), async import (202 + job_id + ImportJobWorker), 8 unit + 7 e2e tests. 151 unit + 7 e2e tests total."
 
 next_steps:
-  - "M11: Bump core to v0.27.1, create JobsModule/Controller, async import, cleanup endpoint"
   - Redeploy to e1 and production with all changes
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 

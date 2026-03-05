@@ -13,6 +13,7 @@ import { ConfirmationsModule } from './confirmations/index.js';
 import { PreferencesModule } from './preferences/index.js';
 import { TrustModule } from './trust/index.js';
 import { AppTierModule } from './app/index.js';
+import { JobsModule } from './jobs/index.js';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AppTierModule } from './app/index.js';
     PreferencesModule,
     TrustModule,
     AppTierModule,
+    JobsModule,
   ],
   providers: [
     {

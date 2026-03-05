@@ -9,6 +9,7 @@ export const WEAVIATE_CLIENT = Symbol('WEAVIATE_CLIENT');
 export const LOGGER = Symbol('LOGGER');
 export const CONFIRMATION_TOKEN_SERVICE = Symbol('CONFIRMATION_TOKEN_SERVICE');
 export const HAIKU_CLIENT = Symbol('HAIKU_CLIENT');
+export const JOB_SERVICE = Symbol('JOB_SERVICE');
 
 export const weaviateClientProvider: Provider = {
   provide: WEAVIATE_CLIENT,

@@ -9,11 +9,15 @@ import {
   Query,
   Inject,
   NotFoundException,
+  HttpCode,
+  Res,
 } from '@nestjs/common';
 import {
   MemoryService,
   RelationshipService,
-  ImportService,
+  ImportJobWorker,
+  DEFAULT_TTL_HOURS,
+  type JobService,
   type CreateMemoryInput,
   type SearchMemoryInput,
   type FindSimilarInput,
@@ -21,15 +25,15 @@ import {
   type UpdateMemoryInput,
   type TimeModeRequest,
   type DensityModeRequest,
-  type ImportInput,
   type HaikuClient,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-core/search';
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
 import { CollectionType, getCollectionName } from '@prmichaelsen/remember-core/collections';
-import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, safeEnsureUserCollection } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, safeEnsureUserCollection } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
+import type { Response } from 'express';
 import {
   CreateMemoryDto,
   SearchMemoryDto,
@@ -50,6 +54,7 @@ export class MemoriesController {
     @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
     @Inject(LOGGER) private readonly logger: Logger,
     @Inject(HAIKU_CLIENT) private readonly haikuClient: HaikuClient | null,
+    @Inject(JOB_SERVICE) private readonly jobService: JobService,
   ) {}
 
   private resolveCollectionName(userId: string, source?: { author?: string; space?: string; group?: string }): string {
@@ -188,21 +193,45 @@ export class MemoriesController {
   }
 
   @Post('import')
-  async importMemories(@User() userId: string, @Body() dto: ImportMemoriesDto) {
+  @HttpCode(202)
+  async importMemories(
+    @User() userId: string,
+    @Body() dto: ImportMemoriesDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     if (!this.haikuClient) {
       throw new Error('Import requires ANTHROPIC_API_KEY to be configured');
     }
 
+    const job = await this.jobService.create({
+      type: 'import',
+      user_id: userId,
+      params: { items: dto.items, chunk_size: dto.chunk_size },
+      ttl_hours: DEFAULT_TTL_HOURS.import,
+    });
+
+    res.header('Location', `/api/svc/v1/jobs/${job.id}`);
+
     const memoryService = await this.getService(userId);
     const relationshipService = await this.getRelationshipService(userId);
-
-    const importService = new ImportService(
+    const worker = new ImportJobWorker(
+      this.jobService,
       memoryService,
       relationshipService,
       this.haikuClient,
       this.logger,
     );
 
-    return importService.import(dto as ImportInput);
+    setImmediate(() => {
+      worker.execute(job.id, userId, {
+        items: dto.items,
+        chunk_size: dto.chunk_size,
+        context_conversation_id: dto.context_conversation_id,
+      }).catch((err) => {
+        this.logger.error?.('Import job failed', { job_id: job.id, error: String(err) });
+      });
+    });
+
+    return { job_id: job.id };
   }
 }

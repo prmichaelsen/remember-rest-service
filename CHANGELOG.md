@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-03-05
+
+### Added
+- **Job Tracking Endpoints** — async job lifecycle management
+  - `GET /api/svc/v1/jobs/:id` — poll job status, progress, steps, and result
+  - `POST /api/svc/v1/jobs/:id/cancel` — cancel a running job
+  - `POST /api/svc/v1/jobs/cleanup` — remove expired jobs (admin/cron)
+- **JobsModule** with `JOB_SERVICE` provider wrapping remember-core `JobService`
+- **Async Import** — `POST /memories/import` now returns 202 with `{ job_id }` and `Location` header
+  - Creates job via `JobService.create()`, dispatches `ImportJobWorker` in background
+  - Worker handles chunking, step tracking, cancellation, and completion
+- **MemoryResolutionService** — cross-collection fallback in app-tier memories endpoint
+  - `GET /api/app/v1/memories/:id` now uses `MemoryResolutionService.resolve()` instead of raw `MemoryService.getById()`
+  - Falls back across collections when primary lookup returns nothing
+- 8 new unit tests for jobs (module + controller), 7 new e2e tests
+
+### Changed
+- Updated `@prmichaelsen/remember-core` from ^0.27.0 to ^0.27.3
+- Import endpoint response changed from 200 with full result to 202 with `{ job_id }` (breaking for callers expecting synchronous result)
+
 ## [0.6.1] - 2026-03-04
 
 ### Fixed
