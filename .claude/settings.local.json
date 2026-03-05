@@ -24,7 +24,8 @@
       "Bash(npm version:*)",
       "Bash(test:*)",
       "Bash(./agent/scripts/acp.version-check-for-updates.sh:*)",
-      "Bash(./node_modules/.bin/nest build:*)"
+      "Bash(./node_modules/.bin/nest build:*)",
+      "Bash(bash:*)"
     ]
   }
 }
