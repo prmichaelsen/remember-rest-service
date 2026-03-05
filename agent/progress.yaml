@@ -485,12 +485,15 @@ tasks:
   milestone_13:
     - id: 43
       name: Bump remember-core for M20
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
       estimated_hours: 0.5
+      actual_hours: 0.05
       dependencies: []
       document: agent/tasks/milestone-13-memory-ratings-rest/task-43-bump-remember-core-m20.md
       notes: |
-        Update remember-core to version with RatingService, byRating, OpenAPI rating schemas.
+        Updated package.json to ^0.31.0. Will resolve once published to npm.
+        RatingService, byRating, OpenAPI rating schemas available in 0.31.0.
     - id: 44
       name: Rating Controller Endpoints
       status: not_started
