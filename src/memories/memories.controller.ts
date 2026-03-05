@@ -88,16 +88,30 @@ export class MemoriesController {
     @Query('group') group?: string,
     @Query('include') include?: string,
   ) {
-    // Unauthenticated requests can only access public space memories
-    if (!userId && !space) {
-      space = 'public';
+    // Try to resolve collection via memory index lookup table first
+    let collectionName: string | null = null;
+    if (!author && !space && !group) {
+      collectionName = await this.memoryIndex.lookup(id);
     }
-    if (!userId && (author || group)) {
+
+    if (!collectionName) {
+      // Fallback to query-param-based resolution
+      if (!userId && !space) {
+        space = 'public';
+      }
+      if (!userId && (author || group)) {
+        throw new NotFoundException('Memory not found');
+      }
+      const source = { author, space, group };
+      collectionName = this.resolveCollectionName(userId ?? 'anonymous', source);
+    }
+
+    // Unauthenticated users can only access public space memories
+    const spacesCollectionName = getCollectionName(CollectionType.SPACES);
+    if (!userId && collectionName !== spacesCollectionName) {
       throw new NotFoundException('Memory not found');
     }
 
-    const source = { author, space, group };
-    const collectionName = this.resolveCollectionName(userId ?? 'anonymous', source);
     const collection = this.weaviateClient.collections.get(collectionName);
     const existing = await fetchMemoryWithAllProperties(collection, id);
     if (!existing?.properties) {
@@ -109,6 +123,7 @@ export class MemoriesController {
     };
 
     if (include === 'similar' || include === 'both') {
+      const source = { author, space, group };
       const service = await this.getService(userId ?? 'anonymous', source);
       const similar = await service.findSimilar({
         memory_id: id,
