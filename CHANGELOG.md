@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2026-03-05
+
+### Fixed
+- Cloud Run deploy failure — container crashed on startup due to missing `JobsModule` import in `MemoriesModule`
+  - `MemoriesController` injects `JOB_SERVICE` (added in M11 for async import) but `MemoriesModule` did not import `JobsModule`
+  - NestJS dependency injection failed at startup, preventing the container from listening on port 8080
+
 ## [0.7.0] - 2026-03-05
 
 ### Added
