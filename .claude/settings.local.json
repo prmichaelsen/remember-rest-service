@@ -27,7 +27,9 @@
       "Bash(./node_modules/.bin/nest build:*)",
       "Bash(bash:*)",
       "Bash(grep:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm pack:*)",
+      "Bash(do echo:*)"
     ]
   }
 }
