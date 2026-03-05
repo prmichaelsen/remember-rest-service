@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { AppRelationshipsController } from './app-relationships.controller.js';
-import { WEAVIATE_CLIENT, LOGGER } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, MEMORY_INDEX } from '../../core/core.providers.js';
 
 const mockMemoryService = {
   getById: jest.fn(),
@@ -34,6 +34,11 @@ const mockLogger = {
   error: jest.fn(),
 };
 
+const mockMemoryIndex = {
+  index: jest.fn(),
+  lookup: jest.fn(),
+};
+
 describe('AppRelationshipsController', () => {
   let controller: AppRelationshipsController;
   const userId = 'test-user-123';
@@ -46,6 +51,7 @@ describe('AppRelationshipsController', () => {
       providers: [
         { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
         { provide: LOGGER, useValue: mockLogger },
+        { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
       ],
     }).compile();
 

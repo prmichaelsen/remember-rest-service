@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.7.1
+  version: 0.8.0
   started: 2026-02-28
   status: in_progress
   description: |
@@ -115,9 +115,10 @@ milestones:
 
   - id: M12
     name: Memory Index Migration
-    status: not_started
+    status: completed
     tasks_total: 2
-    tasks_completed: 0
+    tasks_completed: 2
+    completed: 2026-03-05
     estimated_weeks: 1
     dependencies: [M10]
     document: agent/milestones/milestone-12-memory-index-migration.md
@@ -446,7 +447,9 @@ tasks:
   milestone_12:
     - id: 39
       name: Wire MemoryIndexService Provider and Update MemoryService Constructors
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
+      actual_hours: 0.15
       estimated_hours: 2-3
       document: agent/tasks/milestone-12-memory-index-migration/task-39-wire-memory-index-provider.md
       notes: |
@@ -454,7 +457,9 @@ tasks:
         { memoryIndex, weaviateClient } to MemoryService constructor.
     - id: 40
       name: Replace MemoryResolutionService with resolveById
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
+      actual_hours: 0.1
       estimated_hours: 1-2
       dependencies: [39]
       document: agent/tasks/milestone-12-memory-index-migration/task-40-replace-memory-resolution-service.md
@@ -526,9 +531,12 @@ recent_work:
     description: "🎉 M10 complete: Memory Resolution Fallback — Replaced MemoryService.getById() with MemoryResolutionService.resolve() in AppMemoriesController for cross-collection fallback. 6 unit tests passing (1 new). 142 total tests."
   - date: 2026-03-05
     description: "🎉 M11 complete: Job Tracking REST — JobsModule, JobsController (get/cancel/cleanup), async import (202 + job_id + ImportJobWorker), 8 unit + 7 e2e tests. 151 unit + 7 e2e tests total."
+  - date: 2026-03-05
+    description: "🎉 M12 complete: Memory Index Migration — MEMORY_INDEX provider (MemoryIndexService), all 5 controllers pass { memoryIndex, weaviateClient } to MemoryService. AppMemoriesController migrated from MemoryResolutionService to MemoryService.resolveById(). Zero MemoryResolutionService references remain. 152 tests (150 passing, 2 pre-existing failures)."
 
 next_steps:
-  - Redeploy to e1 and production with all changes
+  - Redeploy to e1 and production with M12 changes
+  - Run backfill migration (npm run migrate:backfill-memory-index in remember-core) for existing memories
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 
 notes:

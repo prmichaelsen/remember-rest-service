@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-03-05
+
+### Added
+- **MemoryIndexService provider** — singleton `MEMORY_INDEX` in CoreModule for Firestore UUID-to-collection lookup table
+- All `MemoryService` constructors now pass `{ memoryIndex, weaviateClient }` options, enabling automatic index writes on memory creation
+
+### Changed
+- **AppMemoriesController** migrated from `MemoryResolutionService.resolve()` to `MemoryService.resolveById()` for O(1) cross-collection resolution via Firestore index
+- Updated 5 controllers: MemoriesController, ProfilesController, GhostSearchController, AppRelationshipsController, AppMemoriesController
+
+### Removed
+- All references to `MemoryResolutionService` (replaced by `MemoryService.resolveById()`)
+
 ## [0.7.1] - 2026-03-05
 
 ### Fixed

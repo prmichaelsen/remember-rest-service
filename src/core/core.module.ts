@@ -5,10 +5,12 @@ import {
   loggerProvider,
   confirmationTokenServiceProvider,
   haikuClientProvider,
+  memoryIndexProvider,
   WEAVIATE_CLIENT,
   LOGGER,
   CONFIRMATION_TOKEN_SERVICE,
   HAIKU_CLIENT,
+  MEMORY_INDEX,
 } from './core.providers.js';
 
 @Global()
@@ -19,7 +21,8 @@ import {
     loggerProvider,
     confirmationTokenServiceProvider,
     haikuClientProvider,
+    memoryIndexProvider,
   ],
-  exports: [WEAVIATE_CLIENT, 'FIRESTORE_INIT', LOGGER, CONFIRMATION_TOKEN_SERVICE, HAIKU_CLIENT],
+  exports: [WEAVIATE_CLIENT, 'FIRESTORE_INIT', LOGGER, CONFIRMATION_TOKEN_SERVICE, HAIKU_CLIENT, MEMORY_INDEX],
 })
 export class CoreModule {}

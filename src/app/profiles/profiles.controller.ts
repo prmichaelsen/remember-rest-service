@@ -11,9 +11,10 @@ import {
 import {
   MemoryService,
   SpaceService,
+  type MemoryIndexService,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, safeEnsureUserCollection } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MEMORY_INDEX, safeEnsureUserCollection } from '../../core/core.providers.js';
 import { User } from '../../auth/decorators.js';
 import {
   CreateProfileDto,
@@ -29,6 +30,7 @@ export class ProfilesController {
     @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
     @Inject(LOGGER) private readonly logger: Logger,
     @Inject(CONFIRMATION_TOKEN_SERVICE) private readonly confirmationTokenService: any,
+    @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
   ) {}
 
   private async getMemoryService(userId: string): Promise<MemoryService> {
@@ -36,7 +38,10 @@ export class ProfilesController {
     const collection = this.weaviateClient.collections.get(
       `Memory_users_${userId}`,
     );
-    return new MemoryService(collection, userId, this.logger);
+    return new MemoryService(collection, userId, this.logger, {
+      memoryIndex: this.memoryIndex,
+      weaviateClient: this.weaviateClient,
+    });
   }
 
   private async getSpaceService(userId: string): Promise<SpaceService> {

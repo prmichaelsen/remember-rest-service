@@ -10,10 +10,11 @@ import {
   resolveAccessorTrustLevel,
   formatMemoryForPrompt,
   getTrustLevelLabel,
+  type MemoryIndexService,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { DEFAULT_GHOST_CONFIG } from '@prmichaelsen/remember-core/types';
-import { WEAVIATE_CLIENT, LOGGER, safeEnsureUserCollection } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, MEMORY_INDEX, safeEnsureUserCollection } from '../../core/core.providers.js';
 import { User } from '../../auth/decorators.js';
 import { SearchAsGhostDto } from './ghost.dto.js';
 
@@ -24,6 +25,7 @@ export class GhostSearchController {
   constructor(
     @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
     @Inject(LOGGER) private readonly logger: Logger,
+    @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
   ) {
     this.ghostConfigProvider = new FirestoreGhostConfigProvider(logger);
   }
@@ -33,7 +35,10 @@ export class GhostSearchController {
     const collection = this.weaviateClient.collections.get(
       `Memory_users_${ownerUserId}`,
     );
-    return new MemoryService(collection, ownerUserId, this.logger);
+    return new MemoryService(collection, ownerUserId, this.logger, {
+      memoryIndex: this.memoryIndex,
+      weaviateClient: this.weaviateClient,
+    });
   }
 
   @Post('search-as-ghost')

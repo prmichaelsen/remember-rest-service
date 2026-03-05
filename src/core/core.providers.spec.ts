@@ -28,10 +28,15 @@ const mockCreateHaikuClient = jest.fn().mockReturnValue({
   validateCluster: jest.fn(),
   extractFeatures: jest.fn(),
 });
+const MockMemoryIndexService = jest.fn().mockImplementation(() => ({
+  index: jest.fn(),
+  lookup: jest.fn(),
+}));
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
   ConfirmationTokenService: MockConfirmationTokenService,
   createHaikuClient: mockCreateHaikuClient,
+  MemoryIndexService: MockMemoryIndexService,
 }));
 
 import {
@@ -40,6 +45,7 @@ import {
   loggerProvider,
   confirmationTokenServiceProvider,
   haikuClientProvider,
+  memoryIndexProvider,
   safeEnsureUserCollection,
 } from './core.providers.js';
 
@@ -174,6 +180,16 @@ describe('Core Providers', () => {
 
       expect(result).toBeNull();
       expect(mockCreateHaikuClient).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('memoryIndexProvider', () => {
+    it('should create MemoryIndexService with logger', () => {
+      const mockLogger = { info: jest.fn() };
+      const factory = (memoryIndexProvider as any).useFactory;
+      factory(mockLogger);
+
+      expect(MockMemoryIndexService).toHaveBeenCalledWith(mockLogger);
     });
   });
 

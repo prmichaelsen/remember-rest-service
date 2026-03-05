@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { GhostSearchController } from './ghost.controller.js';
-import { WEAVIATE_CLIENT, LOGGER } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, MEMORY_INDEX } from '../../core/core.providers.js';
 
 const mockMemoryService = {
   search: jest.fn(),
@@ -52,6 +52,11 @@ const mockLogger = {
   error: jest.fn(),
 };
 
+const mockMemoryIndex = {
+  index: jest.fn(),
+  lookup: jest.fn(),
+};
+
 describe('GhostSearchController', () => {
   let controller: GhostSearchController;
   const userId = 'caller-user-123';
@@ -64,6 +69,7 @@ describe('GhostSearchController', () => {
       providers: [
         { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
         { provide: LOGGER, useValue: mockLogger },
+        { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
       ],
     }).compile();
 
@@ -185,6 +191,10 @@ describe('GhostSearchController', () => {
         mockCollection,
         'owner-x',
         mockLogger,
+        {
+          memoryIndex: mockMemoryIndex,
+          weaviateClient: mockWeaviateClient,
+        },
       );
     });
   });

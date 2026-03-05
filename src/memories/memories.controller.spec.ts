@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { MemoriesController } from './memories.controller.js';
-import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, MEMORY_INDEX } from '../core/core.providers.js';
 
 const mockMemoryService = {
   create: jest.fn(),
@@ -68,6 +68,11 @@ const mockHaikuClient = {
   extractFeatures: jest.fn(),
 };
 
+const mockMemoryIndex = {
+  index: jest.fn(),
+  lookup: jest.fn(),
+};
+
 describe('MemoriesController', () => {
   let controller: MemoriesController;
   const userId = 'test-user-123';
@@ -82,6 +87,7 @@ describe('MemoriesController', () => {
         { provide: LOGGER, useValue: mockLogger },
         { provide: HAIKU_CLIENT, useValue: mockHaikuClient },
         { provide: JOB_SERVICE, useValue: mockJobService },
+        { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
       ],
     }).compile();
 
@@ -352,11 +358,17 @@ describe('MemoriesController', () => {
 
       await controller.create('user-a', { content: 'a' });
       expect(mockWeaviateClient.collections.get).toHaveBeenCalledWith('Memory_users_user-a');
-      expect(MockedService).toHaveBeenCalledWith(mockCollection, 'user-a', mockLogger);
+      expect(MockedService).toHaveBeenCalledWith(mockCollection, 'user-a', mockLogger, {
+        memoryIndex: mockMemoryIndex,
+        weaviateClient: mockWeaviateClient,
+      });
 
       await controller.create('user-b', { content: 'b' });
       expect(mockWeaviateClient.collections.get).toHaveBeenCalledWith('Memory_users_user-b');
-      expect(MockedService).toHaveBeenCalledWith(mockCollection, 'user-b', mockLogger);
+      expect(MockedService).toHaveBeenCalledWith(mockCollection, 'user-b', mockLogger, {
+        memoryIndex: mockMemoryIndex,
+        weaviateClient: mockWeaviateClient,
+      });
     });
   });
 
@@ -419,6 +431,7 @@ describe('MemoriesController', () => {
           { provide: LOGGER, useValue: mockLogger },
           { provide: HAIKU_CLIENT, useValue: null },
           { provide: JOB_SERVICE, useValue: mockJobService },
+          { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
         ],
       }).compile();
 

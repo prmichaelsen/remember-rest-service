@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { ConflictException } from '@nestjs/common';
 import { ProfilesController } from './profiles.controller.js';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MEMORY_INDEX } from '../../core/core.providers.js';
 
 const mockMemoryService = {
   create: jest.fn(),
@@ -42,6 +42,11 @@ const mockLogger = {
 
 const mockConfirmationTokenService = {};
 
+const mockMemoryIndex = {
+  index: jest.fn(),
+  lookup: jest.fn(),
+};
+
 describe('ProfilesController', () => {
   let controller: ProfilesController;
   const userId = 'test-user-123';
@@ -55,6 +60,7 @@ describe('ProfilesController', () => {
         { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
         { provide: LOGGER, useValue: mockLogger },
         { provide: CONFIRMATION_TOKEN_SERVICE, useValue: mockConfirmationTokenService },
+        { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
       ],
     }).compile();
 
@@ -280,7 +286,10 @@ describe('ProfilesController', () => {
       await controller.createAndPublish('user-x', { display_name: 'X' });
 
       expect(mockWeaviateClient.collections.get).toHaveBeenCalledWith('Memory_users_user-x');
-      expect(MockedMemory).toHaveBeenCalledWith(mockCollection, 'user-x', mockLogger);
+      expect(MockedMemory).toHaveBeenCalledWith(mockCollection, 'user-x', mockLogger, {
+        memoryIndex: mockMemoryIndex,
+        weaviateClient: mockWeaviateClient,
+      });
       expect(MockedSpace).toHaveBeenCalledWith(
         mockWeaviateClient,
         mockCollection,

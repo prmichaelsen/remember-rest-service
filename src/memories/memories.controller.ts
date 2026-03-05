@@ -17,6 +17,7 @@ import {
   RelationshipService,
   ImportJobWorker,
   DEFAULT_TTL_HOURS,
+  type MemoryIndexService,
   type JobService,
   type CreateMemoryInput,
   type SearchMemoryInput,
@@ -31,7 +32,7 @@ import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-core/search';
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
 import { CollectionType, getCollectionName } from '@prmichaelsen/remember-core/collections';
-import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, safeEnsureUserCollection } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, MEMORY_INDEX, safeEnsureUserCollection } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 import type { Response } from 'express';
 import {
@@ -55,6 +56,7 @@ export class MemoriesController {
     @Inject(LOGGER) private readonly logger: Logger,
     @Inject(HAIKU_CLIENT) private readonly haikuClient: HaikuClient | null,
     @Inject(JOB_SERVICE) private readonly jobService: JobService,
+    @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
   ) {}
 
   private resolveCollectionName(userId: string, source?: { author?: string; space?: string; group?: string }): string {
@@ -70,7 +72,10 @@ export class MemoriesController {
       await safeEnsureUserCollection(this.weaviateClient, source?.author ?? userId);
     }
     const collection = this.weaviateClient.collections.get(collectionName);
-    return new MemoryService(collection, source?.author ?? userId, this.logger);
+    return new MemoryService(collection, source?.author ?? userId, this.logger, {
+      memoryIndex: this.memoryIndex,
+      weaviateClient: this.weaviateClient,
+    });
   }
 
   @Get(':id')

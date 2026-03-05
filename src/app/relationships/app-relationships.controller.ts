@@ -9,9 +9,10 @@ import {
 import {
   MemoryService,
   RelationshipService,
+  type MemoryIndexService,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
-import { WEAVIATE_CLIENT, LOGGER, safeEnsureUserCollection } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, MEMORY_INDEX, safeEnsureUserCollection } from '../../core/core.providers.js';
 import { User } from '../../auth/decorators.js';
 
 @Controller('api/app/v1/relationships')
@@ -19,6 +20,7 @@ export class AppRelationshipsController {
   constructor(
     @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
     @Inject(LOGGER) private readonly logger: Logger,
+    @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
   ) {}
 
   private async getMemoryService(userId: string): Promise<MemoryService> {
@@ -26,7 +28,10 @@ export class AppRelationshipsController {
     const collection = this.weaviateClient.collections.get(
       `Memory_users_${userId}`,
     );
-    return new MemoryService(collection, userId, this.logger);
+    return new MemoryService(collection, userId, this.logger, {
+      memoryIndex: this.memoryIndex,
+      weaviateClient: this.weaviateClient,
+    });
   }
 
   private async getRelationshipService(userId: string): Promise<RelationshipService> {

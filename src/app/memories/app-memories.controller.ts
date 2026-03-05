@@ -7,11 +7,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  MemoryResolutionService,
+  MemoryService,
   RelationshipService,
+  type MemoryIndexService,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
-import { WEAVIATE_CLIENT, LOGGER, safeEnsureUserCollection } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, MEMORY_INDEX, safeEnsureUserCollection } from '../../core/core.providers.js';
 import { User } from '../../auth/decorators.js';
 
 @Controller('api/app/v1/memories')
@@ -19,10 +20,15 @@ export class AppMemoriesController {
   constructor(
     @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
     @Inject(LOGGER) private readonly logger: Logger,
+    @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
   ) {}
 
-  private getResolutionService(userId: string): MemoryResolutionService {
-    return new MemoryResolutionService(this.weaviateClient, userId, this.logger);
+  private getMemoryService(userId: string): MemoryService {
+    const collection = this.weaviateClient.collections.get(`Memory_users_${userId}`);
+    return new MemoryService(collection, userId, this.logger, {
+      memoryIndex: this.memoryIndex,
+      weaviateClient: this.weaviateClient,
+    });
   }
 
   private async getRelationshipService(userId: string): Promise<RelationshipService> {
@@ -40,11 +46,11 @@ export class AppMemoriesController {
     @Query('includeRelationships') includeRelationships?: string,
     @Query('relationshipMemoryLimit') relationshipMemoryLimitStr?: string,
   ) {
-    const resolver = this.getResolutionService(userId);
+    const memoryService = this.getMemoryService(userId);
     await safeEnsureUserCollection(this.weaviateClient, userId);
 
-    const resolved = await resolver.resolve(memoryId);
-    if (!resolved) {
+    const resolved = await memoryService.resolveById(memoryId);
+    if (!resolved.memory) {
       throw new NotFoundException(`Memory not found: ${memoryId}`);
     }
 
@@ -74,8 +80,8 @@ export class AppMemoriesController {
         const previews = await Promise.all(
           limitedIds.map(async (id: string) => {
             try {
-              const relResolved = await resolver.resolve(id);
-              if (!relResolved) return null;
+              const relResolved = await memoryService.resolveById(id);
+              if (!relResolved.memory) return null;
               const mem = relResolved.memory;
               const title = (mem.title as string) ||
                 ((mem.content as string) ?? '').slice(0, 80);

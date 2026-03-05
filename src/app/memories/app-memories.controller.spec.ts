@@ -1,17 +1,17 @@
 import { Test } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { AppMemoriesController } from './app-memories.controller.js';
-import { WEAVIATE_CLIENT, LOGGER } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, MEMORY_INDEX } from '../../core/core.providers.js';
 
-const mockResolve = jest.fn();
+const mockResolveById = jest.fn();
 
 const mockRelationshipService = {
   findByMemoryIds: jest.fn(),
 };
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
-  MemoryResolutionService: jest.fn().mockImplementation(() => ({
-    resolve: mockResolve,
+  MemoryService: jest.fn().mockImplementation(() => ({
+    resolveById: mockResolveById,
   })),
   RelationshipService: jest.fn().mockImplementation(() => mockRelationshipService),
 }));
@@ -34,6 +34,11 @@ const mockLogger = {
   error: jest.fn(),
 };
 
+const mockMemoryIndex = {
+  index: jest.fn(),
+  lookup: jest.fn(),
+};
+
 describe('AppMemoriesController', () => {
   let controller: AppMemoriesController;
   const userId = 'test-user-123';
@@ -46,6 +51,7 @@ describe('AppMemoriesController', () => {
       providers: [
         { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
         { provide: LOGGER, useValue: mockLogger },
+        { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
       ],
     }).compile();
 
@@ -55,23 +61,23 @@ describe('AppMemoriesController', () => {
   describe('GET /:memoryId', () => {
     it('should return memory without relationships by default', async () => {
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello' };
-      mockResolve.mockResolvedValue({ memory, collectionName: 'Memory_users_test-user-123' });
+      mockResolveById.mockResolvedValue({ memory, collectionName: 'Memory_users_test-user-123' });
 
       const result = await controller.getMemory(userId, 'mem-1');
 
       expect(result).toEqual({ memory, relationships: [] });
-      expect(mockResolve).toHaveBeenCalledWith('mem-1');
+      expect(mockResolveById).toHaveBeenCalledWith('mem-1');
     });
 
     it('should throw NotFoundException when memory not found', async () => {
-      mockResolve.mockResolvedValue(null);
+      mockResolveById.mockResolvedValue({ memory: null, collectionName: null });
 
       await expect(controller.getMemory(userId, 'bad-id')).rejects.toThrow(NotFoundException);
     });
 
     it('should include relationships with previews when includeRelationships=true', async () => {
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello', user_id: userId };
-      mockResolve
+      mockResolveById
         .mockResolvedValueOnce({ memory, collectionName: 'Memory_users_test-user-123' })
         .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'Related B', content: 'World', user_id: userId }, collectionName: 'Memory_users_test-user-123' })
         .mockResolvedValueOnce({ memory: { id: 'mem-3', title: 'Related A', content: 'Foo', user_id: userId }, collectionName: 'Memory_users_test-user-123' });
@@ -99,7 +105,7 @@ describe('AppMemoriesController', () => {
 
     it('should limit relationship memory previews', async () => {
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello' };
-      mockResolve
+      mockResolveById
         .mockResolvedValueOnce({ memory, collectionName: 'Memory_users_test-user-123' })
         .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'A', content: '' }, collectionName: 'Memory_users_test-user-123' });
 
@@ -122,7 +128,7 @@ describe('AppMemoriesController', () => {
     it('should use content[:80] as title fallback', async () => {
       const longContent = 'A'.repeat(100);
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello' };
-      mockResolve
+      mockResolveById
         .mockResolvedValueOnce({ memory, collectionName: 'Memory_users_test-user-123' })
         .mockResolvedValueOnce({ memory: { id: 'mem-2', content: longContent }, collectionName: 'Memory_users_test-user-123' });
 
@@ -140,9 +146,9 @@ describe('AppMemoriesController', () => {
 
     it('should handle resolver returning null for related memories gracefully', async () => {
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello' };
-      mockResolve
+      mockResolveById
         .mockResolvedValueOnce({ memory, collectionName: 'Memory_users_test-user-123' })
-        .mockResolvedValueOnce(null); // related memory not found
+        .mockResolvedValueOnce({ memory: null, collectionName: null }); // related memory not found
 
       mockRelationshipService.findByMemoryIds.mockResolvedValue({
         relationships: [
