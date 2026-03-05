@@ -128,6 +128,21 @@ milestones:
       Wire MemoryIndexService into all MemoryService constructors.
       Depends on remember-core M18 (complete) and backfill migration run.
 
+  - id: M13
+    name: Memory Ratings REST Endpoints
+    status: not_started
+    tasks_total: 4
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M3, M12]
+    document: agent/milestones/milestone-13-memory-ratings-rest.md
+    blockers:
+      - remember-core M20 (RatingService, byRating sort, OpenAPI spec) not yet complete
+    notes: |
+      PUT/DELETE/GET /memories/:id/rating + POST /memories/by-rating sort.
+      DTOs mirror OpenAPI-generated types with class-validator decorators.
+      Depends on remember-core M20 shipping RatingService and byRating.
+
 tasks:
   milestone_1:
     - id: 1
@@ -467,6 +482,42 @@ tasks:
         Swap AppMemoriesController from MemoryResolutionService.resolve()
         to MemoryService.resolveById(). Remove all MemoryResolutionService references.
 
+  milestone_13:
+    - id: 43
+      name: Bump remember-core for M20
+      status: not_started
+      estimated_hours: 0.5
+      dependencies: []
+      document: agent/tasks/milestone-13-memory-ratings-rest/task-43-bump-remember-core-m20.md
+      notes: |
+        Update remember-core to version with RatingService, byRating, OpenAPI rating schemas.
+    - id: 44
+      name: Rating Controller Endpoints
+      status: not_started
+      estimated_hours: 2-3
+      dependencies: [43]
+      document: agent/tasks/milestone-13-memory-ratings-rest/task-44-rating-controller-endpoints.md
+      notes: |
+        PUT/DELETE/GET /memories/:id/rating on MemoriesController.
+        RateMemoryDto, RatingService per-request instantiation.
+    - id: 45
+      name: byRating Sort Endpoint
+      status: not_started
+      estimated_hours: 1
+      dependencies: [43]
+      document: agent/tasks/milestone-13-memory-ratings-rest/task-45-by-rating-sort-endpoint.md
+      notes: |
+        POST /memories/by-rating — same pattern as by-time and by-density.
+        RatingModeDto mirrors generated types.
+    - id: 46
+      name: Unit Tests
+      status: not_started
+      estimated_hours: 1-2
+      dependencies: [44, 45]
+      document: agent/tasks/milestone-13-memory-ratings-rest/task-46-unit-tests.md
+      notes: |
+        Rating CRUD tests, byRating sort tests, DTO validation tests.
+
   unassigned:
     - id: 26
       name: Add ensureUserCollection to Controllers
@@ -511,16 +562,16 @@ tasks:
 
 documentation:
   design_documents: 2
-  milestone_documents: 10
+  milestone_documents: 11
   pattern_documents: 0
-  task_documents: 39
+  task_documents: 43
 
 progress:
   planning: 100
-  implementation: 100
-  overall: 100
+  implementation: 93
+  overall: 95
 
-current_milestone: M12
+current_milestone: M13
 
 recent_work:
   - date: 2026-02-28
@@ -561,8 +612,12 @@ recent_work:
     description: "Task 41 complete: Trust Level Integer Migration — 3 DTOs (trust, memories, preferences) migrated from float 0-1 to integer 1-5 with @IsInt(). 3 test files updated. 150 tests passing."
   - date: 2026-03-05
     description: "Task 42 complete: Fix getById findSimilar Unauthorized — MemoryService was using 'anonymous' userId instead of memory owner's user_id, causing findSimilar() ownership check to throw. Fixed in memories.controller.ts."
+  - date: 2026-03-05
+    description: "M13 planned: Memory Ratings REST — 1 milestone, 4 tasks (bump core, rating endpoints, byRating sort, unit tests). Blocked on remember-core M20."
 
 next_steps:
+  - Wait for remember-core M20 to complete (RatingService, byRating sort, OpenAPI spec)
+  - Implement M13 (Memory Ratings REST) — 4 tasks, ~5 hours
   - Redeploy to e1 and production with M12 + Task 41 changes
   - Run backfill migration (npm run migrate:backfill-memory-index in remember-core) for existing memories
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
@@ -577,4 +632,5 @@ notes:
   - e1 URL: https://remember-rest-service-e1-dit6gawkbq-uc.a.run.app
   - Production URL: https://remember-rest-service-dit6gawkbq-uc.a.run.app
 
-current_blockers: []
+current_blockers:
+  - remember-core M20 (Memory Ratings System) not yet complete — blocks M13
