@@ -25,7 +25,9 @@
       "Bash(test:*)",
       "Bash(./agent/scripts/acp.version-check-for-updates.sh:*)",
       "Bash(./node_modules/.bin/nest build:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)"
     ]
   }
 }
