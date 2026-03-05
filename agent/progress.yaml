@@ -113,6 +113,20 @@ milestones:
     document: agent/milestones/milestone-11-job-tracking-rest.md
     blockers: []
 
+  - id: M12
+    name: Memory Index Migration
+    status: not_started
+    tasks_total: 2
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M10]
+    document: agent/milestones/milestone-12-memory-index-migration.md
+    blockers: []
+    notes: |
+      Migrate from MemoryResolutionService to MemoryService.resolveById().
+      Wire MemoryIndexService into all MemoryService constructors.
+      Depends on remember-core M18 (complete) and backfill migration run.
+
 tasks:
   milestone_1:
     - id: 1
@@ -429,6 +443,25 @@ tasks:
       notes: |
         E2E tests: import→poll→complete, import→cancel, cleanup.
 
+  milestone_12:
+    - id: 39
+      name: Wire MemoryIndexService Provider and Update MemoryService Constructors
+      status: not_started
+      estimated_hours: 2-3
+      document: agent/tasks/milestone-12-memory-index-migration/task-39-wire-memory-index-provider.md
+      notes: |
+        NestJS provider for MemoryIndexService. Update 4 controllers to pass
+        { memoryIndex, weaviateClient } to MemoryService constructor.
+    - id: 40
+      name: Replace MemoryResolutionService with resolveById
+      status: not_started
+      estimated_hours: 1-2
+      dependencies: [39]
+      document: agent/tasks/milestone-12-memory-index-migration/task-40-replace-memory-resolution-service.md
+      notes: |
+        Swap AppMemoriesController from MemoryResolutionService.resolve()
+        to MemoryService.resolveById(). Remove all MemoryResolutionService references.
+
   unassigned:
     - id: 26
       name: Add ensureUserCollection to Controllers
@@ -449,16 +482,16 @@ tasks:
 
 documentation:
   design_documents: 2
-  milestone_documents: 9
+  milestone_documents: 10
   pattern_documents: 0
-  task_documents: 36
+  task_documents: 38
 
 progress:
   planning: 100
   implementation: 100
   overall: 100
 
-current_milestone: M11
+current_milestone: M12
 
 recent_work:
   - date: 2026-02-28
