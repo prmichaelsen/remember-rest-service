@@ -1,7 +1,7 @@
-# Task 33: Use MemoryResolutionService in getById
+# Task 33: App-Tier Memories Controller with MemoryResolutionService
 
 **Milestone**: [M10 - Memory Resolution Fallback](../../milestones/milestone-10-memory-resolution.md)
-**Estimated Time**: 1 hour
+**Estimated Time**: 1-2 hours
 **Dependencies**: [Task 32](task-32-bump-remember-core.md)
 **Status**: Not Started
 
@@ -9,75 +9,86 @@
 
 ## Objective
 
-Replace the raw `fetchMemoryWithAllProperties` call in `MemoriesController.getById` with `MemoryResolutionService.resolve()` so that memory lookups gracefully fall back to the user's own collection when context params are wrong.
+Create a new app-tier memories controller at `GET /api/app/v1/memories/:id` that uses `MemoryResolutionService` for cross-collection fallback. This matches the `AppClient.memories.get()` SDK method added in remember-core v0.27.0.
 
 ---
 
 ## Context
 
-Currently `getById` does a single collection lookup based on context params. If the params point to the wrong collection, it returns 404 even though the memory exists in the user's own collection. `MemoryResolutionService` (added in remember-core v0.26.1) handles this by trying the requested collection first, then falling back to the user's own collection.
+The remember-core SDK architecture has two tiers:
+- **Svc tier** (`/api/svc/v1/`) — 1:1 raw CRUD, no fallback
+- **App tier** (`/api/app/v1/`) — compound, use-case-oriented operations
 
-The `similar_memories` lookup must also use the resolved collection (where the memory was actually found), not the originally requested collection.
+`AppClient.memories.get()` (added in remember-core v0.27.0) calls `GET /api/app/v1/memories/:id` with `includeRelationships` and `relationshipMemoryLimit` options. agentbase.me already calls this from `src/routes/memory/$memoryId.tsx`. However, the server-side handler **doesn't exist yet**.
+
+The app-tier endpoint should:
+1. Use `MemoryResolutionService.resolve()` for cross-collection fallback
+2. Optionally include relationships with memory previews (compound response)
+3. Return `MemoryWithRelationships` shape matching the SDK types
+
+The svc-tier `GET /api/svc/v1/memories/:id` stays unchanged (raw, single-collection).
 
 ---
 
 ## Steps
 
-### 1. Update imports
+### 1. Create App Memories Controller
 
-Add `MemoryResolutionService` to the imports from `@prmichaelsen/remember-core/services`. The `fetchMemoryWithAllProperties` import can be removed if no other method uses it.
+**File**: `src/app/memories/memories.controller.ts`
 
-### 2. Update getById method
-
-**Before**:
 ```typescript
-@Get(':id')
-async getById(...) {
-  const source = { author, space, group };
-  const collectionName = this.resolveCollectionName(userId, source);
-  const collection = this.weaviateClient.collections.get(collectionName);
-  const existing = await fetchMemoryWithAllProperties(collection, id);
-  if (!existing?.properties) {
-    throw new NotFoundException(`Memory not found: ${id}`);
+@Controller('api/app/v1/memories')
+export class AppMemoriesController {
+  constructor(
+    @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
+    @Inject(LOGGER) private readonly logger: Logger,
+  ) {}
+
+  @Get(':id')
+  async getById(
+    @User() userId: string,
+    @Param('id') id: string,
+    @Query('includeRelationships') includeRelationships?: string,
+    @Query('relationshipMemoryLimit') relationshipMemoryLimit?: string,
+  ) {
+    const resolver = new MemoryResolutionService(this.weaviateClient, userId, this.logger);
+    const resolved = await resolver.resolve(id);
+    if (!resolved) {
+      throw new NotFoundException(`Memory not found: ${id}`);
+    }
+
+    const result: Record<string, unknown> = { memory: resolved.memory };
+
+    if (includeRelationships === 'true') {
+      // Fetch relationships for this memory
+      // Use resolved.collectionName for correct collection
+      const collection = this.weaviateClient.collections.get(resolved.collectionName);
+      const relationshipService = new RelationshipService(collection, userId, this.logger);
+      const limit = relationshipMemoryLimit ? parseInt(relationshipMemoryLimit) : 5;
+      const rels = await relationshipService.search({ memory_id: id, limit });
+      result.relationships = rels.relationships ?? [];
+    }
+
+    return result;
   }
-  const result = { memory: { id: existing.uuid, ...existing.properties } };
-  // similar_memories uses getService(userId, source) — original source
 }
 ```
 
-**After**:
-```typescript
-@Get(':id')
-async getById(...) {
-  const source = { author, space, group };
-  const resolver = new MemoryResolutionService(this.weaviateClient, userId, this.logger);
-  const resolved = await resolver.resolve(id, source);
-  if (!resolved) {
-    throw new NotFoundException(`Memory not found: ${id}`);
-  }
-  const result: Record<string, unknown> = { memory: resolved.memory };
+### 2. Register in AppTierModule
 
-  if (include === 'similar' || include === 'both') {
-    // Use resolved.collectionName for similar lookup
-    const collection = this.weaviateClient.collections.get(resolved.collectionName);
-    const service = new MemoryService(collection, userId, this.logger);
-    const similar = await service.findSimilar({
-      memory_id: id,
-      limit: 5,
-      min_similarity: 0.6,
-    });
-    result.similar_memories = similar.similar_memories ?? [];
-  }
-  return result;
-}
-```
+**File**: `src/app/app-tier.module.ts`
 
-### 3. Update unit tests
+Add `AppMemoriesController` to the module's controllers array.
 
-Update `memories.controller.spec.ts`:
-- Existing `getById` tests should still pass (happy path unchanged)
-- Add test: `getById` with wrong author param still returns memory from user collection
-- Add test: `getById` with wrong space param still returns memory from user collection
+### 3. Create unit tests
+
+**File**: `src/app/memories/memories.controller.spec.ts`
+
+- Test: returns memory from user collection (happy path)
+- Test: falls back to user collection when memory not in requested collection
+- Test: returns 404 when memory not found anywhere
+- Test: includes relationships when `includeRelationships=true`
+- Test: respects `relationshipMemoryLimit`
 
 ### 4. Verify
 
@@ -90,17 +101,21 @@ npm run test
 
 ## Verification
 
-- [ ] `getById` uses `MemoryResolutionService.resolve()` instead of raw `fetchMemoryWithAllProperties`
-- [ ] `similar_memories` fetched from `resolved.collectionName`
-- [ ] `fetchMemoryWithAllProperties` import removed (if unused by other methods)
-- [ ] New unit tests for fallback scenarios
-- [ ] All existing tests pass
+- [ ] `GET /api/app/v1/memories/:id` endpoint exists
+- [ ] Uses `MemoryResolutionService.resolve()` (no author/space/group params needed — always resolves with fallback)
+- [ ] Returns `{ memory, relationships? }` matching `MemoryWithRelationships` SDK type
+- [ ] Relationships include memory previews when `includeRelationships=true`
+- [ ] Returns 404 when memory not found
+- [ ] Registered in `AppTierModule`
+- [ ] Unit tests pass
 - [ ] TypeScript builds cleanly
+- [ ] Svc-tier `GET /api/svc/v1/memories/:id` unchanged
 
 ---
 
 ## Notes
 
-- `resolveCollectionName` private method can stay in the controller — it's still used by `getService()` for other endpoints
-- `MemoryResolutionService` is constructed per-request (lightweight, no setup cost)
-- No changes to SvcClient or agentbase.me — transparent to clients
+- The app-tier endpoint does NOT take `author/space/group` query params — `MemoryResolutionService` tries user's own collection with no context, which is the right default for the memory detail page
+- The svc-tier endpoint stays as-is for raw, explicit collection access
+- `AppClient.memories.get()` in remember-core already calls this endpoint — once deployed, agentbase.me's `(appClient as any)` cast will work correctly
+- Follow existing app-tier controller patterns (see `ProfilesController`, `GhostSearchController`)

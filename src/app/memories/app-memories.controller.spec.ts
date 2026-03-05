@@ -3,16 +3,16 @@ import { NotFoundException } from '@nestjs/common';
 import { AppMemoriesController } from './app-memories.controller.js';
 import { WEAVIATE_CLIENT, LOGGER } from '../../core/core.providers.js';
 
-const mockMemoryService = {
-  getById: jest.fn(),
-};
+const mockResolve = jest.fn();
 
 const mockRelationshipService = {
   findByMemoryIds: jest.fn(),
 };
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
-  MemoryService: jest.fn().mockImplementation(() => mockMemoryService),
+  MemoryResolutionService: jest.fn().mockImplementation(() => ({
+    resolve: mockResolve,
+  })),
   RelationshipService: jest.fn().mockImplementation(() => mockRelationshipService),
 }));
 
@@ -55,26 +55,26 @@ describe('AppMemoriesController', () => {
   describe('GET /:memoryId', () => {
     it('should return memory without relationships by default', async () => {
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello' };
-      mockMemoryService.getById.mockResolvedValue({ memory });
+      mockResolve.mockResolvedValue({ memory, collectionName: 'Memory_users_test-user-123' });
 
       const result = await controller.getMemory(userId, 'mem-1');
 
       expect(result).toEqual({ memory, relationships: [] });
-      expect(mockMemoryService.getById).toHaveBeenCalledWith('mem-1');
+      expect(mockResolve).toHaveBeenCalledWith('mem-1');
     });
 
     it('should throw NotFoundException when memory not found', async () => {
-      mockMemoryService.getById.mockRejectedValue(new Error('Memory not found: bad-id'));
+      mockResolve.mockResolvedValue(null);
 
-      await expect(controller.getMemory(userId, 'bad-id')).rejects.toThrow();
+      await expect(controller.getMemory(userId, 'bad-id')).rejects.toThrow(NotFoundException);
     });
 
     it('should include relationships with previews when includeRelationships=true', async () => {
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello', user_id: userId };
-      mockMemoryService.getById
-        .mockResolvedValueOnce({ memory })
-        .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'Related B', content: 'World', user_id: userId } })
-        .mockResolvedValueOnce({ memory: { id: 'mem-3', title: 'Related A', content: 'Foo', user_id: userId } });
+      mockResolve
+        .mockResolvedValueOnce({ memory, collectionName: 'Memory_users_test-user-123' })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'Related B', content: 'World', user_id: userId }, collectionName: 'Memory_users_test-user-123' })
+        .mockResolvedValueOnce({ memory: { id: 'mem-3', title: 'Related A', content: 'Foo', user_id: userId }, collectionName: 'Memory_users_test-user-123' });
 
       mockRelationshipService.findByMemoryIds.mockResolvedValue({
         relationships: [
@@ -99,9 +99,9 @@ describe('AppMemoriesController', () => {
 
     it('should limit relationship memory previews', async () => {
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello' };
-      mockMemoryService.getById
-        .mockResolvedValueOnce({ memory })
-        .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'A', content: '' } });
+      mockResolve
+        .mockResolvedValueOnce({ memory, collectionName: 'Memory_users_test-user-123' })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'A', content: '' }, collectionName: 'Memory_users_test-user-123' });
 
       mockRelationshipService.findByMemoryIds.mockResolvedValue({
         relationships: [
@@ -122,9 +122,9 @@ describe('AppMemoriesController', () => {
     it('should use content[:80] as title fallback', async () => {
       const longContent = 'A'.repeat(100);
       const memory = { id: 'mem-1', title: 'Test', content: 'Hello' };
-      mockMemoryService.getById
-        .mockResolvedValueOnce({ memory })
-        .mockResolvedValueOnce({ memory: { id: 'mem-2', content: longContent } });
+      mockResolve
+        .mockResolvedValueOnce({ memory, collectionName: 'Memory_users_test-user-123' })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', content: longContent }, collectionName: 'Memory_users_test-user-123' });
 
       mockRelationshipService.findByMemoryIds.mockResolvedValue({
         relationships: [
@@ -136,6 +136,24 @@ describe('AppMemoriesController', () => {
       const result = await controller.getMemory(userId, 'mem-1', 'true');
 
       expect(result.relationships[0].memory_previews[0].title).toBe('A'.repeat(80));
+    });
+
+    it('should handle resolver returning null for related memories gracefully', async () => {
+      const memory = { id: 'mem-1', title: 'Test', content: 'Hello' };
+      mockResolve
+        .mockResolvedValueOnce({ memory, collectionName: 'Memory_users_test-user-123' })
+        .mockResolvedValueOnce(null); // related memory not found
+
+      mockRelationshipService.findByMemoryIds.mockResolvedValue({
+        relationships: [
+          { id: 'rel-1', related_memory_ids: ['mem-1', 'mem-2'] },
+        ],
+        total: 1,
+      });
+
+      const result = await controller.getMemory(userId, 'mem-1', 'true');
+
+      expect(result.relationships[0].memory_previews).toHaveLength(0);
     });
   });
 });

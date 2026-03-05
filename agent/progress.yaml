@@ -93,14 +93,24 @@ milestones:
 
   - id: M10
     name: Memory Resolution Fallback
-    status: not_started
+    status: completed
     tasks_total: 2
-    tasks_completed: 0
+    tasks_completed: 2
+    completed: 2026-03-05
     estimated_weeks: 1
     dependencies: [M3]
     document: agent/milestones/milestone-10-memory-resolution.md
-    blockers:
-      - remember-core v0.26.1 not yet published
+    blockers: []
+
+  - id: M11
+    name: Job Tracking REST
+    status: not_started
+    tasks_total: 5
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M9]
+    document: agent/milestones/milestone-11-job-tracking-rest.md
+    blockers: []
 
 tasks:
   milestone_1:
@@ -341,23 +351,72 @@ tasks:
 
   milestone_10:
     - id: 32
-      name: Bump remember-core to v0.26.1
-      status: not_started
+      name: Bump remember-core to v0.27.0
+      status: completed
+      completed_date: 2026-03-04
       estimated_hours: 0.5
       dependencies: []
       document: agent/tasks/milestone-10-memory-resolution/task-32-bump-remember-core.md
       notes: |
-        Updates remember-core to v0.26.1. Adds MemoryResolutionService import.
-        Also resolves M9 Task 31 @ts-ignore for ImportService barrel export.
+        remember-core v0.27.0 already installed with MemoryResolutionService,
+        RelationshipService, and AppClient.memories.get() SDK.
     - id: 33
-      name: Use MemoryResolutionService in getById
-      status: not_started
-      estimated_hours: 1
+      name: App-Tier Memories Controller with MemoryResolutionService
+      status: completed
+      completed_date: 2026-03-05
+      estimated_hours: 1-2
+      actual_hours: 0.1
       dependencies: [32]
       document: agent/tasks/milestone-10-memory-resolution/task-33-use-memory-resolution-service.md
       notes: |
-        Replace raw fetchMemoryWithAllProperties in getById with MemoryResolutionService.resolve().
-        Similar memories fetched from resolved collection. New unit tests for fallback.
+        New app-tier controller at GET /api/app/v1/memories/:id using MemoryResolutionService.
+        Compound response with optional relationships. Svc-tier unchanged.
+
+  milestone_11:
+    - id: 34
+      name: Bump remember-core to v0.27.1
+      status: not_started
+      estimated_hours: 0.5
+      dependencies: []
+      document: agent/tasks/milestone-11-job-tracking-rest/task-34-bump-remember-core.md
+      notes: |
+        Update core dep to v0.27.1 for job tracking exports.
+        Resolves M9 Task 31 @ts-ignore for ImportService barrel export.
+    - id: 35
+      name: Create JobsModule
+      status: not_started
+      estimated_hours: 1
+      dependencies: [34]
+      document: agent/tasks/milestone-11-job-tracking-rest/task-35-create-jobs-module.md
+      notes: |
+        JOB_SERVICE provider wrapping JobService from remember-core.
+        Registered in AppModule.
+    - id: 36
+      name: Create JobsController
+      status: not_started
+      estimated_hours: 2
+      dependencies: [35]
+      document: agent/tasks/milestone-11-job-tracking-rest/task-36-create-jobs-controller.md
+      notes: |
+        GET /api/svc/v1/jobs/:id, POST /jobs/:id/cancel, POST /jobs/cleanup.
+        Matches remember-core OpenAPI spec.
+    - id: 37
+      name: Migrate import to async
+      status: not_started
+      estimated_hours: 2-3
+      dependencies: [36]
+      document: agent/tasks/milestone-11-job-tracking-rest/task-37-async-import.md
+      notes: |
+        POST /memories/import returns 202 + job_id.
+        Background ImportJobWorker dispatch via setImmediate.
+    - id: 38
+      name: Integration tests
+      status: not_started
+      estimated_hours: 1-2
+      dependencies: [37]
+      document: agent/tasks/milestone-11-job-tracking-rest/task-38-integration-tests.md
+      notes: |
+        E2E tests: import→poll→complete, import→cancel, cleanup.
 
   unassigned:
     - id: 26
@@ -379,16 +438,16 @@ tasks:
 
 documentation:
   design_documents: 2
-  milestone_documents: 8
+  milestone_documents: 9
   pattern_documents: 0
-  task_documents: 31
+  task_documents: 36
 
 progress:
   planning: 100
   implementation: 95
   overall: 95
 
-current_milestone: M9
+current_milestone: M11
 
 recent_work:
   - date: 2026-02-28
@@ -419,10 +478,11 @@ recent_work:
     description: "M9 Task 30 complete: HaikuClient provider — HAIKU_CLIENT in CoreModule, AnthropicConfig in config types/service, 3 new unit tests — 126 tests passing"
   - date: 2026-03-04
     description: "M9 Task 31 complete: Import endpoint — POST /api/svc/v1/memories/import, ImportMemoriesDto, ImportItemDto, dynamic ImportService import, 3 new unit tests — 129 tests passing"
+  - date: 2026-03-05
+    description: "🎉 M10 complete: Memory Resolution Fallback — Replaced MemoryService.getById() with MemoryResolutionService.resolve() in AppMemoriesController for cross-collection fallback. 6 unit tests passing (1 new). 142 total tests."
 
 next_steps:
-  - "M10: Bump remember-core to v0.26.1 (MemoryResolutionService + ImportService barrel export)"
-  - "M10: Use MemoryResolutionService in getById for cross-collection fallback"
+  - "M11: Bump core to v0.27.1, create JobsModule/Controller, async import, cleanup endpoint"
   - Redeploy to e1 and production with all changes
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 
@@ -436,5 +496,4 @@ notes:
   - e1 URL: https://remember-rest-service-e1-dit6gawkbq-uc.a.run.app
   - Production URL: https://remember-rest-service-dit6gawkbq-uc.a.run.app
 
-current_blockers:
-  - "M9 Task 31: remember-core ImportService not yet merged/published"
+current_blockers: []

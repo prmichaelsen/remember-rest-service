@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  MemoryService,
+  MemoryResolutionService,
   RelationshipService,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
@@ -21,12 +21,8 @@ export class AppMemoriesController {
     @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
-  private async getMemoryService(userId: string): Promise<MemoryService> {
-    await safeEnsureUserCollection(this.weaviateClient, userId);
-    const collection = this.weaviateClient.collections.get(
-      `Memory_users_${userId}`,
-    );
-    return new MemoryService(collection, userId, this.logger);
+  private getResolutionService(userId: string): MemoryResolutionService {
+    return new MemoryResolutionService(this.weaviateClient, userId, this.logger);
   }
 
   private async getRelationshipService(userId: string): Promise<RelationshipService> {
@@ -44,16 +40,17 @@ export class AppMemoriesController {
     @Query('includeRelationships') includeRelationships?: string,
     @Query('relationshipMemoryLimit') relationshipMemoryLimitStr?: string,
   ) {
-    const memoryService = await this.getMemoryService(userId);
+    const resolver = this.getResolutionService(userId);
+    await safeEnsureUserCollection(this.weaviateClient, userId);
 
-    const result = await memoryService.getById(memoryId);
-    if (!result.memory) {
+    const resolved = await resolver.resolve(memoryId);
+    if (!resolved) {
       throw new NotFoundException(`Memory not found: ${memoryId}`);
     }
 
     const shouldIncludeRelationships = includeRelationships === 'true';
     if (!shouldIncludeRelationships) {
-      return { memory: result.memory, relationships: [] };
+      return { memory: resolved.memory, relationships: [] };
     }
 
     const relationshipMemoryLimit = Math.min(
@@ -77,8 +74,9 @@ export class AppMemoriesController {
         const previews = await Promise.all(
           limitedIds.map(async (id: string) => {
             try {
-              const memResult = await memoryService.getById(id);
-              const mem = memResult.memory as Record<string, unknown>;
+              const relResolved = await resolver.resolve(id);
+              if (!relResolved) return null;
+              const mem = relResolved.memory;
               const title = (mem.title as string) ||
                 ((mem.content as string) ?? '').slice(0, 80);
               const authorId = (mem.author_id as string) ||
@@ -115,7 +113,7 @@ export class AppMemoriesController {
     );
 
     return {
-      memory: result.memory,
+      memory: resolved.memory,
       relationships: relationshipsWithPreviews,
     };
   }
