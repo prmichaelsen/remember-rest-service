@@ -496,22 +496,26 @@ tasks:
         RatingService, byRating, OpenAPI rating schemas available in 0.31.0.
     - id: 44
       name: Rating Controller Endpoints
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
       estimated_hours: 2-3
+      actual_hours: 0.1
       dependencies: [43]
       document: agent/tasks/milestone-13-memory-ratings-rest/task-44-rating-controller-endpoints.md
       notes: |
         PUT/DELETE/GET /memories/:id/rating on MemoriesController.
-        RateMemoryDto, RatingService per-request instantiation.
+        RateMemoryDto, RatingModeDto DTOs. RatingService per-request instantiation.
     - id: 45
       name: byRating Sort Endpoint
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
       estimated_hours: 1
+      actual_hours: 0.05
       dependencies: [43]
       document: agent/tasks/milestone-13-memory-ratings-rest/task-45-by-rating-sort-endpoint.md
       notes: |
         POST /memories/by-rating — same pattern as by-time and by-density.
-        RatingModeDto mirrors generated types.
+        RatingModeDto with direction, limit, offset, filters, deleted_filter, ghost_context.
     - id: 46
       name: Unit Tests
       status: not_started

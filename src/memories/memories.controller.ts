@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Patch,
   Delete,
   Body,
@@ -15,6 +16,7 @@ import {
 import {
   MemoryService,
   RelationshipService,
+  RatingService,
   ImportJobWorker,
   DEFAULT_TTL_HOURS,
   type MemoryIndexService,
@@ -26,6 +28,7 @@ import {
   type UpdateMemoryInput,
   type TimeModeRequest,
   type DensityModeRequest,
+  type RatingModeRequest,
   type HaikuClient,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
@@ -47,6 +50,8 @@ import {
   TimeSliceModeDto,
   DensitySliceModeDto,
   ImportMemoriesDto,
+  RateMemoryDto,
+  RatingModeDto,
 } from './memories.dto.js';
 
 @Controller('api/svc/v1/memories')
@@ -202,6 +207,53 @@ export class MemoriesController {
       direction: dto.direction ?? 'desc',
       filters: dto.filters as Record<string, unknown> | undefined,
     });
+  }
+
+  private getRatingService(): RatingService {
+    return new RatingService({
+      weaviateClient: this.weaviateClient,
+      memoryIndexService: this.memoryIndex,
+      logger: this.logger,
+    });
+  }
+
+  @Put(':id/rating')
+  async rateMemory(
+    @User() userId: string,
+    @Param('id') id: string,
+    @Body() dto: RateMemoryDto,
+  ) {
+    const service = this.getRatingService();
+    return service.rate({ memoryId: id, userId, rating: dto.rating });
+  }
+
+  @Delete(':id/rating')
+  @HttpCode(204)
+  async retractRating(
+    @User() userId: string,
+    @Param('id') id: string,
+  ) {
+    const service = this.getRatingService();
+    await service.retract(id, userId);
+  }
+
+  @Get(':id/rating')
+  async getMyRating(
+    @User() userId: string,
+    @Param('id') id: string,
+  ) {
+    const service = this.getRatingService();
+    const rating = await service.getUserRating(id, userId);
+    if (!rating) {
+      throw new NotFoundException('No rating found');
+    }
+    return rating;
+  }
+
+  @Post('by-rating')
+  async byRating(@User() userId: string, @Body() dto: RatingModeDto) {
+    const service = await this.getService(userId);
+    return service.byRating(dto as RatingModeRequest);
   }
 
   private async getRelationshipService(userId: string): Promise<RelationshipService> {

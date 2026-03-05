@@ -427,6 +427,44 @@ export class DensityModeDto {
   ghost_context?: GhostSearchContextDto;
 }
 
+export class RateMemoryDto {
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  rating!: number;
+}
+
+export class RatingModeDto {
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  direction?: 'asc' | 'desc';
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(500)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
 export class ImportItemDto {
   @IsString()
   content!: string;
