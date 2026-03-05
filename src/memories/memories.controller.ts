@@ -28,9 +28,9 @@ import {
   type UpdateMemoryInput,
   type TimeModeRequest,
   type DensityModeRequest,
-  type RatingModeRequest,
   type HaikuClient,
 } from '@prmichaelsen/remember-core/services';
+import type { RatingModeRequest } from '@prmichaelsen/remember-core/types';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-core/search';
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
