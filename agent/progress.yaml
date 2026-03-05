@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.8.0
+  version: 0.9.0
   started: 2026-02-28
   status: in_progress
   description: |
@@ -484,6 +484,18 @@ tasks:
         Added per_user_trust and blocked_users to UpdateGhostConfigDto.
         Removed unsafe `as any` cast, replaced with typed Partial<GhostConfig>.
         Added 3 new unit tests. 117 tests passing.
+    - id: 41
+      name: Trust Level Integer Migration (1-5)
+      status: completed
+      completed_date: 2026-03-05
+      estimated_hours: 1-2
+      actual_hours: 0.1
+      document: agent/tasks/unassigned/task-41-trust-level-integer-migration.md
+      notes: |
+        Migrated all trust DTOs from float 0-1 to integer 1-5 (@IsInt + @Min(1) @Max(5)).
+        3 DTOs updated: trust.dto.ts, memories.dto.ts, preferences.dto.ts.
+        3 test files updated: trust.controller.spec.ts, ghost.controller.spec.ts, memories.controller.spec.ts.
+        152 tests (150 passing, 2 pre-existing failures).
 
 documentation:
   design_documents: 2
@@ -533,9 +545,11 @@ recent_work:
     description: "🎉 M11 complete: Job Tracking REST — JobsModule, JobsController (get/cancel/cleanup), async import (202 + job_id + ImportJobWorker), 8 unit + 7 e2e tests. 151 unit + 7 e2e tests total."
   - date: 2026-03-05
     description: "🎉 M12 complete: Memory Index Migration — MEMORY_INDEX provider (MemoryIndexService), all 5 controllers pass { memoryIndex, weaviateClient } to MemoryService. AppMemoriesController migrated from MemoryResolutionService to MemoryService.resolveById(). Zero MemoryResolutionService references remain. 152 tests (150 passing, 2 pre-existing failures)."
+  - date: 2026-03-05
+    description: "Task 41 complete: Trust Level Integer Migration — 3 DTOs (trust, memories, preferences) migrated from float 0-1 to integer 1-5 with @IsInt(). 3 test files updated. 150 tests passing."
 
 next_steps:
-  - Redeploy to e1 and production with M12 changes
+  - Redeploy to e1 and production with M12 + Task 41 changes
   - Run backfill migration (npm run migrate:backfill-memory-index in remember-core) for existing memories
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 

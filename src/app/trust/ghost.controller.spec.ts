@@ -13,7 +13,7 @@ jest.mock('@prmichaelsen/remember-core/services', () => ({
   FirestoreGhostConfigProvider: jest.fn().mockImplementation(() => ({
     getGhostConfig: mockGetGhostConfig,
   })),
-  resolveAccessorTrustLevel: jest.fn().mockReturnValue(0.5),
+  resolveAccessorTrustLevel: jest.fn().mockReturnValue(3),
   formatMemoryForPrompt: jest.fn().mockImplementation((raw, trustLevel) => ({
     memory_id: raw.id ?? raw.memory_id ?? 'unknown',
     content: raw.content ?? '',
@@ -26,8 +26,8 @@ jest.mock('@prmichaelsen/remember-core/types', () => ({
   DEFAULT_GHOST_CONFIG: {
     enabled: false,
     public_ghost_enabled: false,
-    default_friend_trust: 0.25,
-    default_public_trust: 0,
+    default_friend_trust: 2,
+    default_public_trust: 1,
     per_user_trust: {},
     blocked_users: [],
     enforcement_mode: 'query',
@@ -80,9 +80,9 @@ describe('GhostSearchController', () => {
     it('should resolve trust and search owner memories', async () => {
       mockGetGhostConfig.mockResolvedValue({
         enabled: true,
-        per_user_trust: { 'caller-user-123': 0.5 },
-        default_friend_trust: 0.25,
-        default_public_trust: 0,
+        per_user_trust: { 'caller-user-123': 3 },
+        default_friend_trust: 2,
+        default_public_trust: 1,
         blocked_users: [],
       });
 
@@ -131,7 +131,7 @@ describe('GhostSearchController', () => {
         limit: 10,
         offset: 0,
         ghost_context: {
-          accessor_trust_level: 0.5,
+          accessor_trust_level: 3,
           owner_user_id: 'owner-user-456',
         },
       });

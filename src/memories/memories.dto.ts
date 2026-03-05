@@ -43,15 +43,15 @@ export class SearchFiltersDto {
   weight_max?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   trust_min?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   trust_max?: number;
 
   @IsOptional()
@@ -68,9 +68,9 @@ export class SearchFiltersDto {
 }
 
 export class GhostSearchContextDto {
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   accessor_trust_level!: number;
 
   @IsString()
@@ -100,9 +100,9 @@ export class CreateMemoryDto {
   weight?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   trust?: number;
 
   @IsOptional()
@@ -279,9 +279,9 @@ export class UpdateMemoryDto {
   weight?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   trust?: number;
 
   @IsOptional()

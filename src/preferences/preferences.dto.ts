@@ -1,6 +1,7 @@
 import {
   IsOptional,
   IsNumber,
+  IsInt,
   IsBoolean,
   IsString,
   IsArray,
@@ -93,9 +94,9 @@ export class LocationPreferencesDto {
 
 export class PrivacyPreferencesDto {
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   default_trust_level?: number;
 
   @IsOptional()

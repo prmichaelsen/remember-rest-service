@@ -86,7 +86,7 @@ describe('TrustController', () => {
     });
 
     it('should pass per_user_trust through to handler', async () => {
-      const dto = { per_user_trust: { 'friend-123': 0.75, 'friend-456': 0.5 } };
+      const dto = { per_user_trust: { 'friend-123': 4, 'friend-456': 3 } };
       const expected = { success: true, config: { per_user_trust: dto.per_user_trust }, message: 'updated' };
       mockHandleUpdateConfig.mockResolvedValue(expected);
 
@@ -122,13 +122,13 @@ describe('TrustController', () => {
 
   describe('setUserTrust', () => {
     it('should set trust level for a target user', async () => {
-      const dto = { target_user_id: 'other-user', trust_level: 0.75 };
+      const dto = { target_user_id: 'other-user', trust_level: 4 };
       const expected = { success: true, message: 'trust set' };
       mockHandleSetTrust.mockResolvedValue(expected);
 
       const result = await controller.setUserTrust(userId, dto);
 
-      expect(mockHandleSetTrust).toHaveBeenCalledWith(userId, 'other-user', 0.75, mockLogger);
+      expect(mockHandleSetTrust).toHaveBeenCalledWith(userId, 'other-user', 4, mockLogger);
       expect(result).toEqual(expected);
     });
   });
@@ -176,9 +176,9 @@ describe('TrustController', () => {
     it('should check memory access for an accessor', async () => {
       const dto = { memory_id: 'mem-1', accessor_user_id: 'accessor-user' };
       mockFetchObjectById.mockResolvedValue({
-        properties: { content: 'secret', user_id: userId, trust: 0.5 },
+        properties: { content: 'secret', user_id: userId, trust: 3 },
       });
-      const expected = { status: 'granted', trust_level: 0.75 };
+      const expected = { status: 'granted', trust_level: 4 };
       mockCheckMemoryAccess.mockResolvedValue(expected);
 
       const result = await controller.checkAccess(userId, dto);
@@ -189,7 +189,7 @@ describe('TrustController', () => {
       });
       expect(mockCheckMemoryAccess).toHaveBeenCalledWith(
         'accessor-user',
-        { id: 'mem-1', content: 'secret', user_id: userId, trust: 0.5 },
+        { id: 'mem-1', content: 'secret', user_id: userId, trust: 3 },
         expect.any(Object),
         expect.any(Object),
       );

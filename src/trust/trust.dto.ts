@@ -2,6 +2,7 @@ import {
   IsString,
   IsOptional,
   IsNumber,
+  IsInt,
   IsBoolean,
   IsEnum,
   IsObject,
@@ -20,15 +21,15 @@ export class UpdateGhostConfigDto {
   public_ghost_enabled?: boolean;
 
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   default_friend_trust?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   default_public_trust?: number;
 
   @IsOptional()
@@ -49,9 +50,9 @@ export class SetUserTrustDto {
   @IsString()
   target_user_id!: string;
 
-  @IsNumber()
-  @Min(0)
-  @Max(1)
+  @IsInt()
+  @Min(1)
+  @Max(5)
   trust_level!: number;
 }
 

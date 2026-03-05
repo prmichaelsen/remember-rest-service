@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-03-05
+
+### Changed
+- **BREAKING**: Trust level validation migrated from float 0-1 to integer 1-5
+  - All trust-related DTO fields now use `@IsInt() @Min(1) @Max(5)` instead of `@IsNumber() @Min(0) @Max(1)`
+  - Affected DTOs: `SetUserTrustDto`, `UpdateGhostConfigDto`, `CreateMemoryDto`, `UpdateMemoryDto`, `SearchFiltersDto`, `GhostSearchContextDto`, `PrivacyPreferencesDto`
+  - Aligns with remember-core M19 TrustLevel enum redesign (PUBLIC=1, INTERNAL=2, CONFIDENTIAL=3, RESTRICTED=4, SECRET=5)
+- Updated test mocks to use integer trust values
+
 ## [0.8.0] - 2026-03-05
 
 ### Added

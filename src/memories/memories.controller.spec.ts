@@ -113,7 +113,7 @@ describe('MemoriesController', () => {
         title: 'My Memory',
         type: 'note',
         weight: 0.8,
-        trust: 0.5,
+        trust: 3,
         tags: ['tag1', 'tag2'],
         references: ['https://example.com'],
         template_id: 'tmpl-1',
