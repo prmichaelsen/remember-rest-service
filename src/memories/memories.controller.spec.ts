@@ -10,6 +10,13 @@ const mockMemoryService = {
   update: jest.fn(),
   delete: jest.fn(),
   byTime: jest.fn(),
+  byRating: jest.fn(),
+};
+
+const mockRatingService = {
+  rate: jest.fn(),
+  retract: jest.fn(),
+  getUserRating: jest.fn(),
 };
 
 const mockRelationshipService = {
@@ -34,6 +41,7 @@ const MockImportJobWorker = jest.fn().mockImplementation(() => ({
 jest.mock('@prmichaelsen/remember-core/services', () => ({
   MemoryService: jest.fn().mockImplementation(() => mockMemoryService),
   RelationshipService: jest.fn().mockImplementation(() => mockRelationshipService),
+  RatingService: jest.fn().mockImplementation(() => mockRatingService),
   get ImportJobWorker() { return MockImportJobWorker; },
   DEFAULT_TTL_HOURS: { import: 1, rem_cycle: 24 },
 }));
@@ -369,6 +377,86 @@ describe('MemoriesController', () => {
         memoryIndex: mockMemoryIndex,
         weaviateClient: mockWeaviateClient,
       });
+    });
+  });
+
+  describe('rateMemory', () => {
+    it('should call RatingService.rate with correct args', async () => {
+      const expected = { previousRating: null, newRating: 4, ratingCount: 1, ratingAvg: null };
+      mockRatingService.rate.mockResolvedValue(expected);
+
+      const result = await controller.rateMemory(userId, 'mem-1', { rating: 4 });
+
+      expect(mockRatingService.rate).toHaveBeenCalledWith({
+        memoryId: 'mem-1',
+        userId,
+        rating: 4,
+      });
+      expect(result).toEqual(expected);
+    });
+
+    it('should handle rating update (change)', async () => {
+      const expected = { previousRating: 3, newRating: 5, ratingCount: 1, ratingAvg: null };
+      mockRatingService.rate.mockResolvedValue(expected);
+
+      const result = await controller.rateMemory(userId, 'mem-1', { rating: 5 });
+
+      expect(result.previousRating).toBe(3);
+      expect(result.newRating).toBe(5);
+    });
+  });
+
+  describe('retractRating', () => {
+    it('should call RatingService.retract and return void', async () => {
+      mockRatingService.retract.mockResolvedValue(undefined);
+
+      const result = await controller.retractRating(userId, 'mem-1');
+
+      expect(mockRatingService.retract).toHaveBeenCalledWith('mem-1', userId);
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('getMyRating', () => {
+    it('should return rating when it exists', async () => {
+      const expected = { rating: 4, created_at: '2026-03-05T00:00:00Z', updated_at: '2026-03-05T00:00:00Z' };
+      mockRatingService.getUserRating.mockResolvedValue(expected);
+
+      const result = await controller.getMyRating(userId, 'mem-1');
+
+      expect(mockRatingService.getUserRating).toHaveBeenCalledWith('mem-1', userId);
+      expect(result).toEqual(expected);
+    });
+
+    it('should throw NotFoundException when no rating exists', async () => {
+      mockRatingService.getUserRating.mockResolvedValue(null);
+
+      await expect(controller.getMyRating(userId, 'mem-1')).rejects.toThrow('No rating found');
+    });
+  });
+
+  describe('byRating', () => {
+    it('should call MemoryService.byRating with correct args', async () => {
+      const dto = { direction: 'desc' as const, limit: 20, offset: 0 };
+      const expected = { memories: [{ id: 'mem-1' }], total: 1, offset: 0, limit: 20 };
+      mockMemoryService.byRating.mockResolvedValue(expected);
+
+      const result = await controller.byRating(userId, dto);
+
+      expect(mockMemoryService.byRating).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+
+    it('should pass filters and ghost_context', async () => {
+      const dto = {
+        filters: { types: ['note'] },
+        ghost_context: { accessor_trust_level: 3, owner_user_id: 'owner-1' },
+      } as any;
+      mockMemoryService.byRating.mockResolvedValue({ memories: [], total: 0, offset: 0, limit: 10 });
+
+      await controller.byRating(userId, dto);
+
+      expect(mockMemoryService.byRating).toHaveBeenCalledWith(dto);
     });
   });
 

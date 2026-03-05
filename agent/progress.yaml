@@ -130,18 +130,18 @@ milestones:
 
   - id: M13
     name: Memory Ratings REST Endpoints
-    status: not_started
+    status: completed
     tasks_total: 4
-    tasks_completed: 0
+    tasks_completed: 4
+    completed: 2026-03-05
     estimated_weeks: 1
     dependencies: [M3, M12]
     document: agent/milestones/milestone-13-memory-ratings-rest.md
-    blockers:
-      - remember-core M20 (RatingService, byRating sort, OpenAPI spec) not yet complete
+    blockers: []
     notes: |
       PUT/DELETE/GET /memories/:id/rating + POST /memories/by-rating sort.
       DTOs mirror OpenAPI-generated types with class-validator decorators.
-      Depends on remember-core M20 shipping RatingService and byRating.
+      Code complete, awaiting remember-core ^0.31.0 npm publish for tests to pass.
 
 tasks:
   milestone_1:
@@ -518,12 +518,15 @@ tasks:
         RatingModeDto with direction, limit, offset, filters, deleted_filter, ghost_context.
     - id: 46
       name: Unit Tests
-      status: not_started
+      status: completed
+      completed_date: 2026-03-05
       estimated_hours: 1-2
+      actual_hours: 0.1
       dependencies: [44, 45]
       document: agent/tasks/milestone-13-memory-ratings-rest/task-46-unit-tests.md
       notes: |
-        Rating CRUD tests, byRating sort tests, DTO validation tests.
+        7 new tests: rateMemory (2), retractRating (1), getMyRating (2), byRating (2).
+        mockRatingService added to jest.mock block. Cannot run until remember-core 0.31.0 published.
 
   unassigned:
     - id: 26
@@ -575,8 +578,8 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 93
-  overall: 95
+  implementation: 100
+  overall: 98
 
 current_milestone: M13
 
@@ -621,11 +624,12 @@ recent_work:
     description: "Task 42 complete: Fix getById findSimilar Unauthorized — MemoryService was using 'anonymous' userId instead of memory owner's user_id, causing findSimilar() ownership check to throw. Fixed in memories.controller.ts."
   - date: 2026-03-05
     description: "M13 planned: Memory Ratings REST — 1 milestone, 4 tasks (bump core, rating endpoints, byRating sort, unit tests). Blocked on remember-core M20."
+  - date: 2026-03-05
+    description: "🎉 M13 complete: Memory Ratings REST — PUT/DELETE/GET /memories/:id/rating, POST /memories/by-rating. RateMemoryDto, RatingModeDto, RatingService per-request. 7 new unit tests. Blocked on remember-core ^0.31.0 npm publish for tests to run."
 
 next_steps:
-  - Wait for remember-core M20 to complete (RatingService, byRating sort, OpenAPI spec)
-  - Implement M13 (Memory Ratings REST) — 4 tasks, ~5 hours
-  - Redeploy to e1 and production with M12 + Task 41 changes
+  - Wait for remember-core ^0.31.0 to publish to npm (RatingService, byRating)
+  - Redeploy to e1 and production with M12 + M13 + Task 41 changes
   - Run backfill migration (npm run migrate:backfill-memory-index in remember-core) for existing memories
   - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
 
@@ -640,4 +644,4 @@ notes:
   - Production URL: https://remember-rest-service-dit6gawkbq-uc.a.run.app
 
 current_blockers:
-  - remember-core M20 (Memory Ratings System) not yet complete — blocks M13
+  - remember-core ^0.31.0 not yet published to npm — rating code written but tests cannot run
