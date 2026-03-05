@@ -33,7 +33,7 @@ import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
 import { CollectionType, getCollectionName } from '@prmichaelsen/remember-core/collections';
 import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, MEMORY_INDEX, safeEnsureUserCollection } from '../core/core.providers.js';
-import { User } from '../auth/decorators.js';
+import { Public, User } from '../auth/decorators.js';
 import type { Response } from 'express';
 import {
   CreateMemoryDto,
@@ -78,6 +78,7 @@ export class MemoriesController {
     });
   }
 
+  @Public()
   @Get(':id')
   async getById(
     @User() userId: string,
@@ -87,8 +88,16 @@ export class MemoriesController {
     @Query('group') group?: string,
     @Query('include') include?: string,
   ) {
+    // Unauthenticated requests can only access public space memories
+    if (!userId && !space) {
+      space = 'public';
+    }
+    if (!userId && (author || group)) {
+      throw new NotFoundException('Memory not found');
+    }
+
     const source = { author, space, group };
-    const collectionName = this.resolveCollectionName(userId, source);
+    const collectionName = this.resolveCollectionName(userId ?? 'anonymous', source);
     const collection = this.weaviateClient.collections.get(collectionName);
     const existing = await fetchMemoryWithAllProperties(collection, id);
     if (!existing?.properties) {
@@ -100,7 +109,7 @@ export class MemoriesController {
     };
 
     if (include === 'similar' || include === 'both') {
-      const service = await this.getService(userId, source);
+      const service = await this.getService(userId ?? 'anonymous', source);
       const similar = await service.findSimilar({
         memory_id: id,
         limit: 5,
@@ -118,9 +127,12 @@ export class MemoriesController {
     return service.create(dto as CreateMemoryInput);
   }
 
+  @Public()
   @Post('search')
   async search(@User() userId: string, @Body() dto: SearchMemoryDto) {
-    const service = await this.getService(userId);
+    // Unauthenticated requests search only the public space collection
+    const source = userId ? undefined : { space: 'public' };
+    const service = await this.getService(userId ?? 'anonymous', source);
     return service.search(dto as SearchMemoryInput);
   }
 

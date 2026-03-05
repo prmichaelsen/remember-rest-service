@@ -9,8 +9,9 @@ import {
   type QuerySpaceInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
+import { getCollectionName, CollectionType } from '@prmichaelsen/remember-core/collections';
 import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, safeEnsureUserCollection } from '../core/core.providers.js';
-import { User } from '../auth/decorators.js';
+import { Public, User } from '../auth/decorators.js';
 import {
   PublishDto,
   RetractDto,
@@ -42,6 +43,18 @@ export class SpacesController {
     );
   }
 
+  private getPublicReadOnlyService(): SpaceService {
+    const publicCollectionName = getCollectionName(CollectionType.SPACES);
+    const publicCollection = this.weaviateClient.collections.get(publicCollectionName);
+    return new SpaceService(
+      this.weaviateClient,
+      publicCollection,
+      'anonymous',
+      this.confirmationTokenService,
+      this.logger,
+    );
+  }
+
   @Post('publish')
   async publish(@User() userId: string, @Body() dto: PublishDto) {
     const service = await this.getService(userId);
@@ -66,15 +79,21 @@ export class SpacesController {
     return service.moderate(dto as ModerateInput);
   }
 
+  @Public()
   @Post('search')
   async search(@User() userId: string, @Body() dto: SearchSpaceDto) {
-    const service = await this.getService(userId);
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
     return service.search(dto as SearchSpaceInput);
   }
 
+  @Public()
   @Post('query')
   async query(@User() userId: string, @Body() dto: QuerySpaceDto) {
-    const service = await this.getService(userId);
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
     return service.query(dto as QuerySpaceInput);
   }
 }
