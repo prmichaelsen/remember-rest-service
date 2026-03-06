@@ -109,6 +109,11 @@ export class SearchSpaceDto {
   max_weight?: number;
 
   @IsOptional()
+  @IsNumber()
+  @Min(0)
+  rating_min?: number;
+
+  @IsOptional()
   @IsString()
   date_from?: string;
 
