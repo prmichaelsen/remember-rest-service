@@ -262,4 +262,8 @@ export class DiscoverySpaceDto {
   @ValidateNested()
   @Type(() => DedupeOptionsDto)
   dedupe?: DedupeOptionsDto;
+
+  @IsOptional()
+  @IsString()
+  query?: string;
 }

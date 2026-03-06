@@ -490,6 +490,10 @@ export class DiscoveryModeDto {
   @ValidateNested()
   @Type(() => GhostSearchContextDto)
   ghost_context?: GhostSearchContextDto;
+
+  @IsOptional()
+  @IsString()
+  query?: string;
 }
 
 export class ImportItemDto {
