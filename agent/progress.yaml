@@ -145,9 +145,10 @@ milestones:
 
   - id: M14
     name: File Extraction Integration
-    status: in_progress
+    status: completed
     tasks_total: 4
-    tasks_completed: 3
+    tasks_completed: 4
+    completed: 2026-03-06
     estimated_weeks: 1
     dependencies: [M11]
     document: agent/milestones/milestone-14-file-extraction-integration.md
@@ -640,12 +641,14 @@ tasks:
         to ImportJobWorker. 3 new unit tests. 38 memories controller tests passing.
     - id: 52
       name: E2E Smoke Test
-      status: pending
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 1
       dependencies: [51]
       document: agent/tasks/milestone-14-file-extraction-integration/task-52-e2e-smoke-test.md
       notes: |
-        E2E tests for file import validation errors and backward compatibility.
+        5 e2e tests: text-only 202, file_url 202, validation 400, auth 401,
+        Location header. 167 total tests (165 passing, 2 pre-existing failures).
 
 documentation:
   design_documents: 2
@@ -709,9 +712,10 @@ recent_work:
     description: "Sync: Renumbered file extraction integration from M12/tasks 39-42 to M14/tasks 49-52 (resolved ID conflicts). Added task 48 to progress.yaml. Updated doc counts."
   - date: 2026-03-06
     description: "M14 Tasks 49-51 complete: Installed extraction peer deps (unpdf, mammoth, turndown). EXTRACTOR_REGISTRY provider in CoreModule. ImportItemDto updated with file_url + mime_type. Controller wired with validateImportItems() + ExtractorRegistry passed to ImportJobWorker. 3 new unit tests (162 total, 160 passing)."
+  - date: 2026-03-06
+    description: "M14 complete: Task 52 — 5 import e2e tests (text-only, file_url, validation 400, auth 401, Location header). 167 total tests (165 passing)."
 
 next_steps:
-  - M14 Task 52: E2E smoke tests for file import validation
   - Redeploy to e1 and production with all pending changes
 
 notes:
