@@ -644,6 +644,7 @@ tasks:
       status: completed
       completed_date: 2026-03-06
       estimated_hours: 1
+      actual_hours: 0.17
       dependencies: [51]
       document: agent/tasks/milestone-14-file-extraction-integration/task-52-e2e-smoke-test.md
       notes: |
