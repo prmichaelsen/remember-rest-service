@@ -2,7 +2,7 @@ import type { Provider } from '@nestjs/common';
 import { initWeaviateClient, ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { initFirestore } from '@prmichaelsen/remember-core/database/firestore';
 import { createLogger } from '@prmichaelsen/remember-core/utils';
-import { ConfirmationTokenService, createHaikuClient, createModerationClient, MemoryIndexService, createDefaultRegistry } from '@prmichaelsen/remember-core/services';
+import { ConfirmationTokenService, createHaikuClient, createModerationClient, MemoryIndexService, createDefaultRegistry, createVisionClient, createDocumentAiClient } from '@prmichaelsen/remember-core/services';
 import { ConfigService } from '../config/config.service.js';
 
 export const WEAVIATE_CLIENT = Symbol('WEAVIATE_CLIENT');
@@ -91,9 +91,24 @@ export const moderationClientProvider: Provider = {
 
 export const extractorRegistryProvider: Provider = {
   provide: EXTRACTOR_REGISTRY,
-  useFactory: () => {
-    return createDefaultRegistry();
+  useFactory: (configService: ConfigService) => {
+    const { gcpServiceAccountKey, documentAiProcessorId, documentAiLocation } = configService.extractionConfig;
+
+    const visionClient = gcpServiceAccountKey
+      ? createVisionClient({ serviceAccountKey: gcpServiceAccountKey })
+      : undefined;
+
+    const documentAiClient = gcpServiceAccountKey && documentAiProcessorId
+      ? createDocumentAiClient({
+          serviceAccountKey: gcpServiceAccountKey,
+          processorId: documentAiProcessorId,
+          location: documentAiLocation,
+        })
+      : undefined;
+
+    return createDefaultRegistry({ visionClient, documentAiClient });
   },
+  inject: [ConfigService],
 };
 
 /**

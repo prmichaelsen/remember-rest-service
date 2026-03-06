@@ -48,6 +48,12 @@ export interface AnthropicConfig {
   haikuModel: string;
 }
 
+export interface ExtractionConfig {
+  gcpServiceAccountKey: string;
+  documentAiProcessorId: string;
+  documentAiLocation: string;
+}
+
 export interface AppConfig {
   server: ServerConfig;
   auth: AuthConfig;
@@ -58,4 +64,5 @@ export interface AppConfig {
   embeddings: EmbeddingsConfig;
   aws: AwsConfig;
   anthropic: AnthropicConfig;
+  extraction: ExtractionConfig;
 }

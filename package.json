@@ -23,11 +23,13 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@google-cloud/documentai": "^9.5.0",
+    "@google-cloud/vision": "^5.3.4",
     "@nestjs/common": "^11.1.14",
     "@nestjs/core": "^11.1.14",
     "@nestjs/platform-express": "^11.1.14",
     "@nestjs/throttler": "^6.5.0",
-    "@prmichaelsen/remember-core": "^0.33.3",
+    "@prmichaelsen/remember-core": "^0.34.0",
     "@types/compression": "^1.8.1",
     "@types/turndown": "^5.0.6",
     "class-transformer": "^0.5.1",

@@ -52,6 +52,11 @@ export class ConfigService {
         apiKey: this.get('ANTHROPIC_API_KEY', ''),
         haikuModel: this.get('ANTHROPIC_HAIKU_MODEL', 'claude-sonnet-4-6-20241210'),
       },
+      extraction: {
+        gcpServiceAccountKey: this.get('GCP_DOC_AI_SERVICE_ACCOUNT_KEY', ''),
+        documentAiProcessorId: this.get('DOCUMENT_AI_PROCESSOR_ID', ''),
+        documentAiLocation: this.get('DOCUMENT_AI_LOCATION', 'us'),
+      },
     };
   }
 
@@ -115,5 +120,9 @@ export class ConfigService {
 
   get anthropicConfig() {
     return this.config.anthropic;
+  }
+
+  get extractionConfig() {
+    return this.config.extraction;
   }
 }
