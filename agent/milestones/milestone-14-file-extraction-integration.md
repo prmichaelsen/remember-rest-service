@@ -1,4 +1,4 @@
-# Milestone 12: File Extraction Integration
+# Milestone 14: File Extraction Integration
 
 **Status**: Not Started
 **Estimated Duration**: 1 week

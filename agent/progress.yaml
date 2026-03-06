@@ -143,6 +143,19 @@ milestones:
       DTOs mirror OpenAPI-generated types with class-validator decorators.
       Code complete, awaiting remember-core ^0.31.0 npm publish for tests to pass.
 
+  - id: M14
+    name: File Extraction Integration
+    status: not_started
+    tasks_total: 4
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M11]
+    document: agent/milestones/milestone-14-file-extraction-integration.md
+    notes: |
+      Wire remember-core file extraction pipeline into import endpoint.
+      ExtractorRegistry provider, updated ImportItemDto (file_url + mime_type),
+      pre-import validation, worker wiring.
+
 tasks:
   milestone_1:
     - id: 1
@@ -579,19 +592,65 @@ tasks:
         MODERATION_CLIENT provider in CoreModule using createModerationClient.
         SpacesController injects and passes to both SpaceService construction paths.
         7 unit tests passing. No regressions (157 pass, 2 pre-existing failures).
+    - id: 48
+      name: Wire MemoryIndexService into SpaceService Constructors
+      status: completed
+      completed_date: 2026-03-06
+      estimated_hours: 0.5-1
+      document: agent/tasks/unassigned/task-48-wire-memory-index-into-space-service.md
+      notes: |
+        remember-core v0.33.0 breaking change — SpaceService constructor now requires
+        memoryIndexService as 6th positional param. Updated spaces, confirmations,
+        and profiles controllers.
+
+  milestone_14:
+    - id: 49
+      name: Extraction Dependencies & Provider
+      status: pending
+      estimated_hours: 1-2
+      dependencies: []
+      document: agent/tasks/milestone-14-file-extraction-integration/task-49-extraction-deps-and-provider.md
+      notes: |
+        Install unpdf, mammoth, turndown peer deps. Create EXTRACTOR_REGISTRY provider
+        in CoreModule via createDefaultRegistry().
+    - id: 50
+      name: Update Import DTO
+      status: pending
+      estimated_hours: 1
+      dependencies: []
+      document: agent/tasks/milestone-14-file-extraction-integration/task-50-update-import-dto.md
+      notes: |
+        Add file_url and mime_type fields to ImportItemDto. Make content optional.
+    - id: 51
+      name: Controller Validation & Worker Wiring
+      status: pending
+      estimated_hours: 2-3
+      dependencies: [49, 50]
+      document: agent/tasks/milestone-14-file-extraction-integration/task-51-controller-validation-and-wiring.md
+      notes: |
+        Inject ExtractorRegistry into MemoriesController. Add pre-import
+        validateImportItems() call. Pass registry to ImportJobWorker constructor.
+    - id: 52
+      name: E2E Smoke Test
+      status: pending
+      estimated_hours: 1
+      dependencies: [51]
+      document: agent/tasks/milestone-14-file-extraction-integration/task-52-e2e-smoke-test.md
+      notes: |
+        E2E tests for file import validation errors and backward compatibility.
 
 documentation:
   design_documents: 2
-  milestone_documents: 11
+  milestone_documents: 14
   pattern_documents: 0
-  task_documents: 44
+  task_documents: 49
 
 progress:
   planning: 100
   implementation: 100
   overall: 98
 
-current_milestone: M13
+current_milestone: M14
 
 recent_work:
   - date: 2026-02-28
@@ -636,12 +695,17 @@ recent_work:
     description: "M13 planned: Memory Ratings REST — 1 milestone, 4 tasks (bump core, rating endpoints, byRating sort, unit tests). Blocked on remember-core M20."
   - date: 2026-03-05
     description: "🎉 M13 complete: Memory Ratings REST — PUT/DELETE/GET /memories/:id/rating, POST /memories/by-rating. RateMemoryDto, RatingModeDto, RatingService per-request. 7 new unit tests. Blocked on remember-core ^0.31.0 npm publish for tests to run."
+  - date: 2026-03-06
+    description: "Task 47+48 complete: Wire ModerationClient and MemoryIndexService into SpaceService constructors."
+  - date: 2026-03-06
+    description: "Sync: Renumbered file extraction integration from M12/tasks 39-42 to M14/tasks 49-52 (resolved ID conflicts). Added task 48 to progress.yaml. Updated doc counts."
 
 next_steps:
-  - Wait for remember-core ^0.31.0 to publish to npm (RatingService, byRating)
-  - Redeploy to e1 and production with M12 + M13 + Task 41 changes
-  - Run backfill migration (npm run migrate:backfill-memory-index in remember-core) for existing memories
-  - Fix remaining live 500s (spaces needs ensureSpacesCollection, preferences has Firestore path bug — both are remember-core issues)
+  - M14 Task 49: Install extraction deps and create EXTRACTOR_REGISTRY provider
+  - M14 Task 50: Update ImportItemDto with file_url + mime_type fields
+  - M14 Task 51: Wire ExtractorRegistry into controller + ImportJobWorker
+  - M14 Task 52: E2E smoke tests for file import validation
+  - Redeploy to e1 and production with all pending changes
 
 notes:
   - Spec-first approach — OpenAPI spec in remember-core is source of truth

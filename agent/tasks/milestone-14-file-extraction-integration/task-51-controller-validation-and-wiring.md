@@ -1,8 +1,8 @@
-# Task 41: Controller Validation & Worker Wiring
+# Task 51: Controller Validation & Worker Wiring
 
-**Milestone**: [M12 - File Extraction Integration](../../milestones/milestone-12-file-extraction-integration.md)
+**Milestone**: [M14 - File Extraction Integration](../../milestones/milestone-14-file-extraction-integration.md)
 **Estimated Time**: 2-3 hours
-**Dependencies**: task-39, task-40
+**Dependencies**: task-49, task-50
 **Status**: Not Started
 
 ---

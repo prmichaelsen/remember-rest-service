@@ -1,6 +1,6 @@
-# Task 39: Extraction Dependencies & Provider
+# Task 49: Extraction Dependencies & Provider
 
-**Milestone**: [M12 - File Extraction Integration](../../milestones/milestone-12-file-extraction-integration.md)
+**Milestone**: [M14 - File Extraction Integration](../../milestones/milestone-14-file-extraction-integration.md)
 **Estimated Time**: 1-2 hours
 **Dependencies**: None
 **Status**: Not Started
