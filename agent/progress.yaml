@@ -668,6 +668,7 @@ tasks:
       status: completed
       completed_date: 2026-03-06
       estimated_hours: 1-2
+      actual_hours: 0.5
       dependencies: [47]
       document: agent/tasks/milestone-15-bugfixes/task-53-investigate-content-moderation-service-unavailable.md
       notes: |
