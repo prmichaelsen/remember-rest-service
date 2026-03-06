@@ -31,7 +31,14 @@
       "Bash(npm pack:*)",
       "Bash(do echo:*)",
       "Bash(mv:*)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm i:*)",
+      "Bash(./agent/scripts/acp.version-check.sh:*)",
+      "Bash(./agent/scripts/acp.version-update.sh:*)"
     ]
   }
 }
