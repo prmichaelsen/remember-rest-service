@@ -188,7 +188,7 @@ milestones:
     name: Comments Endpoint
     status: not_started
     tasks_total: 4
-    tasks_completed: 2
+    tasks_completed: 3
     estimated_weeks: 1
     dependencies: [M7]
     document: agent/milestones/milestone-17-comments-endpoint.md
@@ -780,13 +780,16 @@ tasks:
         Fields: content, parent_id, thread_root_id?, spaces?, groups?, tags?.
     - id: 60
       name: App Spaces Controller
-      status: not_started
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 0.5
+      actual_hours: 0.05
       dependencies: [58, 59]
       document: agent/tasks/milestone-17-comments-endpoint/task-60-app-spaces-controller.md
       notes: |
         AppSpacesController at api/app/v1/spaces with POST comments endpoint.
-        Follows ProfilesController pattern: create memory + publish + confirm.
+        create memory (type: comment) + publish + confirm. Returns 201.
+        Registered in AppTierModule.
     - id: 61
       name: Unit Tests
       status: not_started
