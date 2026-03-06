@@ -184,6 +184,20 @@ milestones:
       POST /memories/by-discovery and POST /spaces/by-discovery.
       Interleaves rated (Bayesian DESC) with unrated (recent) at 4:1 ratio.
 
+  - id: M17
+    name: Comments Endpoint
+    status: not_started
+    tasks_total: 4
+    tasks_completed: 1
+    estimated_weeks: 1
+    dependencies: [M7]
+    document: agent/milestones/milestone-17-comments-endpoint.md
+    blockers:
+      - remember-core >= 0.35.0 not yet published to npm
+    notes: |
+      Wire createAndPublishComment compound operation as app-tier REST endpoint.
+      POST /api/app/v1/spaces/comments — create + publish in one call.
+
 tasks:
   milestone_1:
     - id: 1
@@ -741,18 +755,56 @@ tasks:
         byDiscovery added to mockMemoryService and mockSpaceService.
         172 total tests (170 passing, 2 pre-existing failures).
 
+  milestone_17:
+    - id: 58
+      name: Bump remember-core to >= 0.35.0
+      status: completed
+      completed_date: 2026-03-06
+      estimated_hours: 0.25
+      actual_hours: 0.03
+      dependencies: []
+      document: agent/tasks/milestone-17-comments-endpoint/task-58-bump-remember-core.md
+      notes: |
+        Updated to ^0.35.1. Web SDK createAndPublishComment not in package exports,
+        but REST controller replicates same logic via MemoryService + SpaceService.
+    - id: 59
+      name: Create Comment DTO
+      status: not_started
+      estimated_hours: 0.25
+      dependencies: [58]
+      document: agent/tasks/milestone-17-comments-endpoint/task-59-create-comment-dto.md
+      notes: |
+        CreateCommentDto with class-validator decorators matching OpenAPI CreateCommentInput.
+    - id: 60
+      name: App Spaces Controller
+      status: not_started
+      estimated_hours: 0.5
+      dependencies: [58, 59]
+      document: agent/tasks/milestone-17-comments-endpoint/task-60-app-spaces-controller.md
+      notes: |
+        AppSpacesController at api/app/v1/spaces with POST comments endpoint.
+        Follows ProfilesController pattern: create memory + publish + confirm.
+    - id: 61
+      name: Unit Tests
+      status: not_started
+      estimated_hours: 0.5
+      dependencies: [60]
+      document: agent/tasks/milestone-17-comments-endpoint/task-61-unit-tests.md
+      notes: |
+        Unit tests for AppSpacesController. Mock providers, verify create+publish flow.
+
 documentation:
   design_documents: 2
-  milestone_documents: 16
+  milestone_documents: 17
   pattern_documents: 0
-  task_documents: 54
+  task_documents: 58
 
 progress:
   planning: 100
   implementation: 98
   overall: 97
 
-current_milestone: M16
+current_milestone: M17
 
 recent_work:
   - date: 2026-02-28
