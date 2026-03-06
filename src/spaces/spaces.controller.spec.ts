@@ -9,6 +9,7 @@ const mockSpaceService = {
   moderate: jest.fn(),
   search: jest.fn(),
   query: jest.fn(),
+  byDiscovery: jest.fn(),
 };
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
@@ -142,6 +143,19 @@ describe('SpacesController', () => {
       const result = await controller.query(userId, dto);
 
       expect(mockSpaceService.query).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byDiscovery', () => {
+    it('should call SpaceService.byDiscovery with dto', async () => {
+      const dto = { spaces: ['space1'], limit: 10 };
+      const expected = { memories: [], spaces_searched: ['space1'], groups_searched: [], total: 0 };
+      mockSpaceService.byDiscovery.mockResolvedValue(expected);
+
+      const result = await controller.byDiscovery(userId, dto);
+
+      expect(mockSpaceService.byDiscovery).toHaveBeenCalledWith(dto);
       expect(result).toEqual(expected);
     });
   });
