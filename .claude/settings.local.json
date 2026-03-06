@@ -29,7 +29,9 @@
       "Bash(grep:*)",
       "Bash(cat:*)",
       "Bash(npm pack:*)",
-      "Bash(do echo:*)"
+      "Bash(do echo:*)",
+      "Bash(mv:*)",
+      "Bash(npm view:*)"
     ]
   }
 }
