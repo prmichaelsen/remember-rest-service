@@ -26,6 +26,23 @@ export class AuthGuard implements CanActivate {
     ]);
 
     if (isPublic) {
+      // Still try to extract userId if auth header is present (optional auth)
+      const request = context.switchToHttp().getRequest();
+      const authHeader = request.headers?.authorization;
+      if (authHeader) {
+        try {
+          const [scheme, token] = authHeader.split(' ');
+          if (scheme === 'Bearer' && token) {
+            const { serviceToken, issuer, audience } = this.configService.authConfig;
+            const payload = jwt.verify(token, serviceToken, { issuer, audience }) as JwtPayload;
+            if (payload.sub) {
+              request.userId = payload.sub;
+            }
+          }
+        } catch {
+          // Ignore auth errors on public endpoints — userId stays undefined
+        }
+      }
       return true;
     }
 

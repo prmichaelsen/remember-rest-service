@@ -84,6 +84,27 @@ describe('AuthGuard', () => {
     expect(result).toBe(true);
   });
 
+  it('should extract userId on @Public() endpoints when valid auth header is present', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+    const token = createValidToken();
+    const { context, request } = createMockContext(`Bearer ${token}`);
+
+    const result = guard.canActivate(context as any);
+
+    expect(result).toBe(true);
+    expect(request.userId).toBe('user-123');
+  });
+
+  it('should not throw on @Public() endpoints with invalid auth header', () => {
+    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+    const { context, request } = createMockContext('Bearer invalid-token');
+
+    const result = guard.canActivate(context as any);
+
+    expect(result).toBe(true);
+    expect(request.userId).toBeUndefined();
+  });
+
   it('should reject missing Authorization header', () => {
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(false);
     const { context } = createMockContext();
