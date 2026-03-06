@@ -186,9 +186,10 @@ milestones:
 
   - id: M17
     name: Comments Endpoint
-    status: not_started
+    status: completed
     tasks_total: 4
-    tasks_completed: 3
+    tasks_completed: 4
+    completed: 2026-03-06
     estimated_weeks: 1
     dependencies: [M7]
     document: agent/milestones/milestone-17-comments-endpoint.md
@@ -792,12 +793,16 @@ tasks:
         Registered in AppTierModule.
     - id: 61
       name: Unit Tests
-      status: not_started
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 0.5
+      actual_hours: 0.05
       dependencies: [60]
       document: agent/tasks/milestone-17-comments-endpoint/task-61-unit-tests.md
       notes: |
-        Unit tests for AppSpacesController. Mock providers, verify create+publish flow.
+        6 tests: defined (1), create+publish (1), thread_root_id (1),
+        no spaces/groups 400 (1), groups support (1), error propagation (1).
+        178 total tests (176 passing, 2 pre-existing failures).
 
 documentation:
   design_documents: 2
@@ -865,6 +870,8 @@ recent_work:
     description: "M14 complete: Task 52 — 5 import e2e tests (text-only, file_url, validation 400, auth 401, Location header). 167 total tests (165 passing)."
   - date: 2026-03-06
     description: "M16 complete: byDiscovery REST Endpoints — POST /memories/by-discovery and POST /spaces/by-discovery. DiscoveryModeDto, DiscoverySpaceDto, DedupeOptionsDto. 3 new unit tests. 172 total tests (170 passing, 2 pre-existing failures). Bumped remember-core to ^0.34.17."
+  - date: 2026-03-06
+    description: "M17 complete: Comments Endpoint — POST /api/app/v1/spaces/comments. AppSpacesController with create+publish+confirm flow. CreateCommentDto. 6 new unit tests. 178 total tests (176 passing, 2 pre-existing failures). Bumped remember-core to ^0.35.1."
 
 next_steps:
   - Redeploy to e1 and production with all pending changes (M14, M16, bugfixes)
