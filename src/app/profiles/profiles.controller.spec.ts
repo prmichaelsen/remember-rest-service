@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { ConflictException } from '@nestjs/common';
 import { ProfilesController } from './profiles.controller.js';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MEMORY_INDEX } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, MEMORY_INDEX } from '../../core/core.providers.js';
 
 const mockMemoryService = {
   create: jest.fn(),
@@ -60,6 +60,7 @@ describe('ProfilesController', () => {
         { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
         { provide: LOGGER, useValue: mockLogger },
         { provide: CONFIRMATION_TOKEN_SERVICE, useValue: mockConfirmationTokenService },
+        { provide: MODERATION_CLIENT, useValue: null },
         { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
       ],
     }).compile();
@@ -297,6 +298,7 @@ describe('ProfilesController', () => {
         mockConfirmationTokenService,
         mockLogger,
         mockMemoryIndex,
+        { moderationClient: undefined },
       );
     });
   });

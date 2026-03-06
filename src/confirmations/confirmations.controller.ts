@@ -1,7 +1,7 @@
 import { Controller, Post, Param, Inject } from '@nestjs/common';
-import { SpaceService, type MemoryIndexService } from '@prmichaelsen/remember-core/services';
+import { SpaceService, type ModerationClient, type MemoryIndexService } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MEMORY_INDEX, safeEnsureUserCollection } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, MEMORY_INDEX, safeEnsureUserCollection } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 
 @Controller('api/svc/v1/confirmations')
@@ -10,6 +10,7 @@ export class ConfirmationsController {
     @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
     @Inject(LOGGER) private readonly logger: Logger,
     @Inject(CONFIRMATION_TOKEN_SERVICE) private readonly confirmationTokenService: any,
+    @Inject(MODERATION_CLIENT) private readonly moderationClient: ModerationClient | null,
     @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
   ) {}
 
@@ -25,6 +26,7 @@ export class ConfirmationsController {
       this.confirmationTokenService,
       this.logger,
       this.memoryIndex,
+      { moderationClient: this.moderationClient ?? undefined },
     );
   }
 

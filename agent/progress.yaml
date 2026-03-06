@@ -157,6 +157,17 @@ milestones:
       ExtractorRegistry provider, updated ImportItemDto (file_url + mime_type),
       pre-import validation, worker wiring.
 
+  - id: M15
+    name: Bugfixes
+    status: in_progress
+    tasks_total: 1
+    tasks_completed: 1
+    estimated_weeks: 1
+    dependencies: []
+    document: agent/milestones/milestone-15-bugfixes.md
+    notes: |
+      Rolling milestone for production bugfixes and hotfixes.
+
 tasks:
   milestone_1:
     - id: 1
@@ -651,18 +662,32 @@ tasks:
         5 e2e tests: text-only 202, file_url 202, validation 400, auth 401,
         Location header. 167 total tests (165 passing, 2 pre-existing failures).
 
+  milestone_15:
+    - id: 53
+      name: Investigate Content Moderation Service Unavailable
+      status: completed
+      completed_date: 2026-03-06
+      estimated_hours: 1-2
+      dependencies: [47]
+      document: agent/tasks/milestone-15-bugfixes/task-53-investigate-content-moderation-service-unavailable.md
+      notes: |
+        Root cause: leaked API key as env var name in Cloud Run (rev 12+).
+        Moderation client is fail-closed — invalid key → API 401 → "unavailable".
+        Fix: rotated key, removed corrupted env var, wired MODERATION_CLIENT
+        into ConfirmationsController and ProfilesController for consistency.
+
 documentation:
   design_documents: 2
-  milestone_documents: 14
+  milestone_documents: 15
   pattern_documents: 0
-  task_documents: 49
+  task_documents: 50
 
 progress:
   planning: 100
-  implementation: 100
-  overall: 98
+  implementation: 98
+  overall: 97
 
-current_milestone: M14
+current_milestone: M15
 
 recent_work:
   - date: 2026-02-28
