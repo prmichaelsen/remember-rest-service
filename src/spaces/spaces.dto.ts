@@ -7,7 +7,9 @@ import {
   IsEnum,
   Min,
   Max,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class PublishDto {
   @IsString()
@@ -185,4 +187,79 @@ export class QuerySpaceDto {
   @Min(1)
   @Max(100)
   limit?: number;
+}
+
+export class DedupeOptionsDto {
+  @IsOptional()
+  @IsBoolean()
+  enabled?: boolean;
+
+  @IsOptional()
+  @IsString()
+  viewingGroupId?: string;
+}
+
+export class DiscoverySpaceDto {
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  spaces?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  groups?: string[];
+
+  @IsOptional()
+  @IsString()
+  content_type?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  min_weight?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  max_weight?: number;
+
+  @IsOptional()
+  @IsString()
+  date_from?: string;
+
+  @IsOptional()
+  @IsString()
+  date_to?: string;
+
+  @IsOptional()
+  @IsEnum(['approved', 'pending', 'rejected', 'removed', 'all'])
+  moderation_filter?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  include_comments?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(500)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DedupeOptionsDto)
+  dedupe?: DedupeOptionsDto;
 }

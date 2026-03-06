@@ -9,6 +9,7 @@ import {
   type ModerateInput,
   type SearchSpaceInput,
   type QuerySpaceInput,
+  type DiscoverySpaceInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { getCollectionName, CollectionType } from '@prmichaelsen/remember-core/collections';
@@ -21,6 +22,7 @@ import {
   ModerateDto,
   SearchSpaceDto,
   QuerySpaceDto,
+  DiscoverySpaceDto,
 } from './spaces.dto.js';
 
 @Controller('api/svc/v1/spaces')
@@ -103,5 +105,14 @@ export class SpacesController {
       ? await this.getService(userId)
       : this.getPublicReadOnlyService();
     return service.query(dto as QuerySpaceInput);
+  }
+
+  @Public()
+  @Post('by-discovery')
+  async byDiscovery(@User() userId: string, @Body() dto: DiscoverySpaceDto) {
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
+    return service.byDiscovery(dto as DiscoverySpaceInput);
   }
 }
