@@ -465,6 +465,33 @@ export class RatingModeDto {
   ghost_context?: GhostSearchContextDto;
 }
 
+export class DiscoveryModeDto {
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(500)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
 export class ImportItemDto {
   @IsOptional()
   @IsString()

@@ -32,6 +32,7 @@ import {
   type HaikuClient,
   validateImportItems,
   type ExtractorRegistry,
+  type DiscoveryModeRequest,
 } from '@prmichaelsen/remember-core/services';
 import type { RatingModeRequest } from '@prmichaelsen/remember-core/types';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
@@ -55,6 +56,7 @@ import {
   ImportMemoriesDto,
   RateMemoryDto,
   RatingModeDto,
+  DiscoveryModeDto,
 } from './memories.dto.js';
 
 @Controller('api/svc/v1/memories')
@@ -258,6 +260,12 @@ export class MemoriesController {
   async byRating(@User() userId: string, @Body() dto: RatingModeDto) {
     const service = await this.getService(userId);
     return service.byRating(dto as RatingModeRequest);
+  }
+
+  @Post('by-discovery')
+  async byDiscovery(@User() userId: string, @Body() dto: DiscoveryModeDto) {
+    const service = await this.getService(userId);
+    return service.byDiscovery(dto as DiscoveryModeRequest);
   }
 
   private async getRelationshipService(userId: string): Promise<RelationshipService> {

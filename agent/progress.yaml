@@ -172,7 +172,7 @@ milestones:
     name: byDiscovery REST Endpoints
     status: not_started
     tasks_total: 4
-    tasks_completed: 1
+    tasks_completed: 2
     estimated_weeks: 1
     dependencies: [M13]
     document: agent/milestones/milestone-16-by-discovery-rest.md
@@ -706,8 +706,10 @@ tasks:
         byDiscovery() methods on both MemoryService and SpaceService prototypes confirmed.
     - id: 55
       name: Memories byDiscovery Endpoint
-      status: not_started
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 0.5
+      actual_hours: 0.05
       dependencies: [54]
       document: agent/tasks/milestone-16-by-discovery-rest/task-55-memories-by-discovery-endpoint.md
       notes: |
