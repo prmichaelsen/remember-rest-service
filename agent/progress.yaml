@@ -569,12 +569,21 @@ tasks:
         constructed with 'anonymous' instead of the memory's actual user_id.
         findSimilar() ownership check then threw Unauthorized.
         Fix: use memory's user_id from already-fetched document.
+    - id: 47
+      name: Wire ModerationClient into SpaceService
+      status: not_started
+      estimated_hours: 0.5-1
+      document: agent/tasks/unassigned/task-47-wire-moderation-client.md
+      notes: |
+        Create MODERATION_CLIENT provider, inject into SpacesController,
+        pass to SpaceService constructor for publish/revise moderation.
+        Depends on remember-core ^0.32.0 (already installed).
 
 documentation:
   design_documents: 2
   milestone_documents: 11
   pattern_documents: 0
-  task_documents: 43
+  task_documents: 44
 
 progress:
   planning: 100
