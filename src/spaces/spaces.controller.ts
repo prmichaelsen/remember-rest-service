@@ -2,6 +2,7 @@ import { Controller, Post, Body, Inject } from '@nestjs/common';
 import {
   SpaceService,
   type ModerationClient,
+  type MemoryIndexService,
   type PublishInput,
   type RetractInput,
   type ReviseInput,
@@ -11,7 +12,7 @@ import {
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { getCollectionName, CollectionType } from '@prmichaelsen/remember-core/collections';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, safeEnsureUserCollection } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, MEMORY_INDEX, safeEnsureUserCollection } from '../core/core.providers.js';
 import { Public, User } from '../auth/decorators.js';
 import {
   PublishDto,
@@ -29,6 +30,7 @@ export class SpacesController {
     @Inject(LOGGER) private readonly logger: Logger,
     @Inject(CONFIRMATION_TOKEN_SERVICE) private readonly confirmationTokenService: any,
     @Inject(MODERATION_CLIENT) private readonly moderationClient: ModerationClient | null,
+    @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
   ) {}
 
   private async getService(userId: string): Promise<SpaceService> {
@@ -42,6 +44,7 @@ export class SpacesController {
       userId,
       this.confirmationTokenService,
       this.logger,
+      this.memoryIndex,
       { moderationClient: this.moderationClient ?? undefined },
     );
   }
@@ -55,6 +58,7 @@ export class SpacesController {
       'anonymous',
       this.confirmationTokenService,
       this.logger,
+      this.memoryIndex,
       { moderationClient: this.moderationClient ?? undefined },
     );
   }

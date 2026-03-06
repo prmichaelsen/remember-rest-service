@@ -1,7 +1,7 @@
 import { Controller, Post, Param, Inject } from '@nestjs/common';
-import { SpaceService } from '@prmichaelsen/remember-core/services';
+import { SpaceService, type MemoryIndexService } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, safeEnsureUserCollection } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MEMORY_INDEX, safeEnsureUserCollection } from '../core/core.providers.js';
 import { User } from '../auth/decorators.js';
 
 @Controller('api/svc/v1/confirmations')
@@ -10,6 +10,7 @@ export class ConfirmationsController {
     @Inject(WEAVIATE_CLIENT) private readonly weaviateClient: any,
     @Inject(LOGGER) private readonly logger: Logger,
     @Inject(CONFIRMATION_TOKEN_SERVICE) private readonly confirmationTokenService: any,
+    @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
   ) {}
 
   private async getService(userId: string): Promise<SpaceService> {
@@ -23,6 +24,7 @@ export class ConfirmationsController {
       userId,
       this.confirmationTokenService,
       this.logger,
+      this.memoryIndex,
     );
   }
 

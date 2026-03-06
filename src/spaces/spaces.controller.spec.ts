@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { SpacesController } from './spaces.controller.js';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, MEMORY_INDEX } from '../core/core.providers.js';
 
 const mockSpaceService = {
   publish: jest.fn(),
@@ -53,6 +53,7 @@ describe('SpacesController', () => {
         { provide: LOGGER, useValue: mockLogger },
         { provide: CONFIRMATION_TOKEN_SERVICE, useValue: mockConfirmationTokenService },
         { provide: MODERATION_CLIENT, useValue: mockModerationClient },
+        { provide: MEMORY_INDEX, useValue: { index: jest.fn(), lookup: jest.fn() } },
       ],
     }).compile();
 
@@ -160,6 +161,7 @@ describe('SpacesController', () => {
         'user-a',
         mockConfirmationTokenService,
         mockLogger,
+        expect.objectContaining({ index: expect.any(Function) }),
         { moderationClient: mockModerationClient },
       );
     });

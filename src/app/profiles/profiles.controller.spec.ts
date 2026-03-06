@@ -296,6 +296,7 @@ describe('ProfilesController', () => {
         'user-x',
         mockConfirmationTokenService,
         mockLogger,
+        mockMemoryIndex,
       );
     });
   });

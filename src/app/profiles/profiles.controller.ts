@@ -55,6 +55,7 @@ export class ProfilesController {
       userId,
       this.confirmationTokenService,
       this.logger,
+      this.memoryIndex,
     );
   }
 
