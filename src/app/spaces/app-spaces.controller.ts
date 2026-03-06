@@ -61,12 +61,21 @@ export class AppSpacesController {
     @User() userId: string,
     @Body() dto: CreateCommentDto,
   ) {
-    if (!dto.spaces?.length && !dto.groups?.length) {
-      throw new BadRequestException('At least one space or group is required');
+    const spaceService = await this.getSpaceService(userId);
+
+    // Infer spaces/groups from parent memory when not provided
+    let spaces = dto.spaces;
+    let groups = dto.groups;
+    if (!spaces?.length && !groups?.length) {
+      const locations = await spaceService.getPublishedLocations(dto.parent_id);
+      spaces = locations.space_ids;
+      groups = locations.group_ids;
+      if (!spaces.length && !groups.length) {
+        throw new BadRequestException('Parent memory is not published to any space or group');
+      }
     }
 
     const memoryService = await this.getMemoryService(userId);
-    const spaceService = await this.getSpaceService(userId);
 
     // 1. Create the comment memory
     const memory = await memoryService.create({
@@ -80,8 +89,8 @@ export class AppSpacesController {
     // 2. Publish to spaces/groups (auto-confirmed)
     const { token } = await spaceService.publish({
       memory_id: memory.memory_id,
-      spaces: dto.spaces,
-      groups: dto.groups,
+      spaces,
+      groups,
     });
     const confirmed = await spaceService.confirm({ token });
 
@@ -90,8 +99,8 @@ export class AppSpacesController {
       created_at: memory.created_at,
       composite_id: confirmed.composite_id,
       published_to: [
-        ...(dto.spaces ?? []),
-        ...(dto.groups ?? []),
+        ...(spaces ?? []),
+        ...(groups ?? []),
       ],
     };
   }
