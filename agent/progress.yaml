@@ -160,7 +160,7 @@ milestones:
   - id: M15
     name: Bugfixes
     status: in_progress
-    tasks_total: 1
+    tasks_total: 2
     tasks_completed: 1
     estimated_weeks: 1
     dependencies: []

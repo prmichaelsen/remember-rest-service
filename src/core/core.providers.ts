@@ -91,15 +91,15 @@ export const moderationClientProvider: Provider = {
 
 export const extractorRegistryProvider: Provider = {
   provide: EXTRACTOR_REGISTRY,
-  useFactory: (configService: ConfigService) => {
+  useFactory: async (configService: ConfigService) => {
     const { gcpServiceAccountKey, documentAiProcessorId, documentAiLocation } = configService.extractionConfig;
 
     const visionClient = gcpServiceAccountKey
-      ? createVisionClient({ serviceAccountKey: gcpServiceAccountKey })
+      ? await createVisionClient({ serviceAccountKey: gcpServiceAccountKey })
       : undefined;
 
     const documentAiClient = gcpServiceAccountKey && documentAiProcessorId
-      ? createDocumentAiClient({
+      ? await createDocumentAiClient({
           serviceAccountKey: gcpServiceAccountKey,
           processorId: documentAiProcessorId,
           location: documentAiLocation,
