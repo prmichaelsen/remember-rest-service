@@ -571,13 +571,14 @@ tasks:
         Fix: use memory's user_id from already-fetched document.
     - id: 47
       name: Wire ModerationClient into SpaceService
-      status: not_started
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 0.5-1
       document: agent/tasks/unassigned/task-47-wire-moderation-client.md
       notes: |
-        Create MODERATION_CLIENT provider, inject into SpacesController,
-        pass to SpaceService constructor for publish/revise moderation.
-        Depends on remember-core ^0.32.0 (already installed).
+        MODERATION_CLIENT provider in CoreModule using createModerationClient.
+        SpacesController injects and passes to both SpaceService construction paths.
+        7 unit tests passing. No regressions (157 pass, 2 pre-existing failures).
 
 documentation:
   design_documents: 2

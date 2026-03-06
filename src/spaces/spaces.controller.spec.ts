@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { SpacesController } from './spaces.controller.js';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT } from '../core/core.providers.js';
 
 const mockSpaceService = {
   publish: jest.fn(),
@@ -35,6 +35,10 @@ const mockLogger = {
 
 const mockConfirmationTokenService = {};
 
+const mockModerationClient = {
+  moderate: jest.fn().mockResolvedValue({ pass: true, reason: '' }),
+};
+
 describe('SpacesController', () => {
   let controller: SpacesController;
   const userId = 'test-user-123';
@@ -48,6 +52,7 @@ describe('SpacesController', () => {
         { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
         { provide: LOGGER, useValue: mockLogger },
         { provide: CONFIRMATION_TOKEN_SERVICE, useValue: mockConfirmationTokenService },
+        { provide: MODERATION_CLIENT, useValue: mockModerationClient },
       ],
     }).compile();
 
@@ -155,6 +160,7 @@ describe('SpacesController', () => {
         'user-a',
         mockConfirmationTokenService,
         mockLogger,
+        { moderationClient: mockModerationClient },
       );
     });
   });

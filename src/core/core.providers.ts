@@ -2,7 +2,7 @@ import type { Provider } from '@nestjs/common';
 import { initWeaviateClient, ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { initFirestore } from '@prmichaelsen/remember-core/database/firestore';
 import { createLogger } from '@prmichaelsen/remember-core/utils';
-import { ConfirmationTokenService, createHaikuClient, MemoryIndexService } from '@prmichaelsen/remember-core/services';
+import { ConfirmationTokenService, createHaikuClient, createModerationClient, MemoryIndexService } from '@prmichaelsen/remember-core/services';
 import { ConfigService } from '../config/config.service.js';
 
 export const WEAVIATE_CLIENT = Symbol('WEAVIATE_CLIENT');
@@ -11,6 +11,7 @@ export const CONFIRMATION_TOKEN_SERVICE = Symbol('CONFIRMATION_TOKEN_SERVICE');
 export const HAIKU_CLIENT = Symbol('HAIKU_CLIENT');
 export const JOB_SERVICE = Symbol('JOB_SERVICE');
 export const MEMORY_INDEX = Symbol('MEMORY_INDEX');
+export const MODERATION_CLIENT = Symbol('MODERATION_CLIENT');
 
 export const weaviateClientProvider: Provider = {
   provide: WEAVIATE_CLIENT,
@@ -75,6 +76,16 @@ export const memoryIndexProvider: Provider = {
     return new MemoryIndexService(logger);
   },
   inject: [LOGGER],
+};
+
+export const moderationClientProvider: Provider = {
+  provide: MODERATION_CLIENT,
+  useFactory: (configService: ConfigService) => {
+    const { apiKey } = configService.anthropicConfig;
+    if (!apiKey) return null;
+    return createModerationClient({ apiKey });
+  },
+  inject: [ConfigService],
 };
 
 /**
