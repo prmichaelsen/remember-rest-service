@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { MemoriesController } from './memories.controller.js';
-import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, MEMORY_INDEX } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, MEMORY_INDEX, EXTRACTOR_REGISTRY } from '../core/core.providers.js';
 
 const mockMemoryService = {
   create: jest.fn(),
@@ -38,12 +38,15 @@ const MockImportJobWorker = jest.fn().mockImplementation(() => ({
   execute: mockWorkerExecute,
 }));
 
+const mockValidateImportItems = jest.fn().mockReturnValue([]);
+
 jest.mock('@prmichaelsen/remember-core/services', () => ({
   MemoryService: jest.fn().mockImplementation(() => mockMemoryService),
   RelationshipService: jest.fn().mockImplementation(() => mockRelationshipService),
   RatingService: jest.fn().mockImplementation(() => mockRatingService),
   get ImportJobWorker() { return MockImportJobWorker; },
   DEFAULT_TTL_HOURS: { import: 1, rem_cycle: 24 },
+  get validateImportItems() { return mockValidateImportItems; },
 }));
 
 jest.mock('@prmichaelsen/remember-core/database/weaviate', () => ({
@@ -81,6 +84,11 @@ const mockMemoryIndex = {
   lookup: jest.fn(),
 };
 
+const mockExtractorRegistry = {
+  getExtractor: jest.fn(),
+  getSupportedMimeTypes: jest.fn().mockReturnValue(['text/plain', 'text/html', 'application/pdf']),
+};
+
 describe('MemoriesController', () => {
   let controller: MemoriesController;
   const userId = 'test-user-123';
@@ -96,6 +104,7 @@ describe('MemoriesController', () => {
         { provide: HAIKU_CLIENT, useValue: mockHaikuClient },
         { provide: JOB_SERVICE, useValue: mockJobService },
         { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
+        { provide: EXTRACTOR_REGISTRY, useValue: mockExtractorRegistry },
       ],
     }).compile();
 
@@ -508,6 +517,7 @@ describe('MemoriesController', () => {
         mockRelationshipService,
         mockHaikuClient,
         mockLogger,
+        mockExtractorRegistry,
       );
     });
 
@@ -520,6 +530,7 @@ describe('MemoriesController', () => {
           { provide: HAIKU_CLIENT, useValue: null },
           { provide: JOB_SERVICE, useValue: mockJobService },
           { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
+          { provide: EXTRACTOR_REGISTRY, useValue: mockExtractorRegistry },
         ],
       }).compile();
 
@@ -528,6 +539,47 @@ describe('MemoriesController', () => {
 
       await expect(noHaikuController.importMemories(userId, dto as any, mockRes)).rejects.toThrow(
         'Import requires ANTHROPIC_API_KEY to be configured',
+      );
+    });
+
+    it('should return 400 when validateImportItems finds errors', async () => {
+      mockValidateImportItems.mockReturnValueOnce([
+        { index: 0, error: 'file_url provided without mime_type' },
+      ]);
+
+      const dto = { items: [{ file_url: 'https://example.com/file.pdf' }] };
+
+      await expect(controller.importMemories(userId, dto as any, mockRes)).rejects.toThrow(
+        'Invalid import items',
+      );
+      expect(mockJobService.create).not.toHaveBeenCalled();
+    });
+
+    it('should accept file_url items when validation passes', async () => {
+      mockValidateImportItems.mockReturnValueOnce([]);
+
+      const dto = {
+        items: [{ file_url: 'https://example.com/file.txt', mime_type: 'text/plain' }],
+      };
+
+      const result = await controller.importMemories(userId, dto as any, mockRes);
+
+      expect(result).toEqual({ job_id: 'job-123' });
+      expect(mockValidateImportItems).toHaveBeenCalledWith(dto.items, mockExtractorRegistry);
+    });
+
+    it('should pass extractorRegistry to ImportJobWorker', async () => {
+      const dto = { items: [{ content: 'text' }] };
+
+      await controller.importMemories(userId, dto as any, mockRes);
+
+      expect(MockImportJobWorker).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        mockExtractorRegistry,
       );
     });
   });

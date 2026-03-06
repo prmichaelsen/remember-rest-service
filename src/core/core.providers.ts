@@ -2,7 +2,7 @@ import type { Provider } from '@nestjs/common';
 import { initWeaviateClient, ensureUserCollection } from '@prmichaelsen/remember-core/database/weaviate';
 import { initFirestore } from '@prmichaelsen/remember-core/database/firestore';
 import { createLogger } from '@prmichaelsen/remember-core/utils';
-import { ConfirmationTokenService, createHaikuClient, createModerationClient, MemoryIndexService } from '@prmichaelsen/remember-core/services';
+import { ConfirmationTokenService, createHaikuClient, createModerationClient, MemoryIndexService, createDefaultRegistry } from '@prmichaelsen/remember-core/services';
 import { ConfigService } from '../config/config.service.js';
 
 export const WEAVIATE_CLIENT = Symbol('WEAVIATE_CLIENT');
@@ -12,6 +12,7 @@ export const HAIKU_CLIENT = Symbol('HAIKU_CLIENT');
 export const JOB_SERVICE = Symbol('JOB_SERVICE');
 export const MEMORY_INDEX = Symbol('MEMORY_INDEX');
 export const MODERATION_CLIENT = Symbol('MODERATION_CLIENT');
+export const EXTRACTOR_REGISTRY = Symbol('EXTRACTOR_REGISTRY');
 
 export const weaviateClientProvider: Provider = {
   provide: WEAVIATE_CLIENT,
@@ -86,6 +87,13 @@ export const moderationClientProvider: Provider = {
     return createModerationClient({ apiKey });
   },
   inject: [ConfigService],
+};
+
+export const extractorRegistryProvider: Provider = {
+  provide: EXTRACTOR_REGISTRY,
+  useFactory: () => {
+    return createDefaultRegistry();
+  },
 };
 
 /**

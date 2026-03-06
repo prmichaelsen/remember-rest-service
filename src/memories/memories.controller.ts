@@ -10,6 +10,7 @@ import {
   Query,
   Inject,
   NotFoundException,
+  BadRequestException,
   HttpCode,
   Res,
 } from '@nestjs/common';
@@ -29,13 +30,15 @@ import {
   type TimeModeRequest,
   type DensityModeRequest,
   type HaikuClient,
+  validateImportItems,
+  type ExtractorRegistry,
 } from '@prmichaelsen/remember-core/services';
 import type { RatingModeRequest } from '@prmichaelsen/remember-core/types';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-core/search';
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
 import { CollectionType, getCollectionName } from '@prmichaelsen/remember-core/collections';
-import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, MEMORY_INDEX, safeEnsureUserCollection } from '../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, HAIKU_CLIENT, JOB_SERVICE, MEMORY_INDEX, EXTRACTOR_REGISTRY, safeEnsureUserCollection } from '../core/core.providers.js';
 import { Public, User } from '../auth/decorators.js';
 import type { Response } from 'express';
 import {
@@ -62,6 +65,7 @@ export class MemoriesController {
     @Inject(HAIKU_CLIENT) private readonly haikuClient: HaikuClient | null,
     @Inject(JOB_SERVICE) private readonly jobService: JobService,
     @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
+    @Inject(EXTRACTOR_REGISTRY) private readonly extractorRegistry: ExtractorRegistry,
   ) {}
 
   private resolveCollectionName(userId: string, source?: { author?: string; space?: string; group?: string }): string {
@@ -274,6 +278,15 @@ export class MemoriesController {
       throw new Error('Import requires ANTHROPIC_API_KEY to be configured');
     }
 
+    const validationErrors = validateImportItems(dto.items, this.extractorRegistry);
+    if (validationErrors.length > 0) {
+      throw new BadRequestException({
+        message: 'Invalid import items',
+        errors: validationErrors.map(e => ({ index: e.index, error: e.error })),
+        supported_types: this.extractorRegistry.getSupportedMimeTypes(),
+      });
+    }
+
     const job = await this.jobService.create({
       type: 'import',
       user_id: userId,
@@ -291,6 +304,7 @@ export class MemoriesController {
       relationshipService,
       this.haikuClient,
       this.logger,
+      this.extractorRegistry,
     );
 
     setImmediate(() => {

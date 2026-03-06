@@ -466,8 +466,17 @@ export class RatingModeDto {
 }
 
 export class ImportItemDto {
+  @IsOptional()
   @IsString()
-  content!: string;
+  content?: string;
+
+  @IsOptional()
+  @IsString()
+  file_url?: string;
+
+  @IsOptional()
+  @IsString()
+  mime_type?: string;
 
   @IsOptional()
   @IsString()

@@ -145,9 +145,9 @@ milestones:
 
   - id: M14
     name: File Extraction Integration
-    status: not_started
+    status: in_progress
     tasks_total: 4
-    tasks_completed: 0
+    tasks_completed: 3
     estimated_weeks: 1
     dependencies: [M11]
     document: agent/milestones/milestone-14-file-extraction-integration.md
@@ -606,30 +606,38 @@ tasks:
   milestone_14:
     - id: 49
       name: Extraction Dependencies & Provider
-      status: pending
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 1-2
+      actual_hours: 0.03
       dependencies: []
       document: agent/tasks/milestone-14-file-extraction-integration/task-49-extraction-deps-and-provider.md
       notes: |
-        Install unpdf, mammoth, turndown peer deps. Create EXTRACTOR_REGISTRY provider
-        in CoreModule via createDefaultRegistry().
+        Installed unpdf, mammoth, turndown, @types/turndown. Created EXTRACTOR_REGISTRY
+        provider in CoreModule via createDefaultRegistry(). No cloud clients for MVP.
     - id: 50
       name: Update Import DTO
-      status: pending
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 1
+      actual_hours: 0.02
       dependencies: []
       document: agent/tasks/milestone-14-file-extraction-integration/task-50-update-import-dto.md
       notes: |
-        Add file_url and mime_type fields to ImportItemDto. Make content optional.
+        Added file_url and mime_type to ImportItemDto. Made content optional.
+        Cross-field validation delegated to controller via validateImportItems().
     - id: 51
       name: Controller Validation & Worker Wiring
-      status: pending
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 2-3
+      actual_hours: 0.03
       dependencies: [49, 50]
       document: agent/tasks/milestone-14-file-extraction-integration/task-51-controller-validation-and-wiring.md
       notes: |
-        Inject ExtractorRegistry into MemoriesController. Add pre-import
-        validateImportItems() call. Pass registry to ImportJobWorker constructor.
+        Injected ExtractorRegistry into MemoriesController. Added pre-import
+        validateImportItems() returning 400 before job creation. Passed registry
+        to ImportJobWorker. 3 new unit tests. 38 memories controller tests passing.
     - id: 52
       name: E2E Smoke Test
       status: pending
@@ -699,11 +707,10 @@ recent_work:
     description: "Task 47+48 complete: Wire ModerationClient and MemoryIndexService into SpaceService constructors."
   - date: 2026-03-06
     description: "Sync: Renumbered file extraction integration from M12/tasks 39-42 to M14/tasks 49-52 (resolved ID conflicts). Added task 48 to progress.yaml. Updated doc counts."
+  - date: 2026-03-06
+    description: "M14 Tasks 49-51 complete: Installed extraction peer deps (unpdf, mammoth, turndown). EXTRACTOR_REGISTRY provider in CoreModule. ImportItemDto updated with file_url + mime_type. Controller wired with validateImportItems() + ExtractorRegistry passed to ImportJobWorker. 3 new unit tests (162 total, 160 passing)."
 
 next_steps:
-  - M14 Task 49: Install extraction deps and create EXTRACTOR_REGISTRY provider
-  - M14 Task 50: Update ImportItemDto with file_url + mime_type fields
-  - M14 Task 51: Wire ExtractorRegistry into controller + ImportJobWorker
   - M14 Task 52: E2E smoke tests for file import validation
   - Redeploy to e1 and production with all pending changes
 
