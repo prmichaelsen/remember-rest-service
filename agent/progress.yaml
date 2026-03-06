@@ -188,7 +188,7 @@ milestones:
     name: Comments Endpoint
     status: not_started
     tasks_total: 4
-    tasks_completed: 1
+    tasks_completed: 2
     estimated_weeks: 1
     dependencies: [M7]
     document: agent/milestones/milestone-17-comments-endpoint.md
@@ -769,12 +769,15 @@ tasks:
         but REST controller replicates same logic via MemoryService + SpaceService.
     - id: 59
       name: Create Comment DTO
-      status: not_started
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 0.25
+      actual_hours: 0.02
       dependencies: [58]
       document: agent/tasks/milestone-17-comments-endpoint/task-59-create-comment-dto.md
       notes: |
-        CreateCommentDto with class-validator decorators matching OpenAPI CreateCommentInput.
+        CreateCommentDto at src/app/spaces/app-spaces.dto.ts.
+        Fields: content, parent_id, thread_root_id?, spaces?, groups?, tags?.
     - id: 60
       name: App Spaces Controller
       status: not_started
