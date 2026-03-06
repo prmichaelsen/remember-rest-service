@@ -168,6 +168,21 @@ milestones:
     notes: |
       Rolling milestone for production bugfixes and hotfixes.
 
+  - id: M16
+    name: byDiscovery REST Endpoints
+    status: not_started
+    tasks_total: 4
+    tasks_completed: 1
+    estimated_weeks: 1
+    dependencies: [M13]
+    document: agent/milestones/milestone-16-by-discovery-rest.md
+    blockers:
+      - remember-core >= 0.34.16 not yet published to npm
+    notes: |
+      Wire remember-core byDiscovery sort mode into REST endpoints.
+      POST /memories/by-discovery and POST /spaces/by-discovery.
+      Interleaves rated (Bayesian DESC) with unrated (recent) at 4:1 ratio.
+
 tasks:
   milestone_1:
     - id: 1
@@ -677,18 +692,57 @@ tasks:
         Fix: rotated key, removed corrupted env var, wired MODERATION_CLIENT
         into ConfirmationsController and ProfilesController for consistency.
 
+  milestone_16:
+    - id: 54
+      name: Bump remember-core to >= 0.34.16
+      status: completed
+      completed_date: 2026-03-06
+      estimated_hours: 0.25
+      actual_hours: 0.05
+      dependencies: []
+      document: agent/tasks/milestone-16-by-discovery-rest/task-54-bump-remember-core.md
+      notes: |
+        Updated to ^0.34.17. DiscoveryModeRequest, DiscoverySpaceInput types available.
+        byDiscovery() methods on both MemoryService and SpaceService prototypes confirmed.
+    - id: 55
+      name: Memories byDiscovery Endpoint
+      status: not_started
+      estimated_hours: 0.5
+      dependencies: [54]
+      document: agent/tasks/milestone-16-by-discovery-rest/task-55-memories-by-discovery-endpoint.md
+      notes: |
+        POST /api/svc/v1/memories/by-discovery — DiscoveryModeDto, controller method.
+        Same pattern as by-time, by-density, by-rating.
+    - id: 56
+      name: Spaces byDiscovery Endpoint
+      status: not_started
+      estimated_hours: 0.5
+      dependencies: [54]
+      document: agent/tasks/milestone-16-by-discovery-rest/task-56-spaces-by-discovery-endpoint.md
+      notes: |
+        POST /api/svc/v1/spaces/by-discovery — DiscoverySpaceDto, controller method.
+        Public endpoint (auth optional), same pattern as search/query.
+    - id: 57
+      name: Unit Tests
+      status: not_started
+      estimated_hours: 0.5
+      dependencies: [55, 56]
+      document: agent/tasks/milestone-16-by-discovery-rest/task-57-unit-tests.md
+      notes: |
+        Unit tests for both endpoints. Add byDiscovery to mock services.
+
 documentation:
   design_documents: 2
-  milestone_documents: 15
+  milestone_documents: 16
   pattern_documents: 0
-  task_documents: 50
+  task_documents: 54
 
 progress:
   planning: 100
   implementation: 98
   overall: 97
 
-current_milestone: M15
+current_milestone: M16
 
 recent_work:
   - date: 2026-02-28
@@ -755,5 +809,4 @@ notes:
   - e1 URL: https://remember-rest-service-e1-dit6gawkbq-uc.a.run.app
   - Production URL: https://remember-rest-service-dit6gawkbq-uc.a.run.app
 
-current_blockers:
-  - remember-core ^0.31.0 not yet published to npm — rating code written but tests cannot run
+current_blockers: []
