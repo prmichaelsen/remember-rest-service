@@ -70,9 +70,6 @@ export class AppSpacesController {
       const locations = await spaceService.getPublishedLocations(dto.parent_id);
       spaces = locations.space_ids;
       groups = locations.group_ids;
-      if (!spaces.length && !groups.length) {
-        throw new BadRequestException('Parent memory is not published to any space or group');
-      }
     }
 
     const memoryService = await this.getMemoryService(userId);
@@ -86,18 +83,23 @@ export class AppSpacesController {
       tags: dto.tags ?? [],
     });
 
-    // 2. Publish to spaces/groups (auto-confirmed)
-    const { token } = await spaceService.publish({
-      memory_id: memory.memory_id,
-      spaces,
-      groups,
-    });
-    const confirmed = await spaceService.confirm({ token });
+    // 2. Publish to spaces/groups if any (auto-confirmed)
+    // If parent is not published anywhere, the comment stays in the user's personal collection
+    let composite_id: string | undefined;
+    if (spaces?.length || groups?.length) {
+      const { token } = await spaceService.publish({
+        memory_id: memory.memory_id,
+        spaces,
+        groups,
+      });
+      const confirmed = await spaceService.confirm({ token });
+      composite_id = confirmed.composite_id;
+    }
 
     return {
       memory_id: memory.memory_id,
       created_at: memory.created_at,
-      composite_id: confirmed.composite_id,
+      composite_id,
       published_to: [
         ...(spaces ?? []),
         ...(groups ?? []),

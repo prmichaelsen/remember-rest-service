@@ -10,6 +10,7 @@ const mockMemoryService = {
 const mockSpaceService = {
   publish: jest.fn(),
   confirm: jest.fn(),
+  getPublishedLocations: jest.fn(),
 };
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
@@ -127,15 +128,62 @@ describe('AppSpacesController', () => {
       );
     });
 
-    it('should throw BadRequestException when no spaces or groups', async () => {
-      await expect(
-        controller.createComment(userId, {
-          content: 'Orphan comment',
-          parent_id: 'parent-3',
-        }),
-      ).rejects.toThrow(BadRequestException);
+    it('should create comment in personal collection when parent is unpublished', async () => {
+      mockSpaceService.getPublishedLocations.mockResolvedValue({
+        space_ids: [],
+        group_ids: [],
+      });
+      mockMemoryService.create.mockResolvedValue({
+        memory_id: 'mem-personal',
+        created_at: '2026-03-06T00:00:00Z',
+      });
 
-      expect(mockMemoryService.create).not.toHaveBeenCalled();
+      const result = await controller.createComment(userId, {
+        content: 'Self-annotation on personal memory',
+        parent_id: 'parent-3',
+      });
+
+      expect(result).toEqual({
+        memory_id: 'mem-personal',
+        created_at: '2026-03-06T00:00:00Z',
+        composite_id: undefined,
+        published_to: [],
+      });
+      expect(mockSpaceService.getPublishedLocations).toHaveBeenCalledWith('parent-3');
+      expect(mockMemoryService.create).toHaveBeenCalled();
+      expect(mockSpaceService.publish).not.toHaveBeenCalled();
+      expect(mockSpaceService.confirm).not.toHaveBeenCalled();
+    });
+
+    it('should infer publish destination from parent when no spaces/groups provided', async () => {
+      mockSpaceService.getPublishedLocations.mockResolvedValue({
+        space_ids: ['the_void'],
+        group_ids: [],
+      });
+      mockMemoryService.create.mockResolvedValue({
+        memory_id: 'mem-inferred',
+        created_at: '2026-03-06T00:00:00Z',
+      });
+      mockSpaceService.publish.mockResolvedValue({ token: 'tok-inferred' });
+      mockSpaceService.confirm.mockResolvedValue({ composite_id: 'the_void:test-user-123:mem-inferred' });
+
+      const result = await controller.createComment(userId, {
+        content: 'Comment with inferred destination',
+        parent_id: 'parent-3',
+      });
+
+      expect(result).toEqual({
+        memory_id: 'mem-inferred',
+        created_at: '2026-03-06T00:00:00Z',
+        composite_id: 'the_void:test-user-123:mem-inferred',
+        published_to: ['the_void'],
+      });
+      expect(mockSpaceService.getPublishedLocations).toHaveBeenCalledWith('parent-3');
+      expect(mockSpaceService.publish).toHaveBeenCalledWith({
+        memory_id: 'mem-inferred',
+        spaces: ['the_void'],
+        groups: [],
+      });
     });
 
     it('should support groups', async () => {
