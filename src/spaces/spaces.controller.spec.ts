@@ -10,6 +10,11 @@ const mockSpaceService = {
   search: jest.fn(),
   query: jest.fn(),
   byDiscovery: jest.fn(),
+  byTime: jest.fn(),
+  byRating: jest.fn(),
+  byProperty: jest.fn(),
+  byBroad: jest.fn(),
+  byRandom: jest.fn(),
 };
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
@@ -156,6 +161,71 @@ describe('SpacesController', () => {
       const result = await controller.byDiscovery(userId, dto);
 
       expect(mockSpaceService.byDiscovery).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byTime', () => {
+    it('should call SpaceService.byTime with dto', async () => {
+      const dto = { spaces: ['the_void'], direction: 'desc' as const, limit: 10 };
+      const expected = { memories: [], spaces_searched: ['the_void'], groups_searched: [], total: 0, offset: 0, limit: 10 };
+      mockSpaceService.byTime.mockResolvedValue(expected);
+
+      const result = await controller.byTime(userId, dto);
+
+      expect(mockSpaceService.byTime).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byRating', () => {
+    it('should call SpaceService.byRating with dto', async () => {
+      const dto = { spaces: ['the_void'], direction: 'desc' as const };
+      const expected = { memories: [], spaces_searched: ['the_void'], groups_searched: [], total: 0, offset: 0, limit: 20 };
+      mockSpaceService.byRating.mockResolvedValue(expected);
+
+      const result = await controller.byRating(userId, dto);
+
+      expect(mockSpaceService.byRating).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byProperty', () => {
+    it('should call SpaceService.byProperty with dto', async () => {
+      const dto = { spaces: ['the_void'], sort_field: 'total_significance', sort_direction: 'desc' as const };
+      const expected = { memories: [], spaces_searched: ['the_void'], groups_searched: [], total: 0, offset: 0, limit: 50, sort_field: 'total_significance', sort_direction: 'desc' };
+      mockSpaceService.byProperty.mockResolvedValue(expected);
+
+      const result = await controller.byProperty(userId, dto);
+
+      expect(mockSpaceService.byProperty).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byBroad', () => {
+    it('should call SpaceService.byBroad with dto', async () => {
+      const dto = { spaces: ['the_void'], limit: 20 };
+      const expected = { results: [], spaces_searched: ['the_void'], groups_searched: [], total: 0, offset: 0, limit: 20 };
+      mockSpaceService.byBroad.mockResolvedValue(expected);
+
+      const result = await controller.byBroad(userId, dto);
+
+      expect(mockSpaceService.byBroad).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byRandom', () => {
+    it('should call SpaceService.byRandom with dto', async () => {
+      const dto = { spaces: ['the_void'], limit: 5 };
+      const expected = { results: [], spaces_searched: ['the_void'], groups_searched: [], total_pool_size: 100 };
+      mockSpaceService.byRandom.mockResolvedValue(expected);
+
+      const result = await controller.byRandom(userId, dto);
+
+      expect(mockSpaceService.byRandom).toHaveBeenCalledWith(dto);
       expect(result).toEqual(expected);
     });
   });

@@ -10,6 +10,11 @@ import {
   type SearchSpaceInput,
   type QuerySpaceInput,
   type DiscoverySpaceInput,
+  type TimeSpaceInput,
+  type RatingSpaceInput,
+  type PropertySpaceInput,
+  type BroadSpaceInput,
+  type RandomSpaceInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { getCollectionName, CollectionType } from '@prmichaelsen/remember-core/collections';
@@ -23,6 +28,11 @@ import {
   SearchSpaceDto,
   QuerySpaceDto,
   DiscoverySpaceDto,
+  TimeSpaceDto,
+  RatingSpaceDto,
+  PropertySpaceDto,
+  BroadSpaceDto,
+  RandomSpaceDto,
 } from './spaces.dto.js';
 
 @Controller('api/svc/v1/spaces')
@@ -114,5 +124,50 @@ export class SpacesController {
       ? await this.getService(userId)
       : this.getPublicReadOnlyService();
     return service.byDiscovery(dto as DiscoverySpaceInput);
+  }
+
+  @Public()
+  @Post('by-time')
+  async byTime(@User() userId: string, @Body() dto: TimeSpaceDto) {
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
+    return service.byTime(dto as TimeSpaceInput);
+  }
+
+  @Public()
+  @Post('by-rating')
+  async byRating(@User() userId: string, @Body() dto: RatingSpaceDto) {
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
+    return service.byRating(dto as RatingSpaceInput);
+  }
+
+  @Public()
+  @Post('by-property')
+  async byProperty(@User() userId: string, @Body() dto: PropertySpaceDto) {
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
+    return service.byProperty(dto as PropertySpaceInput);
+  }
+
+  @Public()
+  @Post('by-broad')
+  async byBroad(@User() userId: string, @Body() dto: BroadSpaceDto) {
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
+    return service.byBroad(dto as BroadSpaceInput);
+  }
+
+  @Public()
+  @Post('by-random')
+  async byRandom(@User() userId: string, @Body() dto: RandomSpaceDto) {
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
+    return service.byRandom(dto as RandomSpaceInput);
   }
 }

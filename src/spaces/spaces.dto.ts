@@ -199,6 +199,103 @@ export class DedupeOptionsDto {
   viewingGroupId?: string;
 }
 
+export class SpaceSortBaseDto {
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  spaces?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  groups?: string[];
+
+  @IsOptional()
+  @IsString()
+  content_type?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  min_weight?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1)
+  max_weight?: number;
+
+  @IsOptional()
+  @IsString()
+  date_from?: string;
+
+  @IsOptional()
+  @IsString()
+  date_to?: string;
+
+  @IsOptional()
+  @IsEnum(['approved', 'pending', 'rejected', 'removed', 'all'])
+  moderation_filter?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  include_comments?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(500)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DedupeOptionsDto)
+  dedupe?: DedupeOptionsDto;
+}
+
+export class TimeSpaceDto extends SpaceSortBaseDto {
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  direction?: 'asc' | 'desc';
+}
+
+export class RatingSpaceDto extends SpaceSortBaseDto {
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  direction?: 'asc' | 'desc';
+}
+
+export class PropertySpaceDto extends SpaceSortBaseDto {
+  @IsString()
+  sort_field!: string;
+
+  @IsEnum(['asc', 'desc'])
+  sort_direction!: 'asc' | 'desc';
+}
+
+export class BroadSpaceDto extends SpaceSortBaseDto {
+  @IsOptional()
+  @IsString()
+  query?: string;
+
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  sort_order?: 'asc' | 'desc';
+}
+
+export class RandomSpaceDto extends SpaceSortBaseDto {}
+
 export class DiscoverySpaceDto {
   @IsOptional()
   @IsArray()
