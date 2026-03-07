@@ -15,6 +15,7 @@ import {
   type PropertySpaceInput,
   type BroadSpaceInput,
   type RandomSpaceInput,
+  type CuratedSpaceInput,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { getCollectionName, CollectionType } from '@prmichaelsen/remember-core/collections';
@@ -33,6 +34,7 @@ import {
   PropertySpaceDto,
   BroadSpaceDto,
   RandomSpaceDto,
+  CuratedSpaceDto,
 } from './spaces.dto.js';
 
 @Controller('api/svc/v1/spaces')
@@ -169,5 +171,14 @@ export class SpacesController {
       ? await this.getService(userId)
       : this.getPublicReadOnlyService();
     return service.byRandom(dto as RandomSpaceInput);
+  }
+
+  @Public()
+  @Post('by-curated')
+  async byCurated(@User() userId: string, @Body() dto: CuratedSpaceDto) {
+    const service = userId
+      ? await this.getService(userId)
+      : this.getPublicReadOnlyService();
+    return service.byCurated(dto as CuratedSpaceInput);
   }
 }

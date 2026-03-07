@@ -496,6 +496,41 @@ export class DiscoveryModeDto {
   query?: string;
 }
 
+export class CuratedModeDto {
+  @IsOptional()
+  @IsString()
+  query?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(500)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  direction?: 'asc' | 'desc';
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
 export class RecommendationModeDto {
   @IsOptional()
   @IsString()

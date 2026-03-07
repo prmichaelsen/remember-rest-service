@@ -296,6 +296,16 @@ export class BroadSpaceDto extends SpaceSortBaseDto {
 
 export class RandomSpaceDto extends SpaceSortBaseDto {}
 
+export class CuratedSpaceDto extends SpaceSortBaseDto {
+  @IsOptional()
+  @IsString()
+  query?: string;
+
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  direction?: 'asc' | 'desc';
+}
+
 export class DiscoverySpaceDto {
   @IsOptional()
   @IsArray()

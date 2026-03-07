@@ -12,6 +12,7 @@ const mockMemoryService = {
   byTime: jest.fn(),
   byRating: jest.fn(),
   byDiscovery: jest.fn(),
+  byCurated: jest.fn(),
   byRecommendation: jest.fn(),
   byProperty: jest.fn(),
   byBroad: jest.fn(),
@@ -493,6 +494,19 @@ describe('MemoriesController', () => {
       await controller.byDiscovery(userId, dto);
 
       expect(mockMemoryService.byDiscovery).toHaveBeenCalledWith(dto);
+    });
+  });
+
+  describe('byCurated', () => {
+    it('should call MemoryService.byCurated with correct args', async () => {
+      const dto = { limit: 10, direction: 'desc' as const };
+      const expected = { memories: [], total: 0, offset: 0, limit: 10 };
+      mockMemoryService.byCurated.mockResolvedValue(expected);
+
+      const result = await controller.byCurated(userId, dto);
+
+      expect(mockMemoryService.byCurated).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
     });
   });
 

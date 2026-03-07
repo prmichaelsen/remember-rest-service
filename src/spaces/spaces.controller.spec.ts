@@ -15,6 +15,7 @@ const mockSpaceService = {
   byProperty: jest.fn(),
   byBroad: jest.fn(),
   byRandom: jest.fn(),
+  byCurated: jest.fn(),
 };
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
@@ -226,6 +227,19 @@ describe('SpacesController', () => {
       const result = await controller.byRandom(userId, dto);
 
       expect(mockSpaceService.byRandom).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byCurated', () => {
+    it('should call SpaceService.byCurated with dto', async () => {
+      const dto = { spaces: ['the_void'], direction: 'desc' as const, limit: 10 };
+      const expected = { memories: [], spaces_searched: ['the_void'], groups_searched: [], total: 0, offset: 0, limit: 10 };
+      mockSpaceService.byCurated.mockResolvedValue(expected);
+
+      const result = await controller.byCurated(userId, dto);
+
+      expect(mockSpaceService.byCurated).toHaveBeenCalledWith(dto);
       expect(result).toEqual(expected);
     });
   });

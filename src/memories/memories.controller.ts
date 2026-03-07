@@ -33,6 +33,7 @@ import {
   validateImportItems,
   type ExtractorRegistry,
   type DiscoveryModeRequest,
+  type CuratedModeRequest,
   type RecommendationModeRequest,
   type PropertyModeRequest,
   type BroadModeRequest,
@@ -61,6 +62,7 @@ import {
   RateMemoryDto,
   RatingModeDto,
   DiscoveryModeDto,
+  CuratedModeDto,
   RecommendationModeDto,
   PropertyModeDto,
   BroadModeDto,
@@ -291,6 +293,12 @@ export class MemoriesController {
   async byDiscovery(@User() userId: string, @Body() dto: DiscoveryModeDto) {
     const service = await this.getService(userId);
     return service.byDiscovery(dto as DiscoveryModeRequest);
+  }
+
+  @Post('by-curated')
+  async byCurated(@User() userId: string, @Body() dto: CuratedModeDto) {
+    const service = await this.getService(userId);
+    return service.byCurated(dto as CuratedModeRequest);
   }
 
   @Post('by-recommendation')
