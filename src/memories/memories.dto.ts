@@ -496,6 +496,127 @@ export class DiscoveryModeDto {
   query?: string;
 }
 
+export class RecommendationModeDto {
+  @IsOptional()
+  @IsString()
+  query?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
+export class PropertyModeDto {
+  @IsString()
+  sort_field!: string;
+
+  @IsEnum(['asc', 'desc'])
+  sort_direction!: 'asc' | 'desc';
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
+export class BroadModeDto {
+  @IsOptional()
+  @IsString()
+  query?: string;
+
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  sort_order?: 'asc' | 'desc';
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(200)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
+export class RandomModeDto {
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SearchFiltersDto)
+  filters?: SearchFiltersDto;
+
+  @IsOptional()
+  @IsEnum(['exclude', 'include', 'only'])
+  deleted_filter?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GhostSearchContextDto)
+  ghost_context?: GhostSearchContextDto;
+}
+
 export class ImportItemDto {
   @IsOptional()
   @IsString()

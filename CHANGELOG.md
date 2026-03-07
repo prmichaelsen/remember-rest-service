@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2026-03-07
+
+### Added
+- **Recommendation Sort Endpoint** — `POST /api/svc/v1/memories/by-recommendation`
+  - Personalized memory feed sorted by similarity to user's preference centroid
+  - Returns `similarity_pct`, `profileSize`, `insufficientData` flag, and optional `fallback_sort_mode`
+- **Property Sort Endpoint** — `POST /api/svc/v1/memories/by-property`
+  - Sort memories by any Weaviate property (e.g. `total_significance`, `feel_trauma`, `created_at`)
+  - Required `sort_field` and `sort_direction` parameters
+- **Broad Search Endpoint** — `POST /api/svc/v1/memories/by-broad`
+  - Truncated content view (head/mid/tail slices) for scan-and-drill-in workflows
+  - Supports optional `query` for hybrid search and `sort_order` for chronological ordering
+- **Random Sampling Endpoint** — `POST /api/svc/v1/memories/by-random`
+  - Random memory sampling for serendipitous rediscovery
+  - Returns `total_pool_size` alongside sampled results
+- 6 new unit tests (182 total passing, 2 pre-existing failures)
+
 ## [0.9.1] - 2026-03-06
 
 ### Fixed

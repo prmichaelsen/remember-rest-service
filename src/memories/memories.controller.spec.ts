@@ -12,6 +12,10 @@ const mockMemoryService = {
   byTime: jest.fn(),
   byRating: jest.fn(),
   byDiscovery: jest.fn(),
+  byRecommendation: jest.fn(),
+  byProperty: jest.fn(),
+  byBroad: jest.fn(),
+  byRandom: jest.fn(),
 };
 
 const mockRatingService = {
@@ -489,6 +493,67 @@ describe('MemoriesController', () => {
       await controller.byDiscovery(userId, dto);
 
       expect(mockMemoryService.byDiscovery).toHaveBeenCalledWith(dto);
+    });
+  });
+
+  describe('byRecommendation', () => {
+    it('should call MemoryService.byRecommendation with userId injected', async () => {
+      const dto = { limit: 10, offset: 0 };
+      const expected = { memories: [], profileSize: 0, insufficientData: true, total: 0, offset: 0, limit: 10 };
+      mockMemoryService.byRecommendation.mockResolvedValue(expected);
+
+      const result = await controller.byRecommendation(userId, dto);
+
+      expect(mockMemoryService.byRecommendation).toHaveBeenCalledWith({ ...dto, userId });
+      expect(result).toEqual(expected);
+    });
+
+    it('should pass query and filters through', async () => {
+      const dto = { query: 'test', limit: 5, filters: { types: ['note'] } };
+      mockMemoryService.byRecommendation.mockResolvedValue({ memories: [], profileSize: 0, insufficientData: false, total: 0, offset: 0, limit: 5 });
+
+      await controller.byRecommendation(userId, dto);
+
+      expect(mockMemoryService.byRecommendation).toHaveBeenCalledWith({ ...dto, userId });
+    });
+  });
+
+  describe('byProperty', () => {
+    it('should call MemoryService.byProperty with correct args', async () => {
+      const dto = { sort_field: 'total_significance', sort_direction: 'desc' as const };
+      const expected = { memories: [], total: 0, offset: 0, limit: 50, sort_field: 'total_significance', sort_direction: 'desc' };
+      mockMemoryService.byProperty.mockResolvedValue(expected);
+
+      const result = await controller.byProperty(userId, dto);
+
+      expect(mockMemoryService.byProperty).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byBroad', () => {
+    it('should call MemoryService.byBroad with correct args', async () => {
+      const dto = { limit: 20 };
+      const expected = { results: [], total: 0, offset: 0, limit: 20 };
+      mockMemoryService.byBroad.mockResolvedValue(expected);
+
+      const result = await controller.byBroad(userId, dto);
+
+      expect(mockMemoryService.byBroad).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('byRandom', () => {
+    it('should call MemoryService.byRandom with correct args', async () => {
+      const dto = { limit: 5 };
+      const expected = { results: [], total_pool_size: 100 };
+      mockMemoryService.byRandom.mockResolvedValue(expected);
+
+      const result = await controller.byRandom(userId, dto);
+
+      expect(mockMemoryService.byRandom).toHaveBeenCalledWith(dto);
+      expect(result).toEqual(expected);
     });
   });
 

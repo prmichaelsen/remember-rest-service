@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.9.0
+  version: 0.10.0
   started: 2026-02-28
   status: in_progress
   description: |
@@ -159,9 +159,10 @@ milestones:
 
   - id: M15
     name: Bugfixes
-    status: in_progress
+    status: completed
     tasks_total: 2
-    tasks_completed: 1
+    tasks_completed: 2
+    completed: 2026-03-06
     estimated_weeks: 1
     dependencies: []
     document: agent/milestones/milestone-15-bugfixes.md
@@ -647,13 +648,13 @@ tasks:
         and profiles controllers.
     - id: 62
       name: Add query field to byDiscovery DTOs
-      status: not_started
+      status: completed
+      completed_date: 2026-03-06
       estimated_hours: 0.5
       document: agent/tasks/unassigned/task-62-discovery-query-support.md
-      dependencies: [remember-core 0.35.4+]
       notes: |
-        Add optional query field to DiscoveryModeDto and DiscoverySpaceDto so REST API
-        passes search queries through to core SDK byDiscovery methods. Bump remember-core to ^0.35.4.
+        Added optional query field to DiscoveryModeDto and DiscoverySpaceDto.
+        Enables hybrid search in byDiscovery endpoints when query provided.
 
   milestone_14:
     - id: 49
@@ -830,10 +831,10 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 98
-  overall: 97
+  implementation: 100
+  overall: 99
 
-current_milestone: M17
+current_milestone: M15
 
 recent_work:
   - date: 2026-02-28

@@ -33,7 +33,11 @@ import {
   validateImportItems,
   type ExtractorRegistry,
   type DiscoveryModeRequest,
-} from '@prmichaelsen/remember-core/services';
+  type RecommendationModeRequest,
+  type PropertyModeRequest,
+  type BroadModeRequest,
+  type RandomModeRequest,
+} from '@prmichaelsen/remember-core/services'
 import type { RatingModeRequest } from '@prmichaelsen/remember-core/types';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-core/search';
@@ -57,6 +61,10 @@ import {
   RateMemoryDto,
   RatingModeDto,
   DiscoveryModeDto,
+  RecommendationModeDto,
+  PropertyModeDto,
+  BroadModeDto,
+  RandomModeDto,
 } from './memories.dto.js';
 
 @Controller('api/svc/v1/memories')
@@ -266,6 +274,30 @@ export class MemoriesController {
   async byDiscovery(@User() userId: string, @Body() dto: DiscoveryModeDto) {
     const service = await this.getService(userId);
     return service.byDiscovery(dto as DiscoveryModeRequest);
+  }
+
+  @Post('by-recommendation')
+  async byRecommendation(@User() userId: string, @Body() dto: RecommendationModeDto) {
+    const service = await this.getService(userId);
+    return service.byRecommendation({ ...dto, userId } as RecommendationModeRequest);
+  }
+
+  @Post('by-property')
+  async byProperty(@User() userId: string, @Body() dto: PropertyModeDto) {
+    const service = await this.getService(userId);
+    return service.byProperty(dto as PropertyModeRequest);
+  }
+
+  @Post('by-broad')
+  async byBroad(@User() userId: string, @Body() dto: BroadModeDto) {
+    const service = await this.getService(userId);
+    return service.byBroad(dto as BroadModeRequest);
+  }
+
+  @Post('by-random')
+  async byRandom(@User() userId: string, @Body() dto: RandomModeDto) {
+    const service = await this.getService(userId);
+    return service.byRandom(dto as RandomModeRequest);
   }
 
   private async getRelationshipService(userId: string): Promise<RelationshipService> {
