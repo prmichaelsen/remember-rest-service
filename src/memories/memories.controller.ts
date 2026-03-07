@@ -104,7 +104,13 @@ export class MemoriesController {
     @Param('id') id: string,
     @Query('include') include?: string,
   ) {
-    const collectionName = await this.memoryIndex.lookup(id);
+    let collectionName: string | null;
+    try {
+      collectionName = await this.memoryIndex.lookup(id);
+    } catch (err) {
+      this.logger.error?.('memoryIndex.lookup failed', { id, error: String(err) });
+      throw new NotFoundException('Memory not found');
+    }
     if (!collectionName) {
       throw new NotFoundException('Memory not found');
     }
@@ -115,7 +121,13 @@ export class MemoriesController {
     }
 
     const collection = this.weaviateClient.collections.get(collectionName);
-    const existing = await fetchMemoryWithAllProperties(collection, id);
+    let existing: any;
+    try {
+      existing = await fetchMemoryWithAllProperties(collection, id);
+    } catch (err) {
+      this.logger.error?.('fetchMemoryWithAllProperties failed', { id, collectionName, error: String(err) });
+      throw new NotFoundException('Memory not found');
+    }
     if (!existing?.properties) {
       throw new NotFoundException('Memory not found');
     }
@@ -131,12 +143,17 @@ export class MemoriesController {
         memoryIndex: this.memoryIndex,
         weaviateClient: this.weaviateClient,
       });
-      const similar = await service.findSimilar({
-        memory_id: id,
-        limit: 5,
-        min_similarity: 0.6,
-      });
-      result.similar_memories = similar.similar_memories ?? [];
+      try {
+        const similar = await service.findSimilar({
+          memory_id: id,
+          limit: 5,
+          min_similarity: 0.6,
+        });
+        result.similar_memories = similar.similar_memories ?? [];
+      } catch (err) {
+        this.logger.error?.('findSimilar failed', { id, error: String(err) });
+        result.similar_memories = [];
+      }
     }
 
     return result;

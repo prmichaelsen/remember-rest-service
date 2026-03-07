@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.1] - 2026-03-07
+
+### Fixed
+- Intermittent 500 on `GET /memories/:id` — auth guard on `@Public()` routes enforced `audience: 'svc'`, silently rejecting app-tier JWTs and leaving `userId` undefined; now skips audience check on public routes so both svc and app tokens extract userId correctly
+- Transient Firestore/Weaviate errors in `getById` now return 404 with error logging instead of unhandled 500
+- `findSimilar` failures on `include=similar` now degrade gracefully to empty array instead of 500
+
 ## [0.10.0] - 2026-03-07
 
 ### Added

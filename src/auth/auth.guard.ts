@@ -33,8 +33,9 @@ export class AuthGuard implements CanActivate {
         try {
           const [scheme, token] = authHeader.split(' ');
           if (scheme === 'Bearer' && token) {
-            const { serviceToken, issuer, audience } = this.configService.authConfig;
-            const payload = jwt.verify(token, serviceToken, { issuer, audience }) as JwtPayload;
+            const { serviceToken, issuer } = this.configService.authConfig;
+            // On public routes, skip audience check so both svc and app tokens work
+            const payload = jwt.verify(token, serviceToken, { issuer }) as JwtPayload;
             if (payload.sub) {
               request.userId = payload.sub;
             }
