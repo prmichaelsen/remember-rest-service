@@ -1,6 +1,6 @@
 project:
   name: remember-rest-service
-  version: 0.10.1
+  version: 0.11.0
   started: 2026-02-28
   status: in_progress
   description: |

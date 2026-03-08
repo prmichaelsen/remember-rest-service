@@ -39,7 +39,7 @@ import {
   type BroadModeRequest,
   type RandomModeRequest,
 } from '@prmichaelsen/remember-core/services'
-import type { RatingModeRequest } from '@prmichaelsen/remember-core/types';
+import type { RatingModeRequest, MyRatingsRequest } from '@prmichaelsen/remember-core/types';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
 import { searchByTimeSlice, searchByDensitySlice } from '@prmichaelsen/remember-core/search';
 import { fetchMemoryWithAllProperties } from '@prmichaelsen/remember-core/database/weaviate';
@@ -67,6 +67,7 @@ import {
   PropertyModeDto,
   BroadModeDto,
   RandomModeDto,
+  MyRatingsDto,
 } from './memories.dto.js';
 
 @Controller('api/svc/v1/memories')
@@ -323,6 +324,12 @@ export class MemoriesController {
   async byRandom(@User() userId: string, @Body() dto: RandomModeDto) {
     const service = await this.getService(userId);
     return service.byRandom(dto as RandomModeRequest);
+  }
+
+  @Post('by-my-ratings')
+  async byMyRatings(@User() userId: string, @Body() dto: MyRatingsDto) {
+    const service = this.getRatingService();
+    return service.byMyRatings({ ...dto, userId } as MyRatingsRequest);
   }
 
   private async getRelationshipService(userId: string): Promise<RelationshipService> {

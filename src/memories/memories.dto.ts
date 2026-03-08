@@ -465,6 +465,60 @@ export class RatingModeDto {
   ghost_context?: GhostSearchContextDto;
 }
 
+export class RatingFilterDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  min?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  max?: number;
+}
+
+export class MyRatingsDto {
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  spaces?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  groups?: string[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => RatingFilterDto)
+  rating_filter?: RatingFilterDto;
+
+  @IsOptional()
+  @IsEnum(['rating', 'rated_at'])
+  sort_by?: 'rating' | 'rated_at';
+
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  direction?: 'asc' | 'desc';
+
+  @IsOptional()
+  @IsString()
+  query?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Max(200)
+  limit?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  offset?: number;
+}
+
 export class DiscoveryModeDto {
   @IsOptional()
   @IsNumber()

@@ -47,5 +47,8 @@ export const post = <T = any>(path: string, body: unknown, token?: string) =>
 export const patch = <T = any>(path: string, body: unknown, token?: string) =>
   liveRequest<T>('PATCH', path, { body, token });
 
+export const put = <T = any>(path: string, body: unknown, token?: string) =>
+  liveRequest<T>('PUT', path, { body, token });
+
 export const del = <T = any>(path: string, body?: unknown, token?: string) =>
   liveRequest<T>('DELETE', path, { body, token });

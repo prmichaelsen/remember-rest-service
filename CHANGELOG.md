@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2026-03-08
+
+### Added
+- **My Ratings Sort Endpoint** — `POST /api/svc/v1/memories/by-my-ratings`
+  - Browse mode: Firestore-first query of user's rated memories with pagination, scope filtering (spaces/groups), and star filtering
+  - Search mode: hybrid search intersected with user's rated memory set
+  - Returns `{ memory, metadata }` envelope with `my_rating`, `rated_at`, `deleted`, `unavailable` fields
+- `MyRatingsDto` and `RatingFilterDto` validation classes
+- `put()` helper in live test HTTP client
+- Live e2e test suite `08-my-ratings.live.ts` with 7 test cases (create, rate, browse, star filter, search, empty user, retract)
+- Bump `@prmichaelsen/remember-core` to ^0.49.5
+
 ## [0.11.0] - 2026-03-07
 
 ### Added
