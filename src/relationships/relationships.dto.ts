@@ -87,6 +87,14 @@ export class SearchRelationshipDto {
   @IsOptional()
   @IsEnum(['exclude', 'include', 'only'])
   deleted_filter?: string;
+
+  @IsOptional()
+  @IsString()
+  sort_by?: string;
+
+  @IsOptional()
+  @IsString()
+  sort_direction?: string;
 }
 
 export class UpdateRelationshipDto {
@@ -114,4 +122,9 @@ export class UpdateRelationshipDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  add_memory_ids?: string[];
 }

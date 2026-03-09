@@ -8,6 +8,7 @@ import {
   memoryIndexProvider,
   moderationClientProvider,
   extractorRegistryProvider,
+  eventBusProvider,
   WEAVIATE_CLIENT,
   LOGGER,
   CONFIRMATION_TOKEN_SERVICE,
@@ -15,6 +16,7 @@ import {
   MEMORY_INDEX,
   MODERATION_CLIENT,
   EXTRACTOR_REGISTRY,
+  EVENT_BUS,
 } from './core.providers.js';
 
 @Global()
@@ -28,7 +30,8 @@ import {
     memoryIndexProvider,
     moderationClientProvider,
     extractorRegistryProvider,
+    eventBusProvider,
   ],
-  exports: [WEAVIATE_CLIENT, 'FIRESTORE_INIT', LOGGER, CONFIRMATION_TOKEN_SERVICE, HAIKU_CLIENT, MEMORY_INDEX, MODERATION_CLIENT, EXTRACTOR_REGISTRY],
+  exports: [WEAVIATE_CLIENT, 'FIRESTORE_INIT', LOGGER, CONFIRMATION_TOKEN_SERVICE, HAIKU_CLIENT, MEMORY_INDEX, MODERATION_CLIENT, EXTRACTOR_REGISTRY, EVENT_BUS],
 })
 export class CoreModule {}

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2026-03-09
+
+### Added
+- **Webhook EventBus** — Wire `BatchedWebhookService` into all SpaceService-constructing controllers
+  - New `EVENT_BUS` provider using `createBatchedWebhookService` from remember-core
+  - `WebhookConfig` type and `webhookConfig` accessor on ConfigService
+  - SpacesController, ConfirmationsController, ProfilesController, and AppSpacesController now pass `eventBus` to SpaceService options
+  - Publishes, confirms, and comments via REST now emit webhook events (e.g. `comment.published_to_space`)
+- Cloud Build configs updated to inject `REMEMBER_WEBHOOK_URL` and `REMEMBER_WEBHOOK_SECRET` secrets
+- Relationships DTO: add `sort_by`, `sort_direction`, and `add_memory_ids` fields
+- Bump `@prmichaelsen/remember-core` to ^0.53.0
+- Jest `moduleNameMapper` entry for `@prmichaelsen/remember-core/webhooks`
+
 ## [0.12.0] - 2026-03-08
 
 ### Added

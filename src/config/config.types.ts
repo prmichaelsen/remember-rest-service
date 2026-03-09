@@ -54,6 +54,11 @@ export interface ExtractionConfig {
   documentAiLocation: string;
 }
 
+export interface WebhookConfig {
+  url: string;
+  signingSecret: string;
+}
+
 export interface AppConfig {
   server: ServerConfig;
   auth: AuthConfig;
@@ -65,4 +70,5 @@ export interface AppConfig {
   aws: AwsConfig;
   anthropic: AnthropicConfig;
   extraction: ExtractionConfig;
+  webhook: WebhookConfig;
 }

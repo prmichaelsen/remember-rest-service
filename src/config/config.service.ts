@@ -57,6 +57,10 @@ export class ConfigService {
         documentAiProcessorId: this.get('DOCUMENT_AI_PROCESSOR_ID', ''),
         documentAiLocation: this.get('DOCUMENT_AI_LOCATION', 'us'),
       },
+      webhook: {
+        url: this.get('REMEMBER_WEBHOOK_URL', ''),
+        signingSecret: this.get('REMEMBER_WEBHOOK_SECRET', ''),
+      },
     };
   }
 
@@ -124,5 +128,9 @@ export class ConfigService {
 
   get extractionConfig() {
     return this.config.extraction;
+  }
+
+  get webhookConfig() {
+    return this.config.webhook;
   }
 }

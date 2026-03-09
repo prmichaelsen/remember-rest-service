@@ -1,6 +1,6 @@
 {
   "name": "remember-rest-service",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "REST API for remember-core on Google Cloud Run",
   "private": true,
   "type": "module",
@@ -29,7 +29,7 @@
     "@nestjs/core": "^11.1.14",
     "@nestjs/platform-express": "^11.1.14",
     "@nestjs/throttler": "^6.5.0",
-    "@prmichaelsen/remember-core": "^0.51.0",
+    "@prmichaelsen/remember-core": "^0.53.0",
     "@types/compression": "^1.8.1",
     "@types/turndown": "^5.0.6",
     "class-transformer": "^0.5.1",

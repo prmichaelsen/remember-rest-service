@@ -14,7 +14,8 @@ import {
   type MemoryIndexService,
 } from '@prmichaelsen/remember-core/services';
 import type { Logger } from '@prmichaelsen/remember-core/utils';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, MEMORY_INDEX, safeEnsureUserCollection } from '../../core/core.providers.js';
+import type { EventBus } from '@prmichaelsen/remember-core/webhooks';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, MEMORY_INDEX, EVENT_BUS, safeEnsureUserCollection } from '../../core/core.providers.js';
 import { User } from '../../auth/decorators.js';
 import { CreateCommentDto } from './app-spaces.dto.js';
 
@@ -26,6 +27,7 @@ export class AppSpacesController {
     @Inject(CONFIRMATION_TOKEN_SERVICE) private readonly confirmationTokenService: any,
     @Inject(MODERATION_CLIENT) private readonly moderationClient: ModerationClient | null,
     @Inject(MEMORY_INDEX) private readonly memoryIndex: MemoryIndexService,
+    @Inject(EVENT_BUS) private readonly eventBus: EventBus | null,
   ) {}
 
   private async getMemoryService(userId: string): Promise<MemoryService> {
@@ -51,7 +53,7 @@ export class AppSpacesController {
       this.confirmationTokenService,
       this.logger,
       this.memoryIndex,
-      { moderationClient: this.moderationClient ?? undefined },
+      { moderationClient: this.moderationClient ?? undefined, eventBus: this.eventBus ?? undefined },
     );
   }
 

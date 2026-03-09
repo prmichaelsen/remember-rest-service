@@ -3,6 +3,8 @@ import { initWeaviateClient, ensureUserCollection } from '@prmichaelsen/remember
 import { initFirestore } from '@prmichaelsen/remember-core/database/firestore';
 import { createLogger } from '@prmichaelsen/remember-core/utils';
 import { ConfirmationTokenService, createHaikuClient, createModerationClient, MemoryIndexService, createDefaultRegistry, createVisionClient, createDocumentAiClient } from '@prmichaelsen/remember-core/services';
+import { createBatchedWebhookService } from '@prmichaelsen/remember-core/webhooks';
+import type { EventBus } from '@prmichaelsen/remember-core/webhooks';
 import { ConfigService } from '../config/config.service.js';
 
 export const WEAVIATE_CLIENT = Symbol('WEAVIATE_CLIENT');
@@ -13,6 +15,7 @@ export const JOB_SERVICE = Symbol('JOB_SERVICE');
 export const MEMORY_INDEX = Symbol('MEMORY_INDEX');
 export const MODERATION_CLIENT = Symbol('MODERATION_CLIENT');
 export const EXTRACTOR_REGISTRY = Symbol('EXTRACTOR_REGISTRY');
+export const EVENT_BUS = Symbol('EVENT_BUS');
 
 export const weaviateClientProvider: Provider = {
   provide: WEAVIATE_CLIENT,
@@ -109,6 +112,18 @@ export const extractorRegistryProvider: Provider = {
     return createDefaultRegistry({ visionClient, documentAiClient });
   },
   inject: [ConfigService],
+};
+
+export const eventBusProvider: Provider = {
+  provide: EVENT_BUS,
+  useFactory: (configService: ConfigService, logger: any): EventBus | null => {
+    const { url, signingSecret } = configService.webhookConfig;
+    if (!url || !signingSecret) return null;
+    return createBatchedWebhookService(logger, {
+      resolveEndpoint: () => [{ url, signingSecret }],
+    });
+  },
+  inject: [ConfigService, LOGGER],
 };
 
 /**

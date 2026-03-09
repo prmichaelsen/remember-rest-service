@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { AppSpacesController } from './app-spaces.controller.js';
-import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, MEMORY_INDEX } from '../../core/core.providers.js';
+import { WEAVIATE_CLIENT, LOGGER, CONFIRMATION_TOKEN_SERVICE, MODERATION_CLIENT, MEMORY_INDEX, EVENT_BUS } from '../../core/core.providers.js';
 
 const mockMemoryService = {
   create: jest.fn(),
@@ -58,6 +58,7 @@ describe('AppSpacesController', () => {
         { provide: CONFIRMATION_TOKEN_SERVICE, useValue: mockConfirmationTokenService },
         { provide: MODERATION_CLIENT, useValue: null },
         { provide: MEMORY_INDEX, useValue: mockMemoryIndex },
+        { provide: EVENT_BUS, useValue: null },
       ],
     }).compile();
 
