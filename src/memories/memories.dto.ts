@@ -65,6 +65,10 @@ export class SearchFiltersDto {
   @IsOptional()
   @IsBoolean()
   has_relationships?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  is_user_organized?: boolean;
 }
 
 export class GhostSearchContextDto {
