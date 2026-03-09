@@ -121,8 +121,6 @@ export const eventBusProvider: Provider = {
     if (!url || !signingSecret) return null;
     return createBatchedWebhookService(logger, {
       resolveEndpoint: () => [{ url, signingSecret }],
-      maxBatchSize: 1,       // Flush immediately — Cloud Run idles containers after response
-      flushIntervalMs: 0,
     });
   },
   inject: [ConfigService, LOGGER],
