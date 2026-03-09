@@ -12,7 +12,7 @@ import {
 export class CreateRelationshipDto {
   @IsArray()
   @IsString({ each: true })
-  @ArrayMinSize(2)
+  @ArrayMinSize(1)
   memory_ids!: string[];
 
   @IsString()
