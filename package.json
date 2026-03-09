@@ -29,7 +29,7 @@
     "@nestjs/core": "^11.1.14",
     "@nestjs/platform-express": "^11.1.14",
     "@nestjs/throttler": "^6.5.0",
-    "@prmichaelsen/remember-core": "^0.49.17",
+    "@prmichaelsen/remember-core": "^0.51.0",
     "@types/compression": "^1.8.1",
     "@types/turndown": "^5.0.6",
     "class-transformer": "^0.5.1",
