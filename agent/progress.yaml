@@ -202,9 +202,10 @@ milestones:
 
   - id: M18
     name: Follow-Up Scheduler Endpoint
-    status: in_progress
+    status: completed
     tasks_total: 2
-    tasks_completed: 1
+    tasks_completed: 2
+    completed: 2026-03-10
     estimated_weeks: 0.5
     dependencies: []
     document: agent/milestones/milestone-18-follow-up-scheduler-endpoint.md
@@ -843,7 +844,8 @@ tasks:
       document: agent/tasks/milestone-18-follow-up-scheduler-endpoint/task-62-create-scheduler-module.md
     - id: 63
       name: Unit Tests
-      status: not_started
+      status: completed
+      completed_date: 2026-03-10
       estimated_hours: 1
       dependencies: [62]
       document: agent/tasks/milestone-18-follow-up-scheduler-endpoint/task-63-unit-tests.md
