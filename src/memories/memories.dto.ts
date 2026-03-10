@@ -310,6 +310,10 @@ export class UpdateMemoryDto {
   @IsArray()
   @IsString({ each: true })
   moderation_flags?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  is_user_organized?: boolean;
 }
 
 export class DeleteMemoryDto {
