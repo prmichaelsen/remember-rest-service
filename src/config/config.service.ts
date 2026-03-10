@@ -61,6 +61,9 @@ export class ConfigService {
         url: this.get('REMEMBER_WEBHOOK_URL', ''),
         signingSecret: this.get('REMEMBER_WEBHOOK_SECRET', ''),
       },
+      scheduler: {
+        secret: this.get('SCHEDULER_SECRET', ''),
+      },
     };
   }
 
@@ -132,5 +135,9 @@ export class ConfigService {
 
   get webhookConfig() {
     return this.config.webhook;
+  }
+
+  get schedulerConfig() {
+    return this.config.scheduler;
   }
 }

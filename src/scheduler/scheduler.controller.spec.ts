@@ -1,5 +1,7 @@
 import { Test } from '@nestjs/testing';
+import { UnauthorizedException } from '@nestjs/common';
 import { SchedulerController } from './scheduler.controller.js';
+import { ConfigService } from '../config/config.service.js';
 import { WEAVIATE_CLIENT, EVENT_BUS, LOGGER } from '../core/core.providers.js';
 
 // Mock the remember-core services module
@@ -17,10 +19,16 @@ const mockLogger = {
   error: jest.fn(),
 };
 
+function createMockConfigService(schedulerSecret = '') {
+  return {
+    schedulerConfig: { secret: schedulerSecret },
+  } as unknown as ConfigService;
+}
+
 describe('SchedulerController', () => {
   let controller: SchedulerController;
 
-  describe('with EventBus configured', () => {
+  describe('with EventBus configured (no secret required)', () => {
     const mockEventBus = { emit: jest.fn() };
 
     beforeEach(async () => {
@@ -32,6 +40,7 @@ describe('SchedulerController', () => {
           { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
           { provide: EVENT_BUS, useValue: mockEventBus },
           { provide: LOGGER, useValue: mockLogger },
+          { provide: ConfigService, useValue: createMockConfigService('') },
         ],
       }).compile();
 
@@ -61,6 +70,45 @@ describe('SchedulerController', () => {
     });
   });
 
+  describe('with scheduler secret configured', () => {
+    const mockEventBus = { emit: jest.fn() };
+
+    beforeEach(async () => {
+      jest.clearAllMocks();
+
+      const module = await Test.createTestingModule({
+        controllers: [SchedulerController],
+        providers: [
+          { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
+          { provide: EVENT_BUS, useValue: mockEventBus },
+          { provide: LOGGER, useValue: mockLogger },
+          { provide: ConfigService, useValue: createMockConfigService('my-secret-123') },
+        ],
+      }).compile();
+
+      controller = module.get(SchedulerController);
+    });
+
+    it('allows request with correct secret', async () => {
+      mockScanAndNotify.mockResolvedValue({ scanned: 1, notified: 1, failed: 0 });
+
+      const result = await controller.scanFollowUps('my-secret-123');
+
+      expect(result).toEqual({ scanned: 1, notified: 1, failed: 0 });
+      expect(mockScanAndNotify).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects request with wrong secret', async () => {
+      await expect(controller.scanFollowUps('wrong-secret')).rejects.toThrow(UnauthorizedException);
+      expect(mockScanAndNotify).not.toHaveBeenCalled();
+    });
+
+    it('rejects request with missing secret', async () => {
+      await expect(controller.scanFollowUps(undefined)).rejects.toThrow(UnauthorizedException);
+      expect(mockScanAndNotify).not.toHaveBeenCalled();
+    });
+  });
+
   describe('with null EventBus (webhook not configured)', () => {
     beforeEach(async () => {
       jest.clearAllMocks();
@@ -71,6 +119,7 @@ describe('SchedulerController', () => {
           { provide: WEAVIATE_CLIENT, useValue: mockWeaviateClient },
           { provide: EVENT_BUS, useValue: null },
           { provide: LOGGER, useValue: mockLogger },
+          { provide: ConfigService, useValue: createMockConfigService('') },
         ],
       }).compile();
 

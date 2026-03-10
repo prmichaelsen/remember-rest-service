@@ -59,6 +59,10 @@ export interface WebhookConfig {
   signingSecret: string;
 }
 
+export interface SchedulerConfig {
+  secret: string;
+}
+
 export interface AppConfig {
   server: ServerConfig;
   auth: AuthConfig;
@@ -71,4 +75,5 @@ export interface AppConfig {
   anthropic: AnthropicConfig;
   extraction: ExtractionConfig;
   webhook: WebhookConfig;
+  scheduler: SchedulerConfig;
 }
