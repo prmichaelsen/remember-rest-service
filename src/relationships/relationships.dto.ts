@@ -3,6 +3,7 @@ import {
   IsOptional,
   IsNumber,
   IsArray,
+  IsIn,
   Min,
   Max,
   IsEnum,
@@ -45,6 +46,10 @@ export class CreateRelationshipDto {
   @IsOptional()
   @IsString()
   context_conversation_id?: string;
+
+  @IsOptional()
+  @IsIn(['user', 'rem', 'rule'])
+  source?: string;
 }
 
 export class SearchRelationshipDto {
