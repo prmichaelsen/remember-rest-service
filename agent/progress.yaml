@@ -200,6 +200,17 @@ milestones:
       Wire createAndPublishComment compound operation as app-tier REST endpoint.
       POST /api/app/v1/spaces/comments — create + publish in one call.
 
+  - id: M18
+    name: Follow-Up Scheduler Endpoint
+    status: in_progress
+    tasks_total: 2
+    tasks_completed: 1
+    estimated_weeks: 0.5
+    dependencies: []
+    document: agent/milestones/milestone-18-follow-up-scheduler-endpoint.md
+    notes: |
+      Wire remember-core's FollowUpSchedulerService into a Cloud Scheduler-callable endpoint.
+
 tasks:
   milestone_1:
     - id: 1
@@ -822,6 +833,20 @@ tasks:
         6 tests: defined (1), create+publish (1), thread_root_id (1),
         no spaces/groups 400 (1), groups support (1), error propagation (1).
         178 total tests (176 passing, 2 pre-existing failures).
+
+  milestone_18:
+    - id: 62
+      name: Create Scheduler Module & Controller
+      status: completed
+      completed_date: 2026-03-10
+      estimated_hours: 1
+      document: agent/tasks/milestone-18-follow-up-scheduler-endpoint/task-62-create-scheduler-module.md
+    - id: 63
+      name: Unit Tests
+      status: not_started
+      estimated_hours: 1
+      dependencies: [62]
+      document: agent/tasks/milestone-18-follow-up-scheduler-endpoint/task-63-unit-tests.md
 
 documentation:
   design_documents: 2
