@@ -29,7 +29,7 @@ export class UsersController {
 
     res.header('Location', `/api/svc/v1/jobs/${job.id}`);
 
-    const worker = new AccountDeletionJobWorker(this.jobService, this.logger);
+    const worker = new AccountDeletionJobWorker(this.jobService, this.logger, this.eventBus);
 
     setImmediate(() => {
       worker.execute(job.id, { user_id: userId }).catch((err) => {
