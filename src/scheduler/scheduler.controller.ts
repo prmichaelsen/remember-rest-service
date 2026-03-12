@@ -46,9 +46,12 @@ export class SchedulerController {
 
     async function* collectionEnumerator() {
       let cursor: string | null = null;
+      let first: string | null = null;
       while (true) {
         const next = await getNextMemoryCollection(cursor);
         if (!next) break;
+        if (first === null) first = next;
+        else if (next === first) break;
         yield next;
         cursor = next;
       }
