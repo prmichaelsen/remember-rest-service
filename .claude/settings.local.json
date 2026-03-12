@@ -40,7 +40,8 @@
       "Bash(./agent/scripts/acp.version-check.sh:*)",
       "Bash(./agent/scripts/acp.version-update.sh:*)",
       "Bash(npm info:*)",
-      "Bash(gcloud scheduler:*)"
+      "Bash(gcloud scheduler:*)",
+      "Bash(git -C /home/prmichaelsen/.acp/projects/remember-rest-service status -u)"
     ]
   }
 }
