@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.3] - 2026-03-12
+
+### Added
+- **UsersController** — `DELETE /api/svc/v1/users/{userId}` creates an `account_deletion` job and spawns `AccountDeletionJobWorker` asynchronously via `setImmediate`, returns 202 with `job_id`
+
 ## [0.13.2] - 2026-03-12
 
 ### Fixed

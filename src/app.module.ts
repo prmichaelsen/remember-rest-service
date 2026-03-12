@@ -15,6 +15,7 @@ import { TrustModule } from './trust/index.js';
 import { AppTierModule } from './app/index.js';
 import { JobsModule } from './jobs/index.js';
 import { SchedulerModule } from './scheduler/index.js';
+import { UsersModule } from './users/index.js';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { SchedulerModule } from './scheduler/index.js';
     AppTierModule,
     JobsModule,
     SchedulerModule,
+    UsersModule,
   ],
   providers: [
     {
