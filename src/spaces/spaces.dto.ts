@@ -290,10 +290,6 @@ export class PropertySpaceDto extends SpaceSortBaseDto {
 
 export class BroadSpaceDto extends SpaceSortBaseDto {
   @IsOptional()
-  @IsString()
-  query?: string;
-
-  @IsOptional()
   @IsEnum(['asc', 'desc'])
   sort_order?: 'asc' | 'desc';
 }
@@ -301,10 +297,6 @@ export class BroadSpaceDto extends SpaceSortBaseDto {
 export class RandomSpaceDto extends SpaceSortBaseDto {}
 
 export class CuratedSpaceDto extends SpaceSortBaseDto {
-  @IsOptional()
-  @IsString()
-  query?: string;
-
   @IsOptional()
   @IsEnum(['asc', 'desc'])
   direction?: 'asc' | 'desc';
