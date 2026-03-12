@@ -18,7 +18,7 @@
     "test:live": "jest --config jest-live.config.ts",
     "lint": "eslint \"{src,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",
-    "rollout": "npm i @prmichaelsen/remember-mcp@latest && git diff --quiet package.json package-lock.json || git commit -am 'bump: remember-mcp' && npm run deploy:e1 && npm run deploy"
+    "rollout": "npm i @prmichaelsen/remember-core@latest && git diff --quiet package.json package-lock.json || git commit -am 'bump: remember-core' && npm run deploy:e1 && npm run deploy"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -30,8 +30,7 @@
     "@nestjs/core": "^11.1.14",
     "@nestjs/platform-express": "^11.1.14",
     "@nestjs/throttler": "^6.5.0",
-    "@prmichaelsen/remember-core": "^0.59.3",
-    "@prmichaelsen/remember-mcp": "^3.18.0",
+    "@prmichaelsen/remember-core": "^0.63.0",
     "@types/compression": "^1.8.1",
     "@types/turndown": "^5.0.6",
     "class-transformer": "^0.5.1",
