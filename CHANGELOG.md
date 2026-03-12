@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2026-03-12
+
+### Added
+- **ReportsController** — 6 REST endpoints for content flagging (App Store guideline 1.2)
+  - `POST /api/svc/v1/reports` — create report (reporter_user_id from JWT)
+  - `GET /api/svc/v1/reports` — list authenticated user's reports
+  - `GET /api/svc/v1/reports/pending` — list pending reports (moderator)
+  - `GET /api/svc/v1/reports/:reportId` — get report by ID
+  - `POST /api/svc/v1/reports/:reportId/resolve` — resolve report (resolved_by from JWT)
+  - `GET /api/svc/v1/reports/by-memory/:memoryId` — list reports for a memory
+- **ReportsModule** registered in AppModule
+- CreateReportDto, ResolveReportDto, ListPendingQueryDto validation DTOs
+- 11 unit tests for ReportsController
+
+### Changed
+- Bumped `@prmichaelsen/remember-core` to `^0.68.0`
+
 ## [0.13.3] - 2026-03-12
 
 ### Added

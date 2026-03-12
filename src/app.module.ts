@@ -16,6 +16,7 @@ import { AppTierModule } from './app/index.js';
 import { JobsModule } from './jobs/index.js';
 import { SchedulerModule } from './scheduler/index.js';
 import { UsersModule } from './users/index.js';
+import { ReportsModule } from './reports/index.js';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { UsersModule } from './users/index.js';
     JobsModule,
     SchedulerModule,
     UsersModule,
+    ReportsModule,
   ],
   providers: [
     {

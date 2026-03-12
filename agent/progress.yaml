@@ -212,6 +212,20 @@ milestones:
     notes: |
       Wire remember-core's FollowUpSchedulerService into a Cloud Scheduler-callable endpoint.
 
+  - id: M19
+    name: Reports Endpoint (App Store Guideline 1.2)
+    status: completed
+    tasks_total: 1
+    tasks_completed: 1
+    completed: 2026-03-12
+    estimated_weeks: 0.5
+    dependencies: []
+    document: null
+    notes: |
+      Content flagging REST endpoints for App Store guideline 1.2.
+      6 endpoints: create report, list my reports, list pending, get by ID, resolve, list by memory.
+      Wires remember-core ReportService into NestJS controller.
+
 tasks:
   milestone_1:
     - id: 1
@@ -859,6 +873,18 @@ tasks:
       dependencies: [62]
       document: agent/tasks/milestone-18-follow-up-scheduler-endpoint/task-63-unit-tests.md
 
+  milestone_19:
+    - id: 65
+      name: Reports Controller & Module
+      status: completed
+      completed_date: 2026-03-12
+      estimated_hours: 2-3
+      document: agent/tasks/milestone-19-reports-endpoint/task-65-reports-controller.md
+      notes: |
+        6 REST endpoints for content flagging (App Store guideline 1.2).
+        CreateReportDto, ResolveReportDto, ListPendingQueryDto, ReportsController, ReportsModule.
+        11 unit tests. Bumped remember-core to ^0.68.0.
+
 documentation:
   design_documents: 2
   milestone_documents: 17
@@ -870,7 +896,7 @@ progress:
   implementation: 100
   overall: 99
 
-current_milestone: M15
+current_milestone: M19
 
 recent_work:
   - date: 2026-02-28
@@ -929,9 +955,12 @@ recent_work:
     description: "M17 complete: Comments Endpoint — POST /api/app/v1/spaces/comments. AppSpacesController with create+publish+confirm flow. CreateCommentDto. 6 new unit tests. 178 total tests (176 passing, 2 pre-existing failures). Bumped remember-core to ^0.35.1."
   - date: 2026-03-06
     description: "Task 62 complete: Added optional query field to DiscoveryModeDto and DiscoverySpaceDto for hybrid search in byDiscovery endpoints. No regressions (176 passing, 2 pre-existing failures)."
+  - date: 2026-03-12
+    description: "M19 complete: Reports Endpoint — 6 REST endpoints for content flagging (App Store guideline 1.2). ReportsController, ReportsModule, 3 DTOs, 11 unit tests. Bumped remember-core to ^0.68.0. 208 total tests (206 passing, 2 pre-existing failures)."
 
 next_steps:
-  - Redeploy to e1 and production with all pending changes (M14, M16, M17, task 62)
+  - Redeploy to e1 and production with all pending changes
+  - Task 64: Implement follow_up_due notification handler (cross-project, agentbase.me)
 
 notes:
   - Spec-first approach — OpenAPI spec in remember-core is source of truth
