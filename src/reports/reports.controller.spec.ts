@@ -16,6 +16,16 @@ jest.mock('@prmichaelsen/remember-core/services', () => ({
   ReportService: jest.fn().mockImplementation(() => mockReportService),
 }));
 
+const mockGet = jest.fn();
+const mockLimit = jest.fn().mockReturnValue({ get: mockGet });
+const mockOrderBy = jest.fn().mockReturnValue({ limit: mockLimit });
+const mockWhere = jest.fn().mockReturnValue({ orderBy: mockOrderBy });
+const mockCollection = jest.fn().mockReturnValue({ where: mockWhere });
+
+jest.mock('firebase-admin/firestore', () => ({
+  getFirestore: () => ({ collection: mockCollection }),
+}));
+
 const mockLogger = {
   debug: jest.fn(),
   info: jest.fn(),
@@ -106,20 +116,23 @@ describe('ReportsController', () => {
   describe('GET /reports/pending', () => {
     it('should return pending reports', async () => {
       const reports = [{ id: 'report-1', status: 'pending' }];
-      mockReportService.listPending.mockResolvedValue(reports);
+      mockGet.mockResolvedValue({ docs: reports.map((r) => ({ data: () => r })) });
 
       const result = await controller.listPendingReports({});
 
       expect(result).toEqual(reports);
-      expect(mockReportService.listPending).toHaveBeenCalledWith(undefined);
+      expect(mockCollection).toHaveBeenCalledWith('remember-mcp.reports');
+      expect(mockWhere).toHaveBeenCalledWith('status', '==', 'pending');
+      expect(mockOrderBy).toHaveBeenCalledWith('created_at', 'asc');
+      expect(mockLimit).toHaveBeenCalledWith(50);
     });
 
     it('should pass limit query param', async () => {
-      mockReportService.listPending.mockResolvedValue([]);
+      mockGet.mockResolvedValue({ docs: [] });
 
       await controller.listPendingReports({ limit: 10 });
 
-      expect(mockReportService.listPending).toHaveBeenCalledWith(10);
+      expect(mockLimit).toHaveBeenCalledWith(10);
     });
   });
 

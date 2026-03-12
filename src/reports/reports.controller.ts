@@ -40,8 +40,18 @@ export class ReportsController {
 
   @Get('pending')
   async listPendingReports(@Query() query: ListPendingQueryDto) {
-    const svc = new ReportService(this.logger);
-    return svc.listPending(query.limit);
+    // Use native firebase-admin directly — workaround for
+    // @prmichaelsen/firebase-admin-sdk-v8 queryDocuments bug
+    // with composite index queries (see bug report in firebase-admin-sdk-v8)
+    const db = getFirestore();
+    const limit = query.limit ?? 50;
+    const snapshot = await db
+      .collection('remember-mcp.reports')
+      .where('status', '==', 'pending')
+      .orderBy('created_at', 'asc')
+      .limit(limit)
+      .get();
+    return snapshot.docs.map((doc) => doc.data());
   }
 
   @Get('by-memory/:memoryId')

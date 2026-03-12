@@ -41,7 +41,9 @@
       "Bash(./agent/scripts/acp.version-update.sh:*)",
       "Bash(npm info:*)",
       "Bash(gcloud scheduler:*)",
-      "Bash(git -C /home/prmichaelsen/.acp/projects/remember-rest-service status -u)"
+      "Bash(git -C /home/prmichaelsen/.acp/projects/remember-rest-service status -u)",
+      "Bash(gcloud firestore:*)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@prmichaelsen/remember-core/package.json'\\).version\\)\")"
     ]
   }
 }
