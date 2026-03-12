@@ -667,6 +667,15 @@ tasks:
       notes: |
         Added optional query field to DiscoveryModeDto and DiscoverySpaceDto.
         Enables hybrid search in byDiscovery endpoints when query provided.
+    - id: 64
+      name: Implement follow_up_due Notification Handler (agentbase.me)
+      status: not_started
+      estimated_hours: 2-3
+      dependencies: []
+      document: agent/tasks/unassigned/task-64-follow-up-due-notification-handler.md
+      notes: |
+        Cross-project task: add memory.follow_up_due event handling to agentbase.me
+        webhook handler. Create system notification with deep link to memory.
 
   milestone_14:
     - id: 49
@@ -854,7 +863,7 @@ documentation:
   design_documents: 2
   milestone_documents: 17
   pattern_documents: 0
-  task_documents: 58
+  task_documents: 59
 
 progress:
   planning: 100

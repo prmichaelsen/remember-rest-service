@@ -39,7 +39,8 @@
       "Bash(npm i:*)",
       "Bash(./agent/scripts/acp.version-check.sh:*)",
       "Bash(./agent/scripts/acp.version-update.sh:*)",
-      "Bash(npm info:*)"
+      "Bash(npm info:*)",
+      "Bash(gcloud scheduler:*)"
     ]
   }
 }
