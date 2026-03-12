@@ -201,6 +201,10 @@ export class DedupeOptionsDto {
 
 export class SpaceSortBaseDto {
   @IsOptional()
+  @IsString()
+  query?: string;
+
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   spaces?: string[];
