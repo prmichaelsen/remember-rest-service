@@ -30,6 +30,12 @@ const config: Config = {
       '<rootDir>/../node_modules/@prmichaelsen/remember-core/dist/config/index.js',
     '^@prmichaelsen/remember-core/types$':
       '<rootDir>/../node_modules/@prmichaelsen/remember-core/dist/types/index.js',
+    '^@prmichaelsen/remember-core/webhooks$':
+      '<rootDir>/../node_modules/@prmichaelsen/remember-core/dist/webhooks/index.js',
+    '^@prmichaelsen/remember-core/search$':
+      '<rootDir>/../node_modules/@prmichaelsen/remember-core/dist/search/index.js',
+    '^@prmichaelsen/remember-core/collections$':
+      '<rootDir>/../node_modules/@prmichaelsen/remember-core/dist/collections/index.js',
   },
 };
 
