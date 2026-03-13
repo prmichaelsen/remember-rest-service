@@ -69,12 +69,43 @@ export class RelationshipsController {
     @Param('id') id: string,
     @Body() dto: ReorderRelationshipDto,
   ) {
-    const service = await this.getService(userId);
-    return (service as any).reorder({
+    this.logger.debug('reorder: incoming request', {
+      userId,
       relationship_id: id,
+      operation_type: dto.operation.type,
       operation: dto.operation,
       version: dto.version,
     });
+
+    const service = await this.getService(userId);
+
+    const reorderInput = {
+      relationship_id: id,
+      operation: dto.operation,
+      version: dto.version,
+    };
+    this.logger.debug('reorder: calling service.reorder()', { reorderInput });
+
+    try {
+      const result = await (service as any).reorder(reorderInput);
+      this.logger.debug('reorder: service returned successfully', {
+        relationship_id: id,
+        result_version: result?.version,
+        member_order_length: result?.member_order?.length,
+        member_order: result?.member_order,
+        updated_at: result?.updated_at,
+      });
+      return result;
+    } catch (error: any) {
+      this.logger.debug('reorder: service threw error', {
+        relationship_id: id,
+        operation_type: dto.operation.type,
+        error_message: error?.message,
+        error_name: error?.name,
+        error_code: error?.code,
+      });
+      throw error;
+    }
   }
 
   @Delete(':id')

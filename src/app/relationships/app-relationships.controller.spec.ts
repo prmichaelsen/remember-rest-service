@@ -242,4 +242,104 @@ describe('AppRelationshipsController', () => {
       expect(result.memories[0].title).toBe('Found');
     });
   });
+
+  describe('GET /:relationshipId/ordered-content', () => {
+    it('should throw NotFoundException when relationship not found', async () => {
+      mockRelationshipService.getById.mockResolvedValue({ found: false });
+
+      await expect(
+        controller.getOrderedContent(userId, 'bad-id'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should return full memory objects with _position field added', async () => {
+      mockRelationshipService.getById.mockResolvedValue({
+        found: true,
+        relationship: {
+          id: 'rel-1',
+          relationship_type: 'script',
+          related_memory_ids: ['mem-1', 'mem-2'],
+          member_order: { 'mem-1': 1, 'mem-2': 0 },
+        },
+      });
+
+      mockMemoryService.getById
+        .mockResolvedValueOnce({ memory: { id: 'mem-1', content: 'First content', tags: ['a'], created_at: '2026-01-01T00:00:00Z' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', content: 'Second content', tags: ['b'], created_at: '2026-01-02T00:00:00Z' } });
+
+      const result = await controller.getOrderedContent(userId, 'rel-1');
+
+      expect(result.items).toHaveLength(2);
+      // Sorted by position: mem-2 (0), mem-1 (1)
+      expect(result.items[0]._position).toBe(0);
+      expect(result.items[0].id).toBe('mem-2');
+      expect(result.items[0].content).toBe('Second content');
+      expect(result.items[1]._position).toBe(1);
+      expect(result.items[1].id).toBe('mem-1');
+      expect(result.items[1].content).toBe('First content');
+    });
+
+    it('should use array key "items" not "memories"', async () => {
+      mockRelationshipService.getById.mockResolvedValue({
+        found: true,
+        relationship: {
+          id: 'rel-1',
+          related_memory_ids: ['mem-1'],
+        },
+      });
+
+      mockMemoryService.getById
+        .mockResolvedValueOnce({ memory: { id: 'mem-1', content: 'c', tags: [], created_at: '2026-01-01T00:00:00Z' } });
+
+      const result = await controller.getOrderedContent(userId, 'rel-1');
+
+      expect(result.items).toBeDefined();
+      expect((result as any).memories).toBeUndefined();
+    });
+
+    it('should backfill _position from array order when no member_order', async () => {
+      mockRelationshipService.getById.mockResolvedValue({
+        found: true,
+        relationship: {
+          id: 'rel-1',
+          related_memory_ids: ['mem-a', 'mem-b'],
+        },
+      });
+
+      mockMemoryService.getById
+        .mockResolvedValueOnce({ memory: { id: 'mem-a', content: 'Zebra', tags: [], created_at: '2026-01-01T00:00:00Z' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-b', content: 'Apple', tags: [], created_at: '2026-01-02T00:00:00Z' } });
+
+      const result = await controller.getOrderedContent(userId, 'rel-1');
+
+      // Without member_order, fallback to array order (mem-a first, mem-b second)
+      expect(result.items[0].id).toBe('mem-a');
+      expect(result.items[0]._position).toBe(0);
+      expect(result.items[1].id).toBe('mem-b');
+      expect(result.items[1]._position).toBe(1);
+    });
+
+    it('should paginate with offset and limit', async () => {
+      mockRelationshipService.getById.mockResolvedValue({
+        found: true,
+        relationship: {
+          id: 'rel-1',
+          related_memory_ids: ['mem-1', 'mem-2', 'mem-3'],
+          member_order: { 'mem-1': 0, 'mem-2': 1, 'mem-3': 2 },
+        },
+      });
+
+      mockMemoryService.getById
+        .mockResolvedValueOnce({ memory: { id: 'mem-1', content: 'a', tags: [], created_at: '2026-01-01T00:00:00Z' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', content: 'b', tags: [], created_at: '2026-01-02T00:00:00Z' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-3', content: 'c', tags: [], created_at: '2026-01-03T00:00:00Z' } });
+
+      const result = await controller.getOrderedContent(userId, 'rel-1', '1', '1');
+
+      expect(result.items).toHaveLength(1);
+      expect(result.items[0].id).toBe('mem-2');
+      expect(result.total).toBe(3);
+      expect(result.has_more).toBe(true);
+    });
+  });
 });

@@ -16,15 +16,6 @@ jest.mock('@prmichaelsen/remember-core/services', () => ({
   ReportService: jest.fn().mockImplementation(() => mockReportService),
 }));
 
-const mockGet = jest.fn();
-const mockLimit = jest.fn().mockReturnValue({ get: mockGet });
-const mockOrderBy = jest.fn().mockReturnValue({ limit: mockLimit });
-const mockWhere = jest.fn().mockReturnValue({ orderBy: mockOrderBy });
-const mockCollection = jest.fn().mockReturnValue({ where: mockWhere });
-
-jest.mock('firebase-admin/firestore', () => ({
-  getFirestore: () => ({ collection: mockCollection }),
-}));
 
 const mockLogger = {
   debug: jest.fn(),
@@ -108,7 +99,7 @@ describe('ReportsController', () => {
 
       const result = await controller.listMyReports('user-1');
 
-      expect(result).toEqual(reports);
+      expect(result).toEqual({ reports });
       expect(mockReportService.listByReporter).toHaveBeenCalledWith('user-1');
     });
   });
@@ -116,23 +107,20 @@ describe('ReportsController', () => {
   describe('GET /reports/pending', () => {
     it('should return pending reports', async () => {
       const reports = [{ id: 'report-1', status: 'pending' }];
-      mockGet.mockResolvedValue({ docs: reports.map((r) => ({ data: () => r })) });
+      mockReportService.listPending.mockResolvedValue(reports);
 
       const result = await controller.listPendingReports({});
 
-      expect(result).toEqual(reports);
-      expect(mockCollection).toHaveBeenCalledWith('remember-mcp.reports');
-      expect(mockWhere).toHaveBeenCalledWith('status', '==', 'pending');
-      expect(mockOrderBy).toHaveBeenCalledWith('created_at', 'asc');
-      expect(mockLimit).toHaveBeenCalledWith(50);
+      expect(result).toEqual({ reports });
+      expect(mockReportService.listPending).toHaveBeenCalledWith(undefined);
     });
 
     it('should pass limit query param', async () => {
-      mockGet.mockResolvedValue({ docs: [] });
+      mockReportService.listPending.mockResolvedValue([]);
 
       await controller.listPendingReports({ limit: 10 });
 
-      expect(mockLimit).toHaveBeenCalledWith(10);
+      expect(mockReportService.listPending).toHaveBeenCalledWith(10);
     });
   });
 
@@ -201,7 +189,7 @@ describe('ReportsController', () => {
 
       const result = await controller.listReportsByMemory('mem-1');
 
-      expect(result).toEqual(reports);
+      expect(result).toEqual({ reports });
       expect(mockReportService.listByMemory).toHaveBeenCalledWith('mem-1');
     });
   });

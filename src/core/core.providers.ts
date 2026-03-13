@@ -5,7 +5,6 @@ import { createLogger } from '@prmichaelsen/remember-core/utils';
 import { ConfirmationTokenService, createHaikuClient, createModerationClient, MemoryIndexService, createDefaultRegistry, createVisionClient, createDocumentAiClient } from '@prmichaelsen/remember-core/services';
 import { createBatchedWebhookService } from '@prmichaelsen/remember-core/webhooks';
 import type { EventBus } from '@prmichaelsen/remember-core/webhooks';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { ConfigService } from '../config/config.service.js';
 
 export const WEAVIATE_CLIENT = Symbol('WEAVIATE_CLIENT');
@@ -45,17 +44,6 @@ export const firestoreProvider: Provider = {
       serviceAccount: serviceAccountKey,
       projectId,
     });
-    // Initialize native firebase-admin (used for direct Firestore queries)
-    if (getApps().length === 0) {
-      try {
-        const sa = typeof serviceAccountKey === 'string'
-          ? JSON.parse(serviceAccountKey)
-          : serviceAccountKey;
-        initializeApp({ credential: cert(sa), projectId });
-      } catch {
-        // Graceful fallback — native firebase-admin init may fail in test environments
-      }
-    }
     return true;
   },
   inject: [ConfigService],
