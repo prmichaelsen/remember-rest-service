@@ -255,9 +255,10 @@ milestones:
 
   - id: M22
     name: Trust Level OpenAPI Shape Alignment
-    status: not_started
+    status: completed
     tasks_total: 1
-    tasks_completed: 0
+    tasks_completed: 1
+    completed: 2026-03-13
     estimated_weeks: 0.5
     dependencies: []
     document: agent/milestones/milestone-22-trust-level-shape-alignment.md
@@ -997,8 +998,10 @@ tasks:
   milestone_22:
     - id: 73
       name: Investigate and Align Trust Level Shape
-      status: not_started
+      status: completed
+      completed_date: 2026-03-13
       estimated_hours: 1-2
+      actual_hours: 0.1
       dependencies: []
       document: agent/tasks/milestone-22-trust-level-shape-alignment/task-73-investigate-align-trust-level-shape.md
       notes: |
@@ -1081,10 +1084,11 @@ recent_work:
     description: "M20 complete: Ordered Relationships REST — POST /relationships/:id/reorder (5 operation types via discriminated-union DTO), app-tier getRelationshipMemories now returns position-sorted items with position field and member_order metadata. 10 new tests (6 svc + 4 app). 218 total tests (216 passing, 2 pre-existing failures)."
   - date: 2026-03-13
     description: "agent(plan): add M21 OpenAPI Spec Route Compliance (4 tasks: svc-tier missing endpoints, app-tier memory/relationship pass-through, app-tier spaces/trust/preferences pass-through, unit tests) and M22 Trust Level Shape Alignment (1 task: investigate and align trust_level 0-1 vs 1-5)."
+  - date: 2026-03-13
+    description: "M22 complete: Trust Level Shape Alignment — updated openapi.yaml and openapi-web.yaml in remember-core to use integer 1-5 for trust_level (7 locations). REST service DTOs already correct from task 41."
 
 next_steps:
   - M21: Implement missing OpenAPI routes (svc-tier engagement counters + app-tier pass-throughs)
-  - M22: Investigate and align trust_level shape (0-1 vs 1-5)
   - Redeploy to e1 and production with all pending changes
   - Task 64: Implement follow_up_due notification handler (cross-project, agentbase.me)
 
