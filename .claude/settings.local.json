@@ -43,7 +43,8 @@
       "Bash(gcloud scheduler:*)",
       "Bash(git -C /home/prmichaelsen/.acp/projects/remember-rest-service status -u)",
       "Bash(gcloud firestore:*)",
-      "Bash(node -e \"console.log\\(require\\('./node_modules/@prmichaelsen/remember-core/package.json'\\).version\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@prmichaelsen/remember-core/package.json'\\).version\\)\")",
+      "Bash(cd /home/prmichaelsen/.acp/projects/remember-core && set -a && source .env.prod.local && set +a && ENVIRONMENT=production node --import tsx/esm scripts/inspect-memory.ts 9a6cf4f9-9a8e-4133-896b-3d3a288160d9 2>&1)"
     ]
   }
 }

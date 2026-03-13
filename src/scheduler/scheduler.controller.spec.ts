@@ -8,7 +8,7 @@ import { WEAVIATE_CLIENT, EVENT_BUS, LOGGER } from '../core/core.providers.js';
 const mockScanAndNotify = jest.fn();
 jest.mock('@prmichaelsen/remember-core/services', () => ({
   scanAndNotifyFollowUps: (...args: any[]) => mockScanAndNotify(...args),
-  getNextMemoryCollection: jest.fn(),
+  enumerateAllCollections: jest.fn(async function* () {}),
 }));
 
 const mockWeaviateClient = { collections: { get: jest.fn() } };

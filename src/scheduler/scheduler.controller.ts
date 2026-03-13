@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import {
   scanAndNotifyFollowUps,
-  getNextMemoryCollection,
+  enumerateAllCollections,
 } from '@prmichaelsen/remember-core/services';
 import type { WeaviateClient } from 'weaviate-client';
 import type { EventBus } from '@prmichaelsen/remember-core/webhooks';
@@ -43,25 +43,33 @@ export class SchedulerController {
     }
 
     const weaviateClient = this.weaviateClient;
+    const logger = this.logger;
+
+    logger.info('Follow-up scan starting', { hasEventBus: !!this.eventBus });
 
     async function* collectionEnumerator() {
-      let cursor: string | null = null;
-      let first: string | null = null;
-      while (true) {
-        const next = await getNextMemoryCollection(cursor);
-        if (!next) break;
-        if (first === null) first = next;
-        else if (next === first) break;
-        yield next;
-        cursor = next;
+      let count = 0;
+      for await (const collection of enumerateAllCollections(weaviateClient)) {
+        count++;
+        logger.info('Enumerating collection for follow-up scan', { collection, index: count });
+        yield collection;
       }
+      logger.info('Collection enumeration complete', { totalCollections: count });
     }
 
-    return scanAndNotifyFollowUps({
+    const result = await scanAndNotifyFollowUps({
       weaviateClient,
       eventBus: this.eventBus,
       logger: this.logger,
       collectionEnumerator,
     });
+
+    logger.info('Follow-up scan complete', {
+      scanned: result.scanned,
+      notified: result.notified,
+      failed: result.failed,
+    });
+
+    return result;
   }
 }
