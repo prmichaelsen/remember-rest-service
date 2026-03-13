@@ -240,6 +240,31 @@ milestones:
       POST /relationships/:id/reorder (svc-tier), position-sorted getRelationshipMemories (app-tier).
       Assumes remember-core M77 (reorder service, member_order_json) is complete.
 
+  - id: M21
+    name: OpenAPI Spec Route Compliance
+    status: not_started
+    tasks_total: 4
+    tasks_completed: 0
+    estimated_weeks: 1
+    dependencies: [M3, M7]
+    document: agent/milestones/milestone-21-openapi-route-compliance.md
+    notes: |
+      Implement all missing routes from openapi.yaml (svc-tier) and openapi-web.yaml (app-tier).
+      4 svc-tier gaps (3 engagement counters + spaces/by-recommendation).
+      ~24 app-tier gaps (memory/relationship CRUD, spaces ops, trust ops, preferences, with-relationships).
+
+  - id: M22
+    name: Trust Level OpenAPI Shape Alignment
+    status: not_started
+    tasks_total: 1
+    tasks_completed: 0
+    estimated_weeks: 0.5
+    dependencies: []
+    document: agent/milestones/milestone-22-trust-level-shape-alignment.md
+    notes: |
+      Resolve trust_level shape mismatch: OpenAPI spec says float 0-1, REST DTOs use integer 1-5.
+      Investigate remember-core's actual type and align all three artifacts.
+
 tasks:
   milestone_1:
     - id: 1
@@ -931,18 +956,67 @@ tasks:
         6 svc-tier tests (one per operation type + result shape).
         4 app-tier tests (position sort, position field, member_order metadata, fallback).
 
+  milestone_21:
+    - id: 69
+      name: Svc-Tier Missing Endpoints
+      status: not_started
+      estimated_hours: 1-2
+      dependencies: []
+      document: agent/tasks/milestone-21-openapi-route-compliance/task-69-svc-tier-missing-endpoints.md
+      notes: |
+        3 engagement counter endpoints (click, share, comment-count) returning 204.
+        1 spaces/by-recommendation sort endpoint.
+    - id: 70
+      name: App-Tier Memory & Relationship Pass-Through
+      status: not_started
+      estimated_hours: 3-4
+      dependencies: []
+      document: agent/tasks/milestone-21-openapi-route-compliance/task-70-app-tier-memory-relationship-passthrough.md
+      notes: |
+        7 app-tier memory endpoints (create, update, delete, search, similar, query, with-relationships).
+        4 app-tier relationship endpoints (create, update, delete, search).
+    - id: 71
+      name: App-Tier Spaces, Trust & Preferences Pass-Through
+      status: not_started
+      estimated_hours: 3-4
+      dependencies: []
+      document: agent/tasks/milestone-21-openapi-route-compliance/task-71-app-tier-spaces-trust-preferences-passthrough.md
+      notes: |
+        6 spaces pass-through (publish, retract, revise, moderate, search, query).
+        7 trust pass-through (ghost-config get/patch, set/remove-user-trust, block/unblock, check-access).
+        2 preferences pass-through (get, patch).
+    - id: 72
+      name: Unit Tests
+      status: not_started
+      estimated_hours: 2-3
+      dependencies: [69, 70, 71]
+      document: agent/tasks/milestone-21-openapi-route-compliance/task-72-unit-tests.md
+      notes: |
+        ~30-35 new tests covering all endpoints from tasks 69-71.
+
+  milestone_22:
+    - id: 73
+      name: Investigate and Align Trust Level Shape
+      status: not_started
+      estimated_hours: 1-2
+      dependencies: []
+      document: agent/tasks/milestone-22-trust-level-shape-alignment/task-73-investigate-align-trust-level-shape.md
+      notes: |
+        Determine whether remember-core uses float 0-1 or integer 1-5 for trust_level.
+        Align REST DTOs and OpenAPI spec to match. May require cross-project spec update.
+
 documentation:
   design_documents: 2
-  milestone_documents: 18
+  milestone_documents: 20
   pattern_documents: 0
-  task_documents: 62
+  task_documents: 67
 
 progress:
   planning: 100
-  implementation: 100
-  overall: 99
+  implementation: 92
+  overall: 92
 
-current_milestone: M20
+current_milestone: M21
 
 recent_work:
   - date: 2026-02-28
@@ -1005,9 +1079,13 @@ recent_work:
     description: "M19 complete: Reports Endpoint — 6 REST endpoints for content flagging (App Store guideline 1.2). ReportsController, ReportsModule, 3 DTOs, 11 unit tests. Bumped remember-core to ^0.68.0. 208 total tests (206 passing, 2 pre-existing failures)."
   - date: 2026-03-13
     description: "M20 complete: Ordered Relationships REST — POST /relationships/:id/reorder (5 operation types via discriminated-union DTO), app-tier getRelationshipMemories now returns position-sorted items with position field and member_order metadata. 10 new tests (6 svc + 4 app). 218 total tests (216 passing, 2 pre-existing failures)."
+  - date: 2026-03-13
+    description: "agent(plan): add M21 OpenAPI Spec Route Compliance (4 tasks: svc-tier missing endpoints, app-tier memory/relationship pass-through, app-tier spaces/trust/preferences pass-through, unit tests) and M22 Trust Level Shape Alignment (1 task: investigate and align trust_level 0-1 vs 1-5)."
 
 next_steps:
-  - Redeploy to e1 and production with all pending changes (including M20)
+  - M21: Implement missing OpenAPI routes (svc-tier engagement counters + app-tier pass-throughs)
+  - M22: Investigate and align trust_level shape (0-1 vs 1-5)
+  - Redeploy to e1 and production with all pending changes
   - Task 64: Implement follow_up_due notification handler (cross-project, agentbase.me)
 
 notes:
