@@ -226,6 +226,19 @@ milestones:
       6 endpoints: create report, list my reports, list pending, get by ID, resolve, list by memory.
       Wires remember-core ReportService into NestJS controller.
 
+  - id: M20
+    name: Ordered Relationships REST Endpoints
+    status: not_started
+    tasks_total: 3
+    tasks_completed: 0
+    estimated_weeks: 0.5
+    dependencies: []
+    document: agent/milestones/milestone-20-ordered-relationships-rest.md
+    notes: |
+      Wire remember-core ordered relationships into REST endpoints.
+      POST /relationships/:id/reorder (svc-tier), position-sorted getRelationshipMemories (app-tier).
+      Assumes remember-core M77 (reorder service, member_order_json) is complete.
+
 tasks:
   milestone_1:
     - id: 1
@@ -885,11 +898,40 @@ tasks:
         CreateReportDto, ResolveReportDto, ListPendingQueryDto, ReportsController, ReportsModule.
         11 unit tests. Bumped remember-core to ^0.68.0.
 
+  milestone_20:
+    - id: 66
+      name: Reorder Endpoint + DTOs
+      status: not_started
+      estimated_hours: 1-2
+      dependencies: []
+      document: agent/tasks/milestone-20-ordered-relationships-rest/task-66-reorder-endpoint-and-dtos.md
+      notes: |
+        POST /api/svc/v1/relationships/:id/reorder with discriminated-union DTO
+        for 5 operation types. Delegates to RelationshipService.reorder().
+    - id: 67
+      name: App-Tier Ordered Content Response
+      status: not_started
+      estimated_hours: 1
+      dependencies: []
+      document: agent/tasks/milestone-20-ordered-relationships-rest/task-67-app-tier-ordered-content.md
+      notes: |
+        Update getRelationshipMemories to sort by member_order position
+        instead of alphabetically. Add position field to response items.
+    - id: 68
+      name: Unit Tests
+      status: not_started
+      estimated_hours: 1
+      dependencies: [66, 67]
+      document: agent/tasks/milestone-20-ordered-relationships-rest/task-68-unit-tests.md
+      notes: |
+        6+ svc-tier tests (one per operation type + result shape).
+        4+ app-tier tests (position sort, position field, fallback, pagination).
+
 documentation:
   design_documents: 2
-  milestone_documents: 17
+  milestone_documents: 18
   pattern_documents: 0
-  task_documents: 59
+  task_documents: 62
 
 progress:
   planning: 100
@@ -959,6 +1001,7 @@ recent_work:
     description: "M19 complete: Reports Endpoint — 6 REST endpoints for content flagging (App Store guideline 1.2). ReportsController, ReportsModule, 3 DTOs, 11 unit tests. Bumped remember-core to ^0.68.0. 208 total tests (206 passing, 2 pre-existing failures)."
 
 next_steps:
+  - "M20: Ordered Relationships REST — Task 66 (reorder endpoint), Task 67 (app-tier ordered content), Task 68 (unit tests)"
   - Redeploy to e1 and production with all pending changes
   - Task 64: Implement follow_up_due notification handler (cross-project, agentbase.me)
 
