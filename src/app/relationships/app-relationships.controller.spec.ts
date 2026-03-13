@@ -134,6 +134,95 @@ describe('AppRelationshipsController', () => {
       expect(result.has_more).toBe(true);
     });
 
+    it('should sort memories by member_order position when present', async () => {
+      mockRelationshipService.getById.mockResolvedValue({
+        found: true,
+        relationship: {
+          id: 'rel-1',
+          relationship_type: 'script',
+          related_memory_ids: ['mem-1', 'mem-2', 'mem-3'],
+          member_order: { 'mem-1': 2, 'mem-2': 0, 'mem-3': 1 },
+        },
+      });
+
+      mockMemoryService.getById
+        .mockResolvedValueOnce({ memory: { id: 'mem-1', title: 'Third', content: 'c' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'First', content: 'a' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-3', title: 'Second', content: 'b' } });
+
+      const result = await controller.getRelationshipMemories(userId, 'rel-1');
+
+      // Sorted by position: mem-2 (0), mem-3 (1), mem-1 (2)
+      expect(result.memories[0].id).toBe('mem-2');
+      expect(result.memories[1].id).toBe('mem-3');
+      expect(result.memories[2].id).toBe('mem-1');
+    });
+
+    it('should include position field on each memory', async () => {
+      mockRelationshipService.getById.mockResolvedValue({
+        found: true,
+        relationship: {
+          id: 'rel-1',
+          related_memory_ids: ['mem-1', 'mem-2'],
+          member_order: { 'mem-1': 1, 'mem-2': 0 },
+        },
+      });
+
+      mockMemoryService.getById
+        .mockResolvedValueOnce({ memory: { id: 'mem-1', title: 'B', content: 'b' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'A', content: 'a' } });
+
+      const result = await controller.getRelationshipMemories(userId, 'rel-1');
+
+      expect(result.memories[0].position).toBe(0);
+      expect(result.memories[0].id).toBe('mem-2');
+      expect(result.memories[1].position).toBe(1);
+      expect(result.memories[1].id).toBe('mem-1');
+    });
+
+    it('should include member_order in relationship metadata', async () => {
+      const memberOrder = { 'mem-1': 0, 'mem-2': 1 };
+      mockRelationshipService.getById.mockResolvedValue({
+        found: true,
+        relationship: {
+          id: 'rel-1',
+          related_memory_ids: ['mem-1', 'mem-2'],
+          member_order: memberOrder,
+        },
+      });
+
+      mockMemoryService.getById
+        .mockResolvedValueOnce({ memory: { id: 'mem-1', title: 'A', content: 'a' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'B', content: 'b' } });
+
+      const result = await controller.getRelationshipMemories(userId, 'rel-1');
+
+      expect(result.relationship.member_order).toEqual(memberOrder);
+    });
+
+    it('should fall back to alphabetical sort when no member_order', async () => {
+      mockRelationshipService.getById.mockResolvedValue({
+        found: true,
+        relationship: {
+          id: 'rel-1',
+          related_memory_ids: ['mem-1', 'mem-2'],
+        },
+      });
+
+      mockMemoryService.getById
+        .mockResolvedValueOnce({ memory: { id: 'mem-1', title: 'Zebra', content: 'z' } })
+        .mockResolvedValueOnce({ memory: { id: 'mem-2', title: 'Apple', content: 'a' } });
+
+      const result = await controller.getRelationshipMemories(userId, 'rel-1');
+
+      // Alphabetical: Apple before Zebra
+      expect(result.memories[0].id).toBe('mem-2');
+      expect(result.memories[1].id).toBe('mem-1');
+      // Position should still be present (index-based fallback)
+      expect(result.memories[0].position).toBe(0);
+      expect(result.memories[1].position).toBe(1);
+    });
+
     it('should handle missing memories gracefully', async () => {
       mockRelationshipService.getById.mockResolvedValue({
         found: true,

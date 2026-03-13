@@ -20,6 +20,7 @@ import {
   CreateRelationshipDto,
   SearchRelationshipDto,
   UpdateRelationshipDto,
+  ReorderRelationshipDto,
 } from './relationships.dto.js';
 
 @Controller('api/svc/v1/relationships')
@@ -60,6 +61,20 @@ export class RelationshipsController {
       ...dto,
       relationship_id: id,
     } as UpdateRelationshipInput);
+  }
+
+  @Post(':id/reorder')
+  async reorder(
+    @User() userId: string,
+    @Param('id') id: string,
+    @Body() dto: ReorderRelationshipDto,
+  ) {
+    const service = await this.getService(userId);
+    return (service as any).reorder({
+      relationship_id: id,
+      operation: dto.operation,
+      version: dto.version,
+    });
   }
 
   @Delete(':id')

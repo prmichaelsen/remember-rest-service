@@ -7,6 +7,7 @@ const mockRelationshipService = {
   search: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+  reorder: jest.fn(),
 };
 
 jest.mock('@prmichaelsen/remember-core/services', () => ({
@@ -139,6 +140,116 @@ describe('RelationshipsController', () => {
 
       expect(mockRelationshipService.delete).toHaveBeenCalledWith({ relationship_id: relId });
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('reorder', () => {
+    const reorderResult = {
+      relationship_id: 'rel-1',
+      member_order: { 'mem-1': 1, 'mem-2': 0 },
+      version: 2,
+      updated_at: '2026-03-13T00:00:00Z',
+    };
+
+    it('should reorder with move_to_index', async () => {
+      const dto = {
+        operation: { type: 'move_to_index' as const, memory_id: 'mem-1', index: 0 },
+        version: 1,
+      };
+      mockRelationshipService.reorder.mockResolvedValue(reorderResult);
+
+      const result = await controller.reorder(userId, 'rel-1', dto);
+
+      expect(mockRelationshipService.reorder).toHaveBeenCalledWith({
+        relationship_id: 'rel-1',
+        operation: { type: 'move_to_index', memory_id: 'mem-1', index: 0 },
+        version: 1,
+      });
+      expect(result).toEqual(reorderResult);
+    });
+
+    it('should reorder with swap', async () => {
+      const dto = {
+        operation: { type: 'swap' as const, memory_id_a: 'mem-1', memory_id_b: 'mem-2' },
+        version: 1,
+      };
+      mockRelationshipService.reorder.mockResolvedValue(reorderResult);
+
+      await controller.reorder(userId, 'rel-1', dto);
+
+      expect(mockRelationshipService.reorder).toHaveBeenCalledWith({
+        relationship_id: 'rel-1',
+        operation: { type: 'swap', memory_id_a: 'mem-1', memory_id_b: 'mem-2' },
+        version: 1,
+      });
+    });
+
+    it('should reorder with set_order', async () => {
+      const dto = {
+        operation: { type: 'set_order' as const, ordered_memory_ids: ['mem-2', 'mem-1'] },
+        version: 1,
+      };
+      mockRelationshipService.reorder.mockResolvedValue(reorderResult);
+
+      await controller.reorder(userId, 'rel-1', dto);
+
+      expect(mockRelationshipService.reorder).toHaveBeenCalledWith({
+        relationship_id: 'rel-1',
+        operation: { type: 'set_order', ordered_memory_ids: ['mem-2', 'mem-1'] },
+        version: 1,
+      });
+    });
+
+    it('should reorder with move_before', async () => {
+      const dto = {
+        operation: { type: 'move_before' as const, memory_id: 'mem-2', before: 'mem-1' },
+        version: 1,
+      };
+      mockRelationshipService.reorder.mockResolvedValue(reorderResult);
+
+      await controller.reorder(userId, 'rel-1', dto);
+
+      expect(mockRelationshipService.reorder).toHaveBeenCalledWith({
+        relationship_id: 'rel-1',
+        operation: { type: 'move_before', memory_id: 'mem-2', before: 'mem-1' },
+        version: 1,
+      });
+    });
+
+    it('should reorder with move_after', async () => {
+      const dto = {
+        operation: { type: 'move_after' as const, memory_id: 'mem-1', after: 'mem-2' },
+        version: 1,
+      };
+      mockRelationshipService.reorder.mockResolvedValue(reorderResult);
+
+      await controller.reorder(userId, 'rel-1', dto);
+
+      expect(mockRelationshipService.reorder).toHaveBeenCalledWith({
+        relationship_id: 'rel-1',
+        operation: { type: 'move_after', memory_id: 'mem-1', after: 'mem-2' },
+        version: 1,
+      });
+    });
+
+    it('should return reorder result with member_order and version', async () => {
+      const dto = {
+        operation: { type: 'move_to_index' as const, memory_id: 'mem-1', index: 0 },
+        version: 3,
+      };
+      const expected = {
+        relationship_id: 'rel-1',
+        member_order: { 'mem-1': 0, 'mem-2': 1, 'mem-3': 2 },
+        version: 4,
+        updated_at: '2026-03-13T12:00:00Z',
+      };
+      mockRelationshipService.reorder.mockResolvedValue(expected);
+
+      const result = await controller.reorder(userId, 'rel-1', dto);
+
+      expect(result.member_order).toEqual({ 'mem-1': 0, 'mem-2': 1, 'mem-3': 2 });
+      expect(result.version).toBe(4);
+      expect(result.updated_at).toBe('2026-03-13T12:00:00Z');
     });
   });
 

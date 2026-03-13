@@ -79,23 +79,34 @@ export class AppRelationshipsController {
       }),
     );
 
+    const memberOrder = (relationship.member_order as Record<string, number>) ?? null;
+
     const filtered = allMemories
       .filter((m): m is Record<string, unknown> => m !== null && !m.deleted_at)
       .sort((a, b) => {
+        if (memberOrder) {
+          const posA = memberOrder[a.id as string] ?? Number.MAX_SAFE_INTEGER;
+          const posB = memberOrder[b.id as string] ?? Number.MAX_SAFE_INTEGER;
+          return posA - posB;
+        }
         const titleA = ((a.title as string) || (a.content as string) || '').toLowerCase();
         const titleB = ((b.title as string) || (b.content as string) || '').toLowerCase();
         return titleA.localeCompare(titleB);
       });
 
     const total = filtered.length;
-    const paginated = filtered.slice(offset, offset + limit);
+    const paginated: Array<Record<string, unknown>> = filtered.slice(offset, offset + limit).map((m, idx) => {
+      const position = memberOrder ? (memberOrder[m.id as string] ?? offset + idx) : offset + idx;
+      return { ...m, position };
+    });
 
-    const { related_memory_ids, memory_ids, ...relationshipMetadata } = relationship as any;
+    const { related_memory_ids, memory_ids, member_order_json, ...relationshipMetadata } = relationship as any;
 
     return {
       relationship: {
         ...relationshipMetadata,
         memory_ids: memoryIds,
+        ...(memberOrder ? { member_order: memberOrder } : {}),
       },
       memories: paginated,
       total,
