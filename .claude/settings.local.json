@@ -44,7 +44,10 @@
       "Bash(git -C /home/prmichaelsen/.acp/projects/remember-rest-service status -u)",
       "Bash(gcloud firestore:*)",
       "Bash(node -e \"console.log\\(require\\('./node_modules/@prmichaelsen/remember-core/package.json'\\).version\\)\")",
-      "Bash(cd /home/prmichaelsen/.acp/projects/remember-core && set -a && source .env.prod.local && set +a && ENVIRONMENT=production node --import tsx/esm scripts/inspect-memory.ts 9a6cf4f9-9a8e-4133-896b-3d3a288160d9 2>&1)"
+      "Bash(cd /home/prmichaelsen/.acp/projects/remember-core && set -a && source .env.prod.local && set +a && ENVIRONMENT=production node --import tsx/esm scripts/inspect-memory.ts 9a6cf4f9-9a8e-4133-896b-3d3a288160d9 2>&1)",
+      "Bash(set -a && source .env.prod.local && set +a && ENVIRONMENT=production node --import tsx/esm -e \"\nimport { initWeaviateClient } from './src/database/weaviate/client.js';\nconst client = await initWeaviateClient\\({ url: process.env.WEAVIATE_REST_URL, apiKey: process.env.WEAVIATE_API_KEY, openaiApiKey: process.env.OPENAI_API_KEY }\\);\nconst col = client.collections.get\\('Memory_users_geTmbcAMyhYUyeIfQj0ZRFmorhA2'\\);\nconst config = await col.config.get\\(\\);\nconst props = config.properties.filter\\(p => p.name.startsWith\\('follow_up'\\)\\);\nfor \\(const p of props\\) console.log\\(p.name + ': ' + p.dataType\\);\nprocess.exit\\(0\\);\n\" 2>&1)",
+      "Bash(set -a && source .env.prod.local && set +a && ENVIRONMENT=production npx tsx -e \"\nimport { initWeaviateClient } from './src/database/weaviate/client.js';\nasync function main\\(\\) {\n  const client = await initWeaviateClient\\({ url: process.env.WEAVIATE_REST_URL!, apiKey: process.env.WEAVIATE_API_KEY, openaiApiKey: process.env.OPENAI_API_KEY }\\);\n  const col = client.collections.get\\('Memory_users_geTmbcAMyhYUyeIfQj0ZRFmorhA2'\\);\n  const config = await col.config.get\\(\\);\n  const props = config.properties.filter\\(\\(p: any\\) => p.name.startsWith\\('follow_up'\\)\\);\n  for \\(const p of props\\) console.log\\(p.name + ': ' + p.dataType\\);\n  process.exit\\(0\\);\n}\nmain\\(\\);\n\" 2>&1)",
+      "Bash(set -a && source .env.prod.local && set +a && ENVIRONMENT=production node --import tsx/esm scripts/check-schema.ts 2>&1)"
     ]
   }
 }
